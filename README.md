@@ -5,7 +5,7 @@ The [Wiki](https://github.com/microsoft/SCMScaleUnitDevTools/wiki) provides docu
 
 # Related resources for Dynamics 365 Supply Chain Management
 
-[Documentation Cloud and Edge Scale unitt](https://aka.ms/SCMCnE)
+[Documentation for Cloud and Edge Scale units](https://aka.ms/SCMCnE)
 [Documentation for development deployments](https://docs.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/dev-tools/developer-home-page)
 
 
