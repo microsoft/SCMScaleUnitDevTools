@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CloudAndEdgeConfiguration>
+  <!--EnivronmentType represents the infrastructure you host on.
+      It should be VHD if you have OneBox or LCSVHD.
+      It should be LCSHosted if you have an LCS cloud-hosted devbox.-->
+  <EnvironmentType>LCSHosted</EnvironmentType>
+  <AxDbName>AxDB</AxDbName>
+
+  <AADConfiguration>
+    <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
+    <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
+    <AppId></AppId>
+    <AppSecret></AppSecret>
+    <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
+    <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
+    <AADTenantId></AADTenantId>
+    <AzureStorageConnectionString></AzureStorageConnectionString>
+  </AADConfiguration>
+
+  <ScaleUnitConfiguration>
+    <HubAosResourceId></HubAosResourceId>
+    <ScaleUnitAosResourceId></ScaleUnitAosResourceId>
+    <HubDomain>YOUR_HUB_ENVIRONMENT_URL</HubDomain>
+    <HubIpAddress>YOUR_HUB_ENVIRONMENT_IP</HubIpAddress>
+    <ScaleUnitDomain>YOUR_SCALEUNIT_ENVIRONMENT_URL</ScaleUnitDomain>
+    <InterAOSAppId></InterAOSAppId>
+    <InterAOSAppSecret></InterAOSAppSecret>
+    <ScaleUnitName>spoke</ScaleUnitName>
+    <ScaleUnitId>@A</ScaleUnitId>
+  </ScaleUnitConfiguration>
+
+  <!--Drive which contains AOSService-->
+  <ServiceVolume>
+    C:
+  </ServiceVolume>
+</CloudAndEdgeConfiguration>
