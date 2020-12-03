@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DeepEqual" Version="2.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0001" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CloudAndEdgeLibs\CloudAndEdgeLibs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="UserConfig.sample.xml">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
