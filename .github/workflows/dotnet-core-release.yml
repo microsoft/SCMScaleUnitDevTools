@@ -1,0 +1,46 @@
+name: .NET Core Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore ./src
+    - name: Build
+      run: dotnet build ./src --configuration Release --no-restore
+    - name: Publish CLI project
+      run: dotnet publish ./src/CLI/CLI.csproj --configuration Release --no-restore --no-build --self-contained --runtime win-x64
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.33.0
+      id: tag_action
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+        RELEASE_BRANCHES: main
+        INITIAL_VERSION: 1.0.0
+    - name: Zip published CLI binaries
+      run: zip -r ${{ steps.tag_action.outputs.tag }}.zip ./src/CLI/bin/Release/netcoreapp3.1/win-x64/publish
+    - name: Create GitHub release
+      uses: actions/create-release@v1.1.4
+      id: create_release_action
+      with:
+        tag_name: ${{ steps.tag_action.outputs.tag }}
+        release_name: Release ${{ steps.tag_action.outputs.tag }}
+    - name: Upload published binaries to GitHub release
+      uses: actions/upload-release-asset@v1.0.2
+      with:
+        upload_url: ${{ steps.create_release_action.outputs.upload_url }}
+        asset_path: ./${{ steps.tag_action.outputs.tag }}.zip
+        asset_name: ${{ steps.tag_action.outputs.tag }}.zip
+        asset_content_type: application/zip
