@@ -136,12 +136,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             List<string> mesDynamicConstraintDomainNames = new List<string>()
             {
-                "LegalEntity"
+                "LegalEntity", "Site"
             };
 
             List<string> wesDynamicConstraintDomainNames = new List<string>()
             {
-                "LegalEntity"
+                "LegalEntity", "Site", "Warehouse"
             };
 
             switch (worklaodType.ToUpper())
@@ -153,6 +153,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                         {
                             if (!mesDynamicConstraintDomainNames.Contains(dynamicConstraintValue.DomainName))
                             {
+                                Console.WriteLine(dynamicConstraintValue.DomainName
+                                    + "is not a valid dynamic constraint for workload type " + worklaodType);
                                 return false;
                             }
                         }
