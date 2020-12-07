@@ -9,49 +9,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
     class WorkloadInstanceManager
     {
-        private AOSClient client;
-
-        private readonly List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>()
-        {
-            new DynamicConstraintValue()
-            {
-                DomainName = "LegalEntity",
-                Value = "USMF",
-            },
-        };
-
-        private readonly List<DynamicConstraintValue> mesDynamicConstraintValues = new List<DynamicConstraintValue>()
-        {
-            new DynamicConstraintValue()
-            {
-                DomainName = "LegalEntity",
-                Value = "USMF",
-            },
-            new DynamicConstraintValue()
-            {
-                DomainName = "Site",
-                Value = "1",
-            },
-        };
-
-        private readonly List<DynamicConstraintValue> wesDynamicConstraintValues = new List<DynamicConstraintValue>()
-        {
-            new DynamicConstraintValue()
-            {
-                DomainName = "LegalEntity",
-                Value = "USMF",
-            },
-            new DynamicConstraintValue()
-            {
-                DomainName = "Site",
-                Value = "2",
-            },
-            new DynamicConstraintValue()
-            {
-                DomainName = "Warehouse",
-                Value = "24",
-            },
-        };
+        private readonly AOSClient client;
 
         public WorkloadInstanceManager(AOSClient client)
         {
@@ -63,53 +21,62 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             List<Workload> workloads = await client.GetWorkloads();
             List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
 
+            if (!ValidateClientWorkloadsFromConfig(workloads))
+            {
+                throw new Exception("UserConfig file is missing some of the workload types found on client.");
+            }
+
             foreach (Workload workload in workloads)
             {
-                WorkloadInstance workloadInstance = new WorkloadInstance()
-                {
-                    Id = GetWorkloadInstanceId(workload.Name),
-                    LogicalEnvironmentId = Config.LogicalEnvironmentId,
-                    ExecutingEnvironment = new List<TemporalAssignment>()
-                    {
-                        new TemporalAssignment()
-                        {
-                            EffectiveDate = DateTime.Now,
-                            Environment = new PhysicalEnvironmentReference()
-                            {
-                                Id = Config.ScaleUnitEnvironmentId,
-                                Name = Config.ScaleUnitName(),
-                                ScaleUnitId = Config.ScaleUnitId(),
-                            },
-                        },
-                    },
-                    VersionedWorkload = new VersionedWorkload()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        PlatformPackageId = Guid.NewGuid().ToString(),
-                        ApplicationPackageId = Guid.NewGuid().ToString(),
-                        CustomizationPackageId = Guid.NewGuid().ToString(),
-                        Hash = Config.WorkloadDefinitionHash,
-                        LogicalEnvironmentId = Config.LogicalEnvironmentId,
-                        Workload = workload,
-                    },
-                    DynamicConstraintValues = GetDynamicConstrains(workload.Name),
-                };
+                DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig;
 
-                workloadInstances.Add(workloadInstance);
+                foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
+                {
+                    if (workloadFromConfig.Type.Equals(workload.Name))
+                    {
+                        dynamicConstraintValueListFromConfig = workloadFromConfig.DynamicConstraintValues.DynamicConstraintValueList;
+
+                        if (!ValidateDynamicConstraints(workloadFromConfig.Type, dynamicConstraintValueListFromConfig))
+                        {
+                            throw new Exception("Expected domainNames of dynamic constraints for " + workload.Name + " don't match with what is in UserConfig file.");
+                        }
+
+                        WorkloadInstance workloadInstance = new WorkloadInstance()
+                        {
+                            Id = GetWorkloadInstanceId(workload.Name),
+                            LogicalEnvironmentId = Config.LogicalEnvironmentId,
+                            ExecutingEnvironment = new List<TemporalAssignment>()
+                            {
+                                new TemporalAssignment()
+                                {
+                                    EffectiveDate = DateTime.Now,
+                                    Environment = new PhysicalEnvironmentReference()
+                                    {
+                                        Id = Config.ScaleUnitEnvironmentId,
+                                        Name = Config.ScaleUnitName(),
+                                        ScaleUnitId = Config.ScaleUnitId(),
+                                    },
+                                },
+                            },
+                            VersionedWorkload = new VersionedWorkload()
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                PlatformPackageId = Guid.NewGuid().ToString(),
+                                ApplicationPackageId = Guid.NewGuid().ToString(),
+                                CustomizationPackageId = Guid.NewGuid().ToString(),
+                                Hash = Config.WorkloadDefinitionHash,
+                                LogicalEnvironmentId = Config.LogicalEnvironmentId,
+                                Workload = workload,
+                            },
+                            DynamicConstraintValues = GetDynamicConstraintsFromConfig(dynamicConstraintValueListFromConfig),
+                        };
+
+                        workloadInstances.Add(workloadInstance);
+                    }
+                }
             }
 
             return workloadInstances.OrderBy(wli => wli.VersionedWorkload.Workload.Name, new SysFirstComparer()).ToList();
-        }
-
-        private List<DynamicConstraintValue> GetDynamicConstrains(string workloadInstanceName)
-        {
-            switch (workloadInstanceName)
-            {
-                case "SYS": return this.sysDynamicConstraintValues;
-                case "MES": return this.mesDynamicConstraintValues;
-                case "WES": return this.wesDynamicConstraintValues;
-                default: return new List<DynamicConstraintValue>();
-            }
         }
 
         private string GetWorkloadInstanceId(string workloadInstanceName)
@@ -138,6 +105,107 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                 return 0;
             }
+        }
+
+        private bool ValidateClientWorkloadsFromConfig(List<Workload> workloads)
+        {
+            foreach (Workload workload in workloads)
+            {
+                if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
+
+                var isFound = false;
+
+                foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
+                {
+                    if (workloadFromConfig.Type.Equals(workload.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        isFound = true;
+                        break;
+                    }
+                }
+
+                Console.WriteLine(workload.Name + " workload type is missing from the UserConfig file.");
+
+                if (!isFound) return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateDynamicConstraints(string worklaodType, DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig)
+        {
+            List<string> mesDynamicConstraintDomainNames = new List<string>()
+            {
+                "LegalEntity"
+            };
+
+            List<string> wesDynamicConstraintDomainNames = new List<string>()
+            {
+                "LegalEntity"
+            };
+
+            switch (worklaodType.ToUpper())
+            {
+                case "MES":
+                    if (dynamicConstraintValueListFromConfig.Count() == mesDynamicConstraintDomainNames.Count())
+                    {
+                        foreach (var dynamicConstraintValue in dynamicConstraintValueListFromConfig)
+                        {
+                            if (!mesDynamicConstraintDomainNames.Contains(dynamicConstraintValue.DomainName))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Number of DynamicConstraintValues are not right for workload type " + worklaodType);
+                    }
+                    break;
+
+                case "WES":
+                    if (dynamicConstraintValueListFromConfig.Count() == wesDynamicConstraintDomainNames.Count())
+                    {
+                        foreach (var dynamicConstraintValue in dynamicConstraintValueListFromConfig)
+                        {
+                            if (!wesDynamicConstraintDomainNames.Contains(dynamicConstraintValue.DomainName))
+                            {
+                                Console.WriteLine(dynamicConstraintValue.DomainName
+                                    + "is not a valid dynamic constraint for workload type " + worklaodType);
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Number of DynamicConstraintValues are not right for workload type " + worklaodType);
+                    }
+                    break;
+
+                default:
+                    Console.WriteLine("Dynamic constraints' domain names of Workload type "
+                        + worklaodType + " are not verifed, but the configuration may still succeed.");
+                    return false;
+            }
+
+            return true;
+        }
+
+        private List<DynamicConstraintValue> GetDynamicConstraintsFromConfig(DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig)
+        {
+            List<DynamicConstraintValue> dynamicConstraintValues = new List<DynamicConstraintValue>();
+            foreach (var dynamicConstraintValueFromConfig in dynamicConstraintValueListFromConfig)
+            {
+                DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+                {
+                    DomainName = dynamicConstraintValueFromConfig.DomainName,
+                    Value = dynamicConstraintValueFromConfig.Value,
+                };
+
+                dynamicConstraintValues.Add(dynamicConstraintValue);
+            }
+
+            return dynamicConstraintValues;
         }
     }
 }

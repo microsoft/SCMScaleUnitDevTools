@@ -33,4 +33,62 @@
   <ServiceVolume>
     C:
   </ServiceVolume>
+ 
+  <ToBeDeployedWorkloads>
+    SYS, WES
+  </ToBeDeployedWorkloads>
+
+  <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install-->
+  <Workloads>
+    <Workload>
+      <Type>MES</Type>
+      <DynamicConstraintValues>
+        <DynamicConstraintValue>
+          <DomainName>
+            LegalEntity
+          </DomainName>
+          <Value>
+            USMF
+          </Value>
+        </DynamicConstraintValue>
+        <DynamicConstraintValue>
+          <DomainName>
+            Site
+          </DomainName>
+          <Value>
+            1
+          </Value>
+        </DynamicConstraintValue>
+      </DynamicConstraintValues>
+    </Workload>
+    <Workload>
+      <Type>WES</Type>
+      <DynamicConstraintValues>
+        <DynamicConstraintValue>
+          <DomainName>
+            LegalEntity
+          </DomainName>
+          <Value>
+            USMF
+          </Value>
+        </DynamicConstraintValue>
+        <DynamicConstraintValue>
+          <DomainName>
+            Site
+          </DomainName>
+          <Value>
+            1
+          </Value>
+        </DynamicConstraintValue>
+        <DynamicConstraintValue>
+          <DomainName>
+            Warehouse
+           </DomainName>
+          <Value>
+            24
+          </Value>
+        </DynamicConstraintValue>
+      </DynamicConstraintValues>
+    </Workload>
+  </Workloads>
 </CloudAndEdgeConfiguration>

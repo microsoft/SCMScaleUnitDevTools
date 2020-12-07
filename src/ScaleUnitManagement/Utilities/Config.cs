@@ -61,6 +61,7 @@ namespace ScaleUnitManagement.Utilities
         public static string ScaleUnitName() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitName; }
         public static string ScaleUnitUrlName() { return ScaleUnitDomain().Split('.')[0]; }
         public static string ServiceVolume() { return UserConfiguration().ServiceVolume; }
+        public static WorkloadFromConfig[] WorkloadList() { return UserConfiguration().Workloads.WorkloadList; }
 
         public static string HubAosResourceId()
         {
@@ -151,6 +152,7 @@ namespace ScaleUnitManagement.Utilities
         public LogicalEnvIdAndHash LogicalEnvIdAndHash { get; set; }
         public WorkloadInstanceIds WorkloadInstanceIds { get; set; }
         public string ServiceVolume { get; set; }
+        public Workloads Workloads { get; set; }
     }
 
     public class AADConfiguration
@@ -187,5 +189,27 @@ namespace ScaleUnitManagement.Utilities
         public string SysWorkloadInstanceId { get; set; }
         public string MesWorkloadInstanceId { get; set; }
         public string WesWorkloadInstanceId { get; set; }
+    }
+
+    public class Workloads
+    {
+        public WorkloadFromConfig[] WorkloadList { get; set; }
+    }
+
+    public class WorkloadFromConfig
+    {
+        public string Type { get; set; }
+        public DynamicConstraintValuesFromConfig DynamicConstraintValues { get; set; }
+    }
+
+    public class DynamicConstraintValuesFromConfig
+    {
+        public DynamicConstraintValueFromConfig[] DynamicConstraintValueList { get; set; }
+    }
+
+    public class DynamicConstraintValueFromConfig
+    {
+        public string DomainName { get; set; }
+        public string Value { get; set; }
     }
 }
