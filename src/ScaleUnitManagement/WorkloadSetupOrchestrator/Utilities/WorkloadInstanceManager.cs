@@ -30,7 +30,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             {
                 if(workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
                 {
-                    workloadInstances.Add(GetSYSWorkloadInstance(Workload workload));
+                    workloadInstances.Add(GetSYSWorkloadInstance(workload));
                     continue;
                 }
 
