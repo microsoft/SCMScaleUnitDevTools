@@ -28,6 +28,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             foreach (Workload workload in workloads)
             {
+                if(workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
+                {
+                    workloadInstances.Add(GetSYSWorkloadInstance(Workload workload));
+                    continue;
+                }
+
                 DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig;
 
                 foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
@@ -208,6 +214,50 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             return dynamicConstraintValues;
+        }
+
+        private GetSYSWorkloadInstance(Workload workload)
+        {
+            List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>();
+            DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+            {
+                DomainName = "LegalEntity",
+                Value = "USMF",
+            };
+
+            sysDynamicConstraintValues.Add(dynamicConstraintValue);
+
+            WorkloadInstance workloadInstance = new WorkloadInstance()
+            {
+                Id = GetWorkloadInstanceId(workload.Name),
+                LogicalEnvironmentId = Config.LogicalEnvironmentId,
+                ExecutingEnvironment = new List<TemporalAssignment>()
+                {
+                    new TemporalAssignment()
+                    {
+                        EffectiveDate = DateTime.Now,
+                        Environment = new PhysicalEnvironmentReference()
+                        {
+                            Id = Config.ScaleUnitEnvironmentId,
+                            Name = Config.ScaleUnitName(),
+                            ScaleUnitId = Config.ScaleUnitId(),
+                        },
+                    },
+                },
+                VersionedWorkload = new VersionedWorkload()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PlatformPackageId = Guid.NewGuid().ToString(),
+                    ApplicationPackageId = Guid.NewGuid().ToString(),
+                    CustomizationPackageId = Guid.NewGuid().ToString(),
+                    Hash = Config.WorkloadDefinitionHash,
+                    LogicalEnvironmentId = Config.LogicalEnvironmentId,
+                    Workload = workload,
+                },
+                DynamicConstraintValues = sysDynamicConstraintValues,
+            };
+
+            return workloadInstance;
         }
     }
 }
