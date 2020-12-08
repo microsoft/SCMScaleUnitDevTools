@@ -216,7 +216,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return dynamicConstraintValues;
         }
 
-        private GetSYSWorkloadInstance(Workload workload)
+        private WorkloadInstance GetSYSWorkloadInstance(Workload workload)
         {
             List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>();
             DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
