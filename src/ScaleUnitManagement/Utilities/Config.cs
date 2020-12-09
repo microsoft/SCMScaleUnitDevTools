@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 
 namespace ScaleUnitManagement.Utilities
 {
@@ -63,6 +63,15 @@ namespace ScaleUnitManagement.Utilities
         public static string ScaleUnitUrlName() { return ScaleUnitDomain().Split('.')[0]; }
         public static string ServiceVolume() { return UserConfiguration().ServiceVolume; }
         public static List<WorkloadFromConfig> WorkloadList() { return UserConfiguration().Workloads; }
+        public static List<string> UniqueLegalEntityValues()
+        {
+            List<WorkloadFromConfig> workloadListFromConfig = Config.WorkloadList();
+            return (List<string>)workloadListFromConfig
+                .Select(x => x.DynamicConstraintValuesFromConfig
+                .FirstOrDefault(y => y.DomainName.Equals("LegalEntity", StringComparison.OrdinalIgnoreCase)).Value)
+                .Distinct().ToList();
+
+        }
 
         public static string HubAosResourceId()
         {
@@ -194,7 +203,7 @@ namespace ScaleUnitManagement.Utilities
 
     public class WorkloadFromConfig
     {
-        public string Type { get; set; }
+        public string Name { get; set; }
         public List<DynamicConstraintValueFromConfig> DynamicConstraintValuesFromConfig { get; set; }
     }
 
