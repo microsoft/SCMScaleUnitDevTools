@@ -18,6 +18,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> CreateWorkloadInstances()
         {
+            if (Config.WorkloadList() == null || Config.WorkloadList().Count == 0)
+            {
+                throw new Exception("No workload is defined in the UserConfig file.");
+            }
+
             List<Workload> workloads = await client.GetWorkloads();
             List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
 
@@ -28,7 +33,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             foreach (Workload workload in workloads)
             {
-                if(workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
+                if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
                 {
                     workloadInstances.Add(GetSYSWorkloadInstance(workload));
                     continue;
