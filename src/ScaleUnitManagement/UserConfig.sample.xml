@@ -37,35 +37,35 @@
   <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
   You can also add the same workload with different dynamic constraints if you want to deploy multiple warehouses/sites, etc.-->
   <Workloads>
-    <Workload>
+    <WorkloadFromConfig>
       <Type>MES</Type>
-      <DynamicConstraintValues>
-        <DynamicConstraintValue>
+      <DynamicConstraintValuesFromConfig>
+        <DynamicConstraintValueFromConfig>
           <DomainName>LegalEntity</DomainName>
           <Value>USMF</Value>
-        </DynamicConstraintValue>
-        <DynamicConstraintValue>
+        </DynamicConstraintValueFromConfig>
+        <DynamicConstraintValueFromConfig>
           <DomainName>Site</DomainName>
           <Value>1</Value>
-        </DynamicConstraintValue>
-      </DynamicConstraintValues>
-    </Workload>
-    <Workload>
+        </DynamicConstraintValueFromConfig>
+      </DynamicConstraintValuesFromConfig>
+    </WorkloadFromConfig>
+    <WorkloadFromConfig>
       <Type>WES</Type>
-      <DynamicConstraintValues>
-        <DynamicConstraintValue>
+      <DynamicConstraintValuesFromConfig>
+        <DynamicConstraintValueFromConfig>
           <DomainName>LegalEntity</DomainName>
           <Value>USMF</Value>
-        </DynamicConstraintValue>
-        <DynamicConstraintValue>
+        </DynamicConstraintValueFromConfig>
+        <DynamicConstraintValueFromConfig>
           <DomainName>Site</DomainName>
           <Value>1</Value>
-        </DynamicConstraintValue>
-        <DynamicConstraintValue>
+        </DynamicConstraintValueFromConfig>
+        <DynamicConstraintValueFromConfig>
           <DomainName>Warehouse</DomainName>
           <Value>24</Value>
-        </DynamicConstraintValue>
-      </DynamicConstraintValues>
-    </Workload>
+        </DynamicConstraintValueFromConfig>
+      </DynamicConstraintValuesFromConfig>
+    </WorkloadFromConfig>
   </Workloads>
 </CloudAndEdgeConfiguration>
