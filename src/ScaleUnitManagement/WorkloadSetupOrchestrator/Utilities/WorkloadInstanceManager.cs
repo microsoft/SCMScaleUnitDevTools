@@ -34,13 +34,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     continue;
                 }
 
-                DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig;
+                List<DynamicConstraintValueFromConfig> dynamicConstraintValueListFromConfig;
 
                 foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
                 {
                     if (workloadFromConfig.Type.Equals(workload.Name))
                     {
-                        dynamicConstraintValueListFromConfig = workloadFromConfig.DynamicConstraintValues.DynamicConstraintValueList;
+                        dynamicConstraintValueListFromConfig = workloadFromConfig.DynamicConstraintValuesFromConfig;
 
                         if (!ValidateDynamicConstraints(workloadFromConfig.Type, dynamicConstraintValueListFromConfig))
                         {
@@ -138,7 +138,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return true;
         }
 
-        private bool ValidateDynamicConstraints(string worklaodType, DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig)
+        private bool ValidateDynamicConstraints(string worklaodType, List<DynamicConstraintValueFromConfig> dynamicConstraintValueListFromConfig)
         {
             List<string> mesDynamicConstraintDomainNames = new List<string>()
             {
@@ -199,7 +199,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return true;
         }
 
-        private List<DynamicConstraintValue> GetDynamicConstraintsFromConfig(DynamicConstraintValueFromConfig[] dynamicConstraintValueListFromConfig)
+        private List<DynamicConstraintValue> GetDynamicConstraintsFromConfig(List<DynamicConstraintValueFromConfig> dynamicConstraintValueListFromConfig)
         {
             List<DynamicConstraintValue> dynamicConstraintValues = new List<DynamicConstraintValue>();
             foreach (var dynamicConstraintValueFromConfig in dynamicConstraintValueListFromConfig)

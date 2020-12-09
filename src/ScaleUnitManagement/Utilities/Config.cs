@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace ScaleUnitManagement.Utilities
 {
@@ -61,7 +62,7 @@ namespace ScaleUnitManagement.Utilities
         public static string ScaleUnitName() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitName; }
         public static string ScaleUnitUrlName() { return ScaleUnitDomain().Split('.')[0]; }
         public static string ServiceVolume() { return UserConfiguration().ServiceVolume; }
-        public static WorkloadFromConfig[] WorkloadList() { return UserConfiguration().Workloads.WorkloadList; }
+        public static List<WorkloadFromConfig> WorkloadList() { return UserConfiguration().Workloads; }
 
         public static string HubAosResourceId()
         {
@@ -152,7 +153,7 @@ namespace ScaleUnitManagement.Utilities
         public LogicalEnvIdAndHash LogicalEnvIdAndHash { get; set; }
         public WorkloadInstanceIds WorkloadInstanceIds { get; set; }
         public string ServiceVolume { get; set; }
-        public Workloads Workloads { get; set; }
+        public List<WorkloadFromConfig> Workloads { get; set; }
     }
 
     public class AADConfiguration
@@ -191,20 +192,10 @@ namespace ScaleUnitManagement.Utilities
         public string WesWorkloadInstanceId { get; set; }
     }
 
-    public class Workloads
-    {
-        public WorkloadFromConfig[] WorkloadList { get; set; }
-    }
-
     public class WorkloadFromConfig
     {
         public string Type { get; set; }
-        public DynamicConstraintValuesFromConfig DynamicConstraintValues { get; set; }
-    }
-
-    public class DynamicConstraintValuesFromConfig
-    {
-        public DynamicConstraintValueFromConfig[] DynamicConstraintValueList { get; set; }
+        public List<DynamicConstraintValueFromConfig> DynamicConstraintValuesFromConfig { get; set; }
     }
 
     public class DynamicConstraintValueFromConfig
