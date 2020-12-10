@@ -37,35 +37,37 @@
   <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
   You can also add the same workload with different dynamic constraints if you want to deploy multiple warehouses/sites, etc.-->
   <Workloads>
-    <WorkloadFromConfig>
-      <Type>MES</Type>
-      <DynamicConstraintValuesFromConfig>
-        <DynamicConstraintValueFromConfig>
+    <ConfiguredWorkload>
+      <WorkloadInstanceId>ccbcebb2-5516-433e-8ca3-7b4d39b9dad1</WorkloadInstanceId>
+      <Name>MES</Name>
+      <ConfiguredDynamicConstraintValues>
+        <ConfiguredDynamicConstraintValue>
           <DomainName>LegalEntity</DomainName>
           <Value>USMF</Value>
-        </DynamicConstraintValueFromConfig>
-        <DynamicConstraintValueFromConfig>
+        </ConfiguredDynamicConstraintValue>
+        <ConfiguredDynamicConstraintValue>
           <DomainName>Site</DomainName>
           <Value>1</Value>
-        </DynamicConstraintValueFromConfig>
-      </DynamicConstraintValuesFromConfig>
-    </WorkloadFromConfig>
-    <WorkloadFromConfig>
-      <Type>WES</Type>
-      <DynamicConstraintValuesFromConfig>
-        <DynamicConstraintValueFromConfig>
+        </ConfiguredDynamicConstraintValue>
+      </ConfiguredDynamicConstraintValues>
+    </ConfiguredWorkload>
+    <ConfiguredWorkload>
+      <WorkloadInstanceId>918744a0-bddc-4827-ae89-683eaa9be1ac</WorkloadInstanceId>
+      <Name>WES</Name>
+      <ConfiguredDynamicConstraintValues>
+        <ConfiguredDynamicConstraintValue>
           <DomainName>LegalEntity</DomainName>
           <Value>USMF</Value>
-        </DynamicConstraintValueFromConfig>
-        <DynamicConstraintValueFromConfig>
+        </ConfiguredDynamicConstraintValue>
+        <ConfiguredDynamicConstraintValue>
           <DomainName>Site</DomainName>
           <Value>1</Value>
-        </DynamicConstraintValueFromConfig>
-        <DynamicConstraintValueFromConfig>
+        </ConfiguredDynamicConstraintValue>
+        <ConfiguredDynamicConstraintValue>
           <DomainName>Warehouse</DomainName>
           <Value>24</Value>
-        </DynamicConstraintValueFromConfig>
-      </DynamicConstraintValuesFromConfig>
-    </WorkloadFromConfig>
+        </ConfiguredDynamicConstraintValue>
+      </ConfiguredDynamicConstraintValues>
+    </ConfiguredWorkload>
   </Workloads>
 </CloudAndEdgeConfiguration>

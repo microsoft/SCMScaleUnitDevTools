@@ -35,13 +35,32 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                WorkloadInstanceStatus sysStatus = await scaleUnitAosClient.CheckWorkloadStatus(Config.SysWorkloadInstanceId);
-                WorkloadInstanceStatus mesStatus = await scaleUnitAosClient.CheckWorkloadStatus(Config.MesWorkloadInstanceId);
-                WorkloadInstanceStatus wesStatus = await scaleUnitAosClient.CheckWorkloadStatus(Config.WesWorkloadInstanceId);
+                List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
+                List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
+                List<string> nonSysIds = Config.ConfiguredWorkloadInstanceIds();
+                List<string> sysIds = Config.SYSWorkloadInstanceIds();
 
-                Console.WriteLine($"SYS workload installation status: {sysStatus.Health} {sysStatus.ErrorMessage}");
-                Console.WriteLine($"MES workload installation status: {mesStatus.Health} {mesStatus.ErrorMessage}");
-                Console.WriteLine($"WES workload installation status: {wesStatus.Health} {wesStatus.ErrorMessage}");
+                foreach (string workloadInstanceId in sysIds)
+                {
+                    sysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceId));
+                }
+
+                foreach (string workloadInstanceId in nonSysIds)
+                {
+                    nonSysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceId));
+                }
+
+                foreach (WorkloadInstanceStatus status in sysStatusList)
+                {
+                    Console.WriteLine($"SYS Workload installation status: {status.Health} {status.ErrorMessage}");
+                }
+
+                int count = 0;
+
+                foreach (WorkloadInstanceStatus status in nonSysStatusList)
+                {
+                    Console.WriteLine($"Non-SYS Id : {nonSysIds[count++]} Workload installation status: {status.Health} {status.ErrorMessage}");
+                }
             }, "Installation status");
         }
 
@@ -62,22 +81,17 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private void ValidateCreatedWorkloadInstances(List<WorkloadInstance> expectedWorkloadInstances, List<WorkloadInstance> createdInstances)
         {
-            var sysWorkloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(Config.SysWorkloadInstanceId));
-            var wesWorkloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(Config.WesWorkloadInstanceId));
-            var mesWorkloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(Config.MesWorkloadInstanceId));
-
-            var foundSysWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(Config.SysWorkloadInstanceId));
-            var foundMESWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(Config.MesWorkloadInstanceId));
-            var foundWESWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(Config.WesWorkloadInstanceId));
-
             createdInstances.Should().NotBeNull();
-            foundSysWorkloadInstance.Should().NotBeNull();
-            foundMESWorkloadInstance.Should().NotBeNull();
-            foundWESWorkloadInstance.Should().NotBeNull();
 
-            foundSysWorkloadInstance.WithDeepEqual(sysWorkloadInstance).Assert();
-            foundMESWorkloadInstance.WithDeepEqual(mesWorkloadInstance).Assert();
-            foundWESWorkloadInstance.WithDeepEqual(wesWorkloadInstance).Assert();
+            foreach (string workloadInstanceId in Config.AllWorkloadInstanceIds())
+            {
+                var workloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
+                var foundWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
+
+                foundWorkloadInstance.Should().NotBeNull();
+
+                foundWorkloadInstance.WithDeepEqual(workloadInstance).Assert();
+            }
         }
     }
 }
