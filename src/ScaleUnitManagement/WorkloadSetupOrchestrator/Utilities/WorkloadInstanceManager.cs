@@ -26,9 +26,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             List<Workload> workloads = await client.GetWorkloads();
             List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
 
-            if (!ValidateClientWorkloadsFromConfig(workloads))
+            if (!ValidateIfConfigWorkloadsExistOnClient(workloads))
             {
-                throw new Exception("UserConfig file is missing some of the workload types found on client.");
+                throw new Exception("UserConfig file has some workload types which are not found on client.");
             }
 
             foreach (Workload workload in workloads)
@@ -118,15 +118,17 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
-        private bool ValidateClientWorkloadsFromConfig(List<Workload> workloads)
+        private bool ValidateIfConfigWorkloadsExistOnClient(List<Workload> workloads)
         {
-            foreach (Workload workload in workloads)
+            List<string> nonValidWorkloadNames = new List<string>();
+
+            foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
             {
-                if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
+                if (workloadFromConfig.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
 
                 var isFound = false;
 
-                foreach (WorkloadFromConfig workloadFromConfig in Config.WorkloadList())
+                foreach (Workload workload in workloads)
                 {
                     if (workloadFromConfig.Name.Equals(workload.Name, StringComparison.OrdinalIgnoreCase))
                     {
@@ -135,9 +137,17 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     }
                 }
 
-                Console.WriteLine(workload.Name + " workload name is missing from the UserConfig file.");
+                if (!isFound)
+                {
+                    nonValidWorkloadNames.Add(workloadFromConfig.Name);
+                }
+            }
 
-                if (!isFound) return false;
+            if (nonValidWorkloadNames?.Any() == false)
+            {
+                Console.WriteLine("The following workload names were not found on client. Please remove them from the UserConfig file and try again.");
+                nonValidWorkloadNames.ForEach(Console.WriteLine);
+                return false;
             }
 
             return true;
@@ -163,11 +173,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     List<string> missingDomainNamesMESInConfig = (List<string>)mesDynamicConstraintDomainNames
                         .Except(dynamicConstraintValueListFromConfig.Select(x => x.DomainName));
 
-                    Console.WriteLine("Missing domain names for workload name " + workloadName);
-                    missingDomainNamesMESInConfig.ForEach(Console.WriteLine);
+                    if (missingDomainNamesMESInConfig?.Any() == false)
+                    {
+                        Console.WriteLine("Missing domain names in the UserConfig file for workload name " + workloadName);
+                        missingDomainNamesMESInConfig.ForEach(Console.WriteLine);
+                    }
 
-                    Console.WriteLine("Invalid domain names for workload name " + workloadName);
-                    nonValidDomainNamesMESInConfig.ForEach(Console.WriteLine);
+                    if (nonValidDomainNamesMESInConfig?.Any() == false)
+                    {
+                        Console.WriteLine("Invalid domain names in the UserConfig file for workload name " + workloadName);
+                        nonValidDomainNamesMESInConfig.ForEach(Console.WriteLine);
+                    }
+
+                    if (missingDomainNamesMESInConfig?.Any() == false || nonValidDomainNamesMESInConfig?.Any() == false)
+                    {
+                        return false;
+                    }
 
                     break;
 
@@ -175,17 +196,29 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     List<string> nonValidDomainNamesWESInConfig = (List<string>)dynamicConstraintValueListFromConfig.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames);
                     List<string> missingDomainNamesWESInConfig = (List<string>)wesDynamicConstraintDomainNames.Except(dynamicConstraintValueListFromConfig.Select(x => x.DomainName));
 
-                    Console.WriteLine("Missing domain names for workload name " + workloadName);
-                    missingDomainNamesWESInConfig.ForEach(Console.WriteLine);
+                    if (missingDomainNamesWESInConfig?.Any() == false)
+                    {
+                        Console.WriteLine("Missing domain names in the UserConfig file for workload name " + workloadName);
+                        missingDomainNamesWESInConfig.ForEach(Console.WriteLine);
+                    }
 
-                    Console.WriteLine("Invalid domain names for workload name " + workloadName);
-                    nonValidDomainNamesWESInConfig.ForEach(Console.WriteLine);
+                    if (nonValidDomainNamesWESInConfig?.Any() == false)
+                    {
+                        Console.WriteLine("Invalid domain names in the UserConfig file for workload name " + workloadName);
+                        nonValidDomainNamesWESInConfig.ForEach(Console.WriteLine);
+                    }
+
+                    if (missingDomainNamesWESInConfig?.Any() == false || nonValidDomainNamesWESInConfig?.Any() == false)
+                    {
+                        return false;
+                    }
+
                     break;
 
                 default:
                     Console.WriteLine("Dynamic constraints' domain names of Workload name "
                         + workloadName + " are not verifed, but the configuration may still succeed.");
-                    return false;
+                    return true;
             }
 
             return true;
