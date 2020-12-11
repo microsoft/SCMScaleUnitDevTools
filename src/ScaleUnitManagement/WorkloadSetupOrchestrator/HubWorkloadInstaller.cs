@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
@@ -39,7 +38,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             {
                 List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
                 List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
-                List<string> nonSysIds = Config.ConfiguredWorkloadInstanceIds();
+                List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
                 List<string> sysIds = Config.SYSWorkloadInstanceIds();
 
                 foreach (string workloadInstanceId in sysIds)
@@ -47,9 +46,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     sysStatusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceId));
                 }
 
-                foreach (string workloadInstanceId in nonSysIds)
+                foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
                 {
-                    nonSysStatusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceId));
+                    nonSysStatusList.Add(await hubAosClient.CheckWorkloadStatus(configuredWorkload.WorkloadInstanceId));
                 }
 
                 foreach (WorkloadInstanceStatus status in sysStatusList)
@@ -61,7 +60,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceStatus status in nonSysStatusList)
                 {
-                    Console.WriteLine($"Non-SYS Id : {nonSysIds[count++]} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    Console.WriteLine($"{configuredWorkloads[count++].Name} Id : {configuredWorkloads[count++].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
                 }
             }, "Installation status");
         }

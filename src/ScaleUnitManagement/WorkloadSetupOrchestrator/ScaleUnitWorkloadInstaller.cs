@@ -37,7 +37,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             {
                 List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
                 List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
-                List<string> nonSysIds = Config.ConfiguredWorkloadInstanceIds();
+                List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
                 List<string> sysIds = Config.SYSWorkloadInstanceIds();
 
                 foreach (string workloadInstanceId in sysIds)
@@ -45,9 +45,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     sysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceId));
                 }
 
-                foreach (string workloadInstanceId in nonSysIds)
+                foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
                 {
-                    nonSysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceId));
+                    nonSysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(configuredWorkload.WorkloadInstanceId));
                 }
 
                 foreach (WorkloadInstanceStatus status in sysStatusList)
@@ -59,7 +59,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceStatus status in nonSysStatusList)
                 {
-                    Console.WriteLine($"Non-SYS Id : {nonSysIds[count++]} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    Console.WriteLine($"{configuredWorkloads[count++].Name} Id : {configuredWorkloads[count++].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
                 }
             }, "Installation status");
         }
