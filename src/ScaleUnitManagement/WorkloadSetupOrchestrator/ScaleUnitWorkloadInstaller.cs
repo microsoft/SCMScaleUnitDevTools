@@ -35,31 +35,18 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
-                List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
-                List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
-                List<string> sysIds = Config.SYSWorkloadInstanceIds();
-
-                foreach (string workloadInstanceId in sysIds)
-                {
-                    sysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceId));
-                }
-
-                foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
-                {
-                    nonSysStatusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(configuredWorkload.WorkloadInstanceId));
-                }
-
-                foreach (WorkloadInstanceStatus status in sysStatusList)
-                {
-                    Console.WriteLine($"SYS Workload installation status: {status.Health} {status.ErrorMessage}");
-                }
-
+                List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
+                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
                 int count = 0;
 
-                foreach (WorkloadInstanceStatus status in nonSysStatusList)
+                foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    Console.WriteLine($"{configuredWorkloads[count++].Name} Id : {configuredWorkloads[count++].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    statusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
+                }
+                foreach (WorkloadInstanceStatus status in statusList)
+                {
+                    Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    count++;
                 }
             }, "Installation status");
         }

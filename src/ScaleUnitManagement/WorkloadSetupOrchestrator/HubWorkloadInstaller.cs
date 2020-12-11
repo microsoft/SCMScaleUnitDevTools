@@ -36,31 +36,18 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
-                List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
-                List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
-                List<string> sysIds = Config.SYSWorkloadInstanceIds();
-
-                foreach (string workloadInstanceId in sysIds)
-                {
-                    sysStatusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceId));
-                }
-
-                foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
-                {
-                    nonSysStatusList.Add(await hubAosClient.CheckWorkloadStatus(configuredWorkload.WorkloadInstanceId));
-                }
-
-                foreach (WorkloadInstanceStatus status in sysStatusList)
-                {
-                    Console.WriteLine($"SYS Workload installation status: {status.Health} {status.ErrorMessage}");
-                }
-
+                List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
+                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
                 int count = 0;
 
-                foreach (WorkloadInstanceStatus status in nonSysStatusList)
+                foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    Console.WriteLine($"{configuredWorkloads[count++].Name} Id : {configuredWorkloads[count++].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    statusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
+                }
+                foreach (WorkloadInstanceStatus status in statusList)
+                {
+                    Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    count++;
                 }
             }, "Installation status");
         }
@@ -99,34 +86,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                List<WorkloadInstanceStatus> sysStatusList = new List<WorkloadInstanceStatus>();
-                List<WorkloadInstanceStatus> nonSysStatusList = new List<WorkloadInstanceStatus>();
-                List<string> nonSysIds = Config.ConfiguredWorkloadInstanceIds();
-                List<string> sysIds = Config.SYSWorkloadInstanceIds();
-
-                foreach (string workloadInstanceId in sysIds)
-                {
-                    sysStatusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceId));
-                }
-
-                foreach (string workloadInstanceId in nonSysIds)
-                {
-                    nonSysStatusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceId));
-                }
-
-                foreach (WorkloadInstanceStatus sysStatus in sysStatusList)
-                {
-                    sysStatus.Should().NotBeNull("SYS workload instance should be found");
-                    sysStatus.Health.Should().Be(WorkloadInstanceHealthConstants.Running);
-                }
-
+                List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
+                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
                 int count = 0;
 
-                foreach (WorkloadInstanceStatus nonSysStatus in nonSysStatusList)
+                foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    nonSysStatus.Should().NotBeNull($"Non-SYS workload instance Id : {nonSysIds[count++]} should be found");
-                    nonSysStatus.Health.Should().Be(WorkloadInstanceHealthConstants.Running);
+                    statusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
                 }
+
+                foreach (WorkloadInstanceStatus status in statusList)
+                {
+                    status.Should().NotBeNull($"{workloadInstanceIdWithNameList[count].Name} workload instance Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} should be found");
+                    status.Health.Should().Be(WorkloadInstanceHealthConstants.Running);
+                    count++;
+                }
+
             }, "Wait for workload instance readiness");
         }
     }

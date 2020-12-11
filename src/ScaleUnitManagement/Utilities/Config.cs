@@ -103,6 +103,29 @@ namespace ScaleUnitManagement.Utilities
             return (List<string>)SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds()).ToList();
         }
 
+        public static List<WorkloadInstanceIdWithName> WorkloadInstanceIdWithNameList()
+        {
+            List<WorkloadInstanceIdWithName> result = new List<WorkloadInstanceIdWithName>();
+            List<string> sysIds = SYSWorkloadInstanceIds();
+            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+
+            foreach (string id in sysIds)
+            {
+                result.Add(new WorkloadInstanceIdWithName() { Name = "SYS", WorkloadInstanceId = id });
+            }
+
+            foreach(ConfiguredWorkload configuredWorkload in configuredWorkloads)
+            {
+                result.Add(
+                    new WorkloadInstanceIdWithName()
+                    { Name = configuredWorkload.Name, WorkloadInstanceId = configuredWorkload.WorkloadInstanceId }
+                );
+            }
+
+            return result;
+
+        }
+
         public static string HubAosResourceId()
         {
             if (String.IsNullOrEmpty(UserConfiguration().ScaleUnitConfiguration.HubAosResourceId))
