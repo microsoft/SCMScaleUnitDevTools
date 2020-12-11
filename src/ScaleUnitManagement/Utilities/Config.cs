@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ScaleUnitManagement.Utilities
@@ -12,9 +13,6 @@ namespace ScaleUnitManagement.Utilities
         public static string WifServicesConfigPath = ServiceVolume() + @"\AOSService\webroot\wif.services.config";
         public static string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
         public static string WorkloadDefinitionHash = "c2f309922ef4fc1f1a418ae31ebf85763f8a836e355062e6489ff12e3c438c0d";
-        public static string SysWorkloadInstanceId = "e7898a21-63f7-440b-a572-6c160b357660";
-        public static string MesWorkloadInstanceId = "ccbcebb2-5516-433e-8ca3-7b4d39b9dad1";
-        public static string WesWorkloadInstanceId = "918744a0-bddc-4827-ae89-683eaa9be1ac";
         public static string ScaleUnitEnvironmentId = "a4557a4e-6980-4e1b-b7c7-661793b4a098";
 
 
@@ -61,6 +59,72 @@ namespace ScaleUnitManagement.Utilities
         public static string ScaleUnitName() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitName; }
         public static string ScaleUnitUrlName() { return ScaleUnitDomain().Split('.')[0]; }
         public static string ServiceVolume() { return UserConfiguration().ServiceVolume; }
+        public static List<ConfiguredWorkload> WorkloadList() { return UserConfiguration().Workloads; }
+
+        public static List<string> UniqueLegalEntityValues()
+        {
+            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+            return (List<string>)configuredWorkloads
+                .Select(x => x.ConfiguredDynamicConstraintValues
+                .FirstOrDefault(y => y.DomainName.Equals("LegalEntity", StringComparison.OrdinalIgnoreCase)).Value)
+                .Distinct().ToList();
+
+        }
+
+        public static List<string> ConfiguredWorkloadInstanceIds()
+        {
+            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+            return (List<string>)configuredWorkloads
+                .Select(x => x.WorkloadInstanceId)
+                .ToList();
+        }
+
+        public static List<string> SYSWorkloadInstanceIds()
+        {
+            string Flip(string workloadInstanceId)
+            {
+                if (workloadInstanceId[0] >= '0' && workloadInstanceId[0] <= '9')
+                    return "a" + workloadInstanceId.Substring(1);
+                else
+                    return "0" + workloadInstanceId.Substring(1);
+            }
+
+            var numOfIds = UniqueLegalEntityValues().Count;
+
+            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+            return (List<string>)configuredWorkloads
+                .Take(numOfIds)
+                .Select(x => Flip(x.WorkloadInstanceId))
+                .ToList();
+        }
+
+        public static List<string> AllWorkloadInstanceIds()
+        {
+            return (List<string>)SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds()).ToList();
+        }
+
+        public static List<WorkloadInstanceIdWithName> WorkloadInstanceIdWithNameList()
+        {
+            List<WorkloadInstanceIdWithName> result = new List<WorkloadInstanceIdWithName>();
+            List<string> sysIds = SYSWorkloadInstanceIds();
+            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+
+            foreach (string id in sysIds)
+            {
+                result.Add(new WorkloadInstanceIdWithName() { Name = "SYS", WorkloadInstanceId = id });
+            }
+
+            foreach(ConfiguredWorkload configuredWorkload in configuredWorkloads)
+            {
+                result.Add(
+                    new WorkloadInstanceIdWithName()
+                    { Name = configuredWorkload.Name, WorkloadInstanceId = configuredWorkload.WorkloadInstanceId }
+                );
+            }
+
+            return result;
+
+        }
 
         public static string HubAosResourceId()
         {
@@ -151,6 +215,7 @@ namespace ScaleUnitManagement.Utilities
         public LogicalEnvIdAndHash LogicalEnvIdAndHash { get; set; }
         public WorkloadInstanceIds WorkloadInstanceIds { get; set; }
         public string ServiceVolume { get; set; }
+        public List<ConfiguredWorkload> Workloads { get; set; }
     }
 
     public class AADConfiguration
@@ -187,5 +252,24 @@ namespace ScaleUnitManagement.Utilities
         public string SysWorkloadInstanceId { get; set; }
         public string MesWorkloadInstanceId { get; set; }
         public string WesWorkloadInstanceId { get; set; }
+    }
+
+    public class ConfiguredWorkload
+    {
+        public string WorkloadInstanceId { get; set; }
+        public string Name { get; set; }
+        public List<ConfiguredDynamicConstraintValue> ConfiguredDynamicConstraintValues { get; set; }
+    }
+
+    public class ConfiguredDynamicConstraintValue
+    {
+        public string DomainName { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class WorkloadInstanceIdWithName
+    {
+        public string WorkloadInstanceId { get; set; }
+        public string Name { get; set; }
     }
 }
