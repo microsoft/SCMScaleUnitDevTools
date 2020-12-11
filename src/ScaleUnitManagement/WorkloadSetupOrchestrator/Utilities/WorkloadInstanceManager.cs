@@ -18,13 +18,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> CreateWorkloadInstances()
         {
-            if (Config.WorkloadList()?.Any() == false)
+            if (Config.WorkloadList() == null || Config.WorkloadList().Any() == false)
             {
                 throw new Exception("No workload is defined in the UserConfig file.");
             }
 
             List<Workload> workloads = await client.GetWorkloads();
             List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
+            List<WorkloadInstance> sysWorkloadInstances = new List<WorkloadInstance>();
 
             if (!ValidateIfConfigWorkloadsExistOnClient(workloads))
             {
@@ -35,7 +36,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             {
                 if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
                 {
-                    workloadInstances.Concat(GetSYSWorkloadInstancesPerLegalEntity(workload));
+                    sysWorkloadInstances = GetSYSWorkloadInstancesPerLegalEntity(workload);
                     continue;
                 }
 
@@ -87,24 +88,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
             }
 
-            return workloadInstances.OrderBy(wli => wli.VersionedWorkload.Workload.Name, new SysFirstComparer()).ToList();
-        }
-
-        private class SysFirstComparer : IComparer<string>
-        {
-            public int Compare(string x, string y)
-            {
-                if (x.Equals("SYS", StringComparison.OrdinalIgnoreCase))
-                {
-                    return -1;
-                }
-                else if (y.Equals("SYS", StringComparison.OrdinalIgnoreCase))
-                {
-                    return 1;
-                }
-
-                return 0;
-            }
+            return sysWorkloadInstances.Concat(workloadInstances).ToList();
         }
 
         private bool ValidateIfConfigWorkloadsExistOnClient(List<Workload> workloads)
@@ -132,7 +116,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
             }
 
-            if (nonValidWorkloadNames?.Any() == false)
+            if (nonValidWorkloadNames != null && nonValidWorkloadNames.Any())
             {
                 Console.WriteLine("The following workload names were not found on client. Please remove them from the UserConfig file and try again.");
                 nonValidWorkloadNames.ForEach(Console.WriteLine);
@@ -158,23 +142,24 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             {
                 case "MES":
                     List<string> nonValidDomainNamesMESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName)
-                        .Except(mesDynamicConstraintDomainNames);
+                        .Except(mesDynamicConstraintDomainNames).ToList();
                     List<string> missingDomainNamesMESInConfig = (List<string>)mesDynamicConstraintDomainNames
-                        .Except(configuredDynamicConstraintValues.Select(x => x.DomainName));
+                        .Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
-                    if (missingDomainNamesMESInConfig?.Any() == false)
+                    if (missingDomainNamesMESInConfig != null && missingDomainNamesMESInConfig.Any())
                     {
                         Console.WriteLine("Missing domain names in the UserConfig file for workload name " + workloadName);
                         missingDomainNamesMESInConfig.ForEach(Console.WriteLine);
                     }
 
-                    if (nonValidDomainNamesMESInConfig?.Any() == false)
+                    if (nonValidDomainNamesMESInConfig != null && nonValidDomainNamesMESInConfig.Any())
                     {
                         Console.WriteLine("Invalid domain names in the UserConfig file for workload name " + workloadName);
                         nonValidDomainNamesMESInConfig.ForEach(Console.WriteLine);
                     }
 
-                    if (missingDomainNamesMESInConfig?.Any() == false || nonValidDomainNamesMESInConfig?.Any() == false)
+                    if ((missingDomainNamesMESInConfig != null && missingDomainNamesMESInConfig.Any())
+                        || (nonValidDomainNamesMESInConfig != null && nonValidDomainNamesMESInConfig.Any()))
                     {
                         return false;
                     }
@@ -182,22 +167,23 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     break;
 
                 case "WES":
-                    List<string> nonValidDomainNamesWESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames);
-                    List<string> missingDomainNamesWESInConfig = (List<string>)wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName));
+                    List<string> nonValidDomainNamesWESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames).ToList();
+                    List<string> missingDomainNamesWESInConfig = (List<string>)wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
-                    if (missingDomainNamesWESInConfig?.Any() == false)
+                    if (missingDomainNamesWESInConfig != null && missingDomainNamesWESInConfig.Any())
                     {
                         Console.WriteLine("Missing domain names in the UserConfig file for workload name " + workloadName);
                         missingDomainNamesWESInConfig.ForEach(Console.WriteLine);
                     }
 
-                    if (nonValidDomainNamesWESInConfig?.Any() == false)
+                    if (nonValidDomainNamesWESInConfig != null && nonValidDomainNamesWESInConfig.Any())
                     {
                         Console.WriteLine("Invalid domain names in the UserConfig file for workload name " + workloadName);
                         nonValidDomainNamesWESInConfig.ForEach(Console.WriteLine);
                     }
 
-                    if (missingDomainNamesWESInConfig?.Any() == false || nonValidDomainNamesWESInConfig?.Any() == false)
+                    if ((missingDomainNamesWESInConfig != null && missingDomainNamesWESInConfig.Any())
+                        || (nonValidDomainNamesWESInConfig != null && nonValidDomainNamesWESInConfig.Any()))
                     {
                         return false;
                     }
@@ -237,7 +223,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             List<string> sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
             int count = 0;
 
-            foreach(string legalEntityValue in uniqueLegalEntityValues)
+            foreach (string legalEntityValue in uniqueLegalEntityValues)
             {
                 List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>();
                 DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()

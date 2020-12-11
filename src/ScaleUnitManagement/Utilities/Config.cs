@@ -100,7 +100,7 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> AllWorkloadInstanceIds()
         {
-            return (List<string>)SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds());
+            return (List<string>)SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds()).ToList();
         }
 
         public static string HubAosResourceId()
