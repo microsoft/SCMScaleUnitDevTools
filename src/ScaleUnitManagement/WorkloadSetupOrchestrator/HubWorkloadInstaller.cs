@@ -60,7 +60,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceStatus status in nonSysStatusList)
                 {
-                    Console.WriteLine($"{configuredWorkloads[count++].Name} Id : {configuredWorkloads[count++].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    Console.WriteLine($"{configuredWorkloads[count].Name} Id : {configuredWorkloads[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                    count++;
                 }
             }, "Installation status");
         }
