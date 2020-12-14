@@ -3,6 +3,8 @@ name: .NET Core PR
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - 'src/**'
 
 jobs:
   build:
