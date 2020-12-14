@@ -1,4 +1,6 @@
 # Tools for deploying and configuring scale units for Dynamics 365 Supply Chain Management on one-box developer environments
+![CEToolsIcon](https://user-images.githubusercontent.com/8451704/102076252-c114ef80-3e07-11eb-94b5-254ed89a2f4b.png)
+
 These tools enable Dynamics 365 Supply Chain Management partners and independent software vendors (ISVs) to create and manage one-box development instances of Supply Chain Management that use cloud or edge scale units.
 
 The [Wiki](https://github.com/microsoft/SCMScaleUnitDevTools/wiki) provides documentation for how to use the tools.
