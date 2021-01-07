@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
-using DeepEqual.Syntax;
-using FluentAssertions;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
@@ -41,7 +40,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    statusList.Add(await scaleUnitAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
+                    statusList.Add(await WorkloadInstanceManager.GetWorkloadInstanceStatus(scaleUnitAosClient, workloadInstanceIdWithName.WorkloadInstanceId));
                 }
                 foreach (WorkloadInstanceStatus status in statusList)
                 {
@@ -49,6 +48,32 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     count++;
                 }
             }, "Installation status");
+        }
+
+        private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
+        {
+            if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
+                return;
+
+            Console.WriteLine($"Waiting for {workloadInstance.VersionedWorkload.Workload.Name} initial sync to complete");
+
+            int count = 0;
+            do
+            {
+                for (int i = 0; i < 10; i++) // wait 10 seconds before querying the status again.
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    Console.Write(".");
+                }
+
+                count++;
+                if (count == 12) // After two minutes
+                {
+                    Console.WriteLine($"\nThis is taking a long time. Ensure the upload packages for {workloadInstance.VersionedWorkload.Workload.Name} haven't failed.");
+                    Console.WriteLine($"Waiting for {workloadInstance.VersionedWorkload.Workload.Name} initial sync to complete");
+                }
+
+            } while (!await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance));
         }
 
         private async Task InstallWorkloadsOnScaleUnit()
@@ -60,25 +85,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 AOSClient hubAosClient = await AOSClient.Construct(Config.HubAosResourceId(), Config.HubAosEndpoint());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
-                List<WorkloadInstance> createdInstances = await scaleUnitAosClient.WriteWorkloadInstances(workloadInstances);
 
-                this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
+                foreach (var workloadInstance in workloadInstances)
+                {
+                    if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
+                        continue;
+
+                    if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
+                    {
+                        Console.WriteLine($"Installing Workload {workloadInstance.VersionedWorkload.Workload.Name}");
+                        List<WorkloadInstance> workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
+                        await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
+                    }
+
+                    await WaitForWorkloadInstallation(workloadInstance);
+                }
             }, "Install workload on scale unit");
-        }
-
-        private void ValidateCreatedWorkloadInstances(List<WorkloadInstance> expectedWorkloadInstances, List<WorkloadInstance> createdInstances)
-        {
-            createdInstances.Should().NotBeNull();
-
-            foreach (string workloadInstanceId in Config.AllWorkloadInstanceIds())
-            {
-                var workloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
-                var foundWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
-
-                foundWorkloadInstance.Should().NotBeNull();
-
-                foundWorkloadInstance.WithDeepEqual(workloadInstance).Assert();
-            }
         }
     }
 }
