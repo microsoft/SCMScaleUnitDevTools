@@ -5,6 +5,12 @@ using CloudAndEdgeLibs.Contracts;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
+    /// <summary>
+    /// The <c>WorkloadInstanceTopologicalSortUtil</c> provides the necessary funcitonality that
+    /// allows a list of workload instances to be sorted based on the DependsOn field of the enclosed
+    /// workload, so we can install workloads in the right order and ensure that any depended workloads
+    /// are already installed.
+    /// </summary>
     public class WorkloadInstanceTopologicalSortUtil
     {
         private readonly HashSet<WorkloadInstanceDFSNode> nonProcessedNodes;
