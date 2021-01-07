@@ -5,7 +5,7 @@ using CloudAndEdgeLibs.Contracts;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
-    class WorkloadInstanceTopologicalSortUtil
+    public class WorkloadInstanceTopologicalSortUtil
     {
         private readonly HashSet<WorkloadInstanceDFSNode> nonProcessedNodes;
         private readonly Dictionary<string, List<WorkloadInstanceDFSNode>> nameToDFSNodesMap;
@@ -13,6 +13,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public WorkloadInstanceTopologicalSortUtil(List<WorkloadInstance> workloadInstances)
         {
+            if (workloadInstances == null)
+                throw new ArgumentNullException();
+
             nonProcessedNodes = BuildNonProcessedNodes(workloadInstances);
             nameToDFSNodesMap = BuildNameToDFSNodesMap(nonProcessedNodes);
             sortedWorkloadInstanceList = new List<WorkloadInstance>();
@@ -52,7 +55,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             foreach (string workloadName in node.workloadInstance.VersionedWorkload.Workload.DependsOn)
             {
-                dependedNodes.Concat(nameToDFSNodesMap[workloadName]);
+                dependedNodes = dependedNodes.Concat(nameToDFSNodesMap[workloadName]).ToList();
             }
 
             return dependedNodes;
