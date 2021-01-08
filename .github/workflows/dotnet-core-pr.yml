@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'src/**'
+      - '.github/workflows/*.yml'
 
 jobs:
   build:
@@ -21,3 +22,5 @@ jobs:
       run: dotnet restore ./src
     - name: Build
       run: dotnet build ./src --configuration Release --no-restore
+    - name: Test
+      run: dotnet test ./src
