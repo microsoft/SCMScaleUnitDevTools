@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Web.Administration;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -56,10 +57,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 }
 
                 // Configure IIS binding
-                string updateBindingInformationCommand = "Set-ItemProperty " + CommandExecutor.Quotes + "IIS:\\Sites\\AOSService" + CommandExecutor.Quotes + " -Name bindings -Value @{ protocol = " + CommandExecutor.Quotes + "https" + CommandExecutor.Quotes + "; bindingInformation = *:443:" + Config.ScaleUnitDomain() + "}";
+                using (ServerManager manager = new ServerManager())
+                {
+                    Site site = manager.Sites["AOSService"];
+                    site.Bindings.Clear();
+                    site.Bindings.Add("*:443:" + Config.ScaleUnitDomain(), "https");
 
-                CommandExecutor ce = new CommandExecutor();
-                ce.RunCommand(updateBindingInformationCommand);
+                    manager.CommitChanges();
+                }
             }
         }
     }
