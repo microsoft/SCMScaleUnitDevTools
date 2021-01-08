@@ -26,6 +26,7 @@
     <InterAOSAppId></InterAOSAppId>
     <InterAOSAppSecret></InterAOSAppSecret>
     <ScaleUnitName>spoke</ScaleUnitName>
+    <!--Note: This should be always the scale unit id. Don't use @@ here as it's reserved for the hub.-->
     <ScaleUnitId>@A</ScaleUnitId>
   </ScaleUnitConfiguration>
 
@@ -61,7 +62,7 @@
         </ConfiguredDynamicConstraintValue>
         <ConfiguredDynamicConstraintValue>
           <DomainName>Site</DomainName>
-          <Value>1</Value>
+          <Value>2</Value>
         </ConfiguredDynamicConstraintValue>
         <ConfiguredDynamicConstraintValue>
           <DomainName>Warehouse</DomainName>
