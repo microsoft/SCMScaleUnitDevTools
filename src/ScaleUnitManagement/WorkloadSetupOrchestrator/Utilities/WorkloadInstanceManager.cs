@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.Utilities;
 
@@ -10,6 +11,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
     class WorkloadInstanceManager
     {
         private readonly AOSClient client;
+        private static readonly string ReadyState = "Running";
+        private static readonly string InstallingState = "Installing";
 
         public WorkloadInstanceManager(AOSClient client)
         {
@@ -88,7 +91,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
             }
 
-            return sysWorkloadInstances.Concat(workloadInstances).ToList();
+            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(sysWorkloadInstances.Concat(workloadInstances).ToList());
+            return topologicalSortUtil.Sort();
         }
 
         private bool ValidateIfConfigWorkloadsExistOnClient(List<Workload> workloads)
@@ -268,6 +272,23 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             return sysWorkloadInstances;
+        }
+
+        public static async Task<WorkloadInstanceStatus> GetWorkloadInstanceStatus(AOSClient client, string workloadInstanceId)
+        {
+            return await client.CheckWorkloadStatus(workloadInstanceId);
+        }
+
+        public static async Task<bool> IsWorkloadInstanceInReadyState(AOSClient client, WorkloadInstance workloadInstance)
+        {
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            return status.Health == ReadyState;
+        }
+
+        public static async Task<bool> IsWorkloadInstanceInInstallingState(AOSClient client, WorkloadInstance workloadInstance)
+        {
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            return status.Health == InstallingState;
         }
     }
 }
