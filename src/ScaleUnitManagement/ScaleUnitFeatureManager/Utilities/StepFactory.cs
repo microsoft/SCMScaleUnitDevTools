@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Reflection;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
     public class StepFactory
     {
-        private IEnumerable<Type> FindClassesDeriving(Type type)
+        private IEnumerable<Type> FindClassesDeriving(Type superType)
         {
-            return (Assembly.GetAssembly(type)).GetTypes().Where(TheType => TheType.IsClass && !TheType.IsAbstract && TheType.IsSubclassOf(type));
+            return from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                   from type in assembly.GetTypes()
+                   where type.IsClass && !type.IsAbstract && type.IsSubclassOf(superType)
+                   select type;
         }
 
         public List<Step> GetStepsOfType<T>()

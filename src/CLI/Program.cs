@@ -4,9 +4,9 @@ using CLIFramework;
 
 namespace CLI
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             CLIOption enableScaleUnitFeatureOption = new CLIOption() { Name = "Enable the environment as the hub or a scale unit", Command = EnableScaleUnitFeature.Show };
             CLIOption configureEnvironmentOption = new CLIOption() { Name = "Configure the environment", Command = ConfigureEnvironment.Show };
