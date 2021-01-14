@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="UserConfig.xml">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
     <None Update="UserConfig.sample.xml">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </None>

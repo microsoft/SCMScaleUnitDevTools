@@ -43,7 +43,6 @@ namespace ScaleUnitManagement.Utilities
             return domainName;
         }
 
-        public static EnvironmentType EnvironmentType() { return UserConfiguration().EnvironmentType; }
         public static string AxDbName() { return UserConfiguration().AxDbName; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
@@ -169,11 +168,6 @@ namespace ScaleUnitManagement.Utilities
             ValidateValue("AppSecret", AppSecret());
             ValidateValue("Authority", Authority());
 
-            if (EnvironmentType() == ScaleUnitManagement.Utilities.EnvironmentType.VHD)
-            {
-                ValidateValue("AzureStorageConnectionString", AzureStorageConnectionString());
-            }
-
             ValidateValue("HubDomain", HubDomain());
             ValidateValue("ScaleUnitDomain", ScaleUnitDomain());
             ValidateValue("ScaleUnitName", ScaleUnitName());
@@ -181,19 +175,6 @@ namespace ScaleUnitManagement.Utilities
             ValidateValue("InterAOSAppId", InterAOSAppId());
             ValidateValue("InterAOSAppSecret", InterAOSAppSecret());
             ValidateValue("ServiceVolume", ServiceVolume());
-
-            if (EnvironmentType() == ScaleUnitManagement.Utilities.EnvironmentType.Unknown)
-            {
-                hasAnyError = true;
-                Console.Error.WriteLine("EnvironmentType is not valid. The following values are supported (see documentation for help): ");
-
-                foreach (ScaleUnitManagement.Utilities.EnvironmentType val in Enum.GetValues(typeof(ScaleUnitManagement.Utilities.EnvironmentType)))
-                {
-                    if (val != ScaleUnitManagement.Utilities.EnvironmentType.Unknown)
-                        Console.WriteLine(val);
-                }
-            }
-
 
             if (hasAnyError)
             {
@@ -208,7 +189,6 @@ namespace ScaleUnitManagement.Utilities
 
     public class CloudAndEdgeConfiguration
     {
-        public EnvironmentType EnvironmentType { get; set; }
         public string AxDbName { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
         public ScaleUnitConfiguration ScaleUnitConfiguration { get; set; }
