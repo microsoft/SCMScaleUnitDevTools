@@ -44,6 +44,7 @@ namespace ScaleUnitManagement.Utilities
         }
 
         public static string AxDbName() { return UserConfiguration().AxDbName; }
+        public static string AxScaleUnitDbName() { return UserConfiguration().AxScaleUnitDbName; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
@@ -190,6 +191,7 @@ namespace ScaleUnitManagement.Utilities
     public class CloudAndEdgeConfiguration
     {
         public string AxDbName { get; set; }
+        public string AxScaleUnitDbName { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
         public ScaleUnitConfiguration ScaleUnitConfiguration { get; set; }
         public LogicalEnvIdAndHash LogicalEnvIdAndHash { get; set; }

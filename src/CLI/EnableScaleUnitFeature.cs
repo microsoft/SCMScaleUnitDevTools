@@ -10,7 +10,7 @@ namespace CLI
 {
     class EnableScaleUnitFeature
     {
-        protected List<Step> AvailableSteps;
+        protected List<IStep> AvailableSteps;
 
         public static async Task Show(int input, string selectionHistory)
         {
@@ -23,10 +23,10 @@ namespace CLI
             await CLIMenu.ShowScreen(screen);
         }
 
-        protected virtual List<Step> GetAvailableSteps()
+        protected virtual List<IStep> GetAvailableSteps()
         {
             StepFactory sf = new StepFactory();
-            List<Step> steps = sf.GetStepsOfType<CommonStep>();
+            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
             return steps;
         }
 
@@ -36,7 +36,7 @@ namespace CLI
             AvailableSteps = GetAvailableSteps();
             AvailableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (Step s in AvailableSteps)
+            foreach (IStep s in AvailableSteps)
             {
                 options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
             }
@@ -56,7 +56,7 @@ namespace CLI
                 }
                 catch (Exception)
                 {
-                    if (!CLIMenu.YesNoPrompt("Step " + AvailableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
+                    if (!CLIMenu.YesNoPrompt("IStep " + AvailableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
                         break;
                 }
             }

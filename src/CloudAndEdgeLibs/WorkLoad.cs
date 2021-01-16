@@ -11,8 +11,8 @@ namespace CloudAndEdgeLibs.Contracts
     {
         public enum SyncDirection
         {
-            HubToSpoke = 0,
-            SpokeToHub = 1,
+            HubToScaleUnit = 0,
+            ScaleUnitToHub = 1,
             BothWays = 2,
         }
 

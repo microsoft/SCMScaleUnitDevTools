@@ -5,19 +5,19 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ConfigureScaleUnit : ScaleUnitStep
+    public class ConfigureScaleUnit : IScaleUnitStep
     {
-        public override string Label()
+        public  string Label()
         {
             return "Configure Scale unit";
         }
 
-        public override float Priority()
+        public  float Priority()
         {
             return 2F;
         }
 
-        public override void Run()
+        public  void Run()
         {
             using (var webConfig = new WebConfig())
             {

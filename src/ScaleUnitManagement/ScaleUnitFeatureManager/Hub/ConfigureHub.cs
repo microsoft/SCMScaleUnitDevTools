@@ -4,19 +4,19 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
-    public class ConfigureHub : HubStep
+    public class ConfigureHub : IHubStep
     {
-        public override string Label()
+        public  string Label()
         {
             return "Configure Hub";
         }
 
-        public override float Priority()
+        public  float Priority()
         {
             return 2F;
         }
 
-        public override void Run()
+        public  void Run()
         {
             using (var webConfig = new WebConfig())
             {

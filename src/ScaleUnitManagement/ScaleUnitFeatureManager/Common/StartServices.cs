@@ -3,19 +3,19 @@ using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class StartServices : CommonStep
+    public class StartServices : ICommonStep
     {
-        public override string Label()
+        public  string Label()
         {
             return "Start Services";
         }
 
-        public override float Priority()
+        public  float Priority()
         {
             return 4F;
         }
 
-        public override void Run()
+        public  void Run()
         {
             if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {

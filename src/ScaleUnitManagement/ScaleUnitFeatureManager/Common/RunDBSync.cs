@@ -17,7 +17,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 3F;
         }
 
-        public void Run(string scaleUnitId)
+        public void Run(string scaleUnitId, string dbName)
         {
             Console.WriteLine("2. Executing DbSync");
 
@@ -30,7 +30,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                     dbSyncTool
                     + " -syncmode=" + CommandExecutor.Quotes + "fullall" + CommandExecutor.Quotes
                     + " -metadatabinaries=" + CommandExecutor.Quotes + metaBinariesPath + CommandExecutor.Quotes
-                    + " -connect=" + CommandExecutor.Quotes + $"Data Source=localhost;Initial Catalog={Config.AxDbName()};Integrated Security=True;Enlist=True;Application Name=AXVSSDK" + CommandExecutor.Quotes
+                    + " -connect=" + CommandExecutor.Quotes + $"Data Source=localhost;Initial Catalog={dbName};Integrated Security=True;Enlist=True;Application Name=AXVSSDK" + CommandExecutor.Quotes
                     + " -verbosity=" + CommandExecutor.Quotes + "Diagnostic" + CommandExecutor.Quotes
                     + " -scaleUnitOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsScaleUnitFeatureEnabled" + CommandExecutor.Quotes + ": true, " + CommandExecutor.Quotes + "scaleUnitMnemonics" + CommandExecutor.Quotes + ":" + $"'{scaleUnitId}'" + " }" + CommandExecutor.Quotes
                     + " -triggerOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsEnabled" + CommandExecutor.Quotes + ": true}" + CommandExecutor.Quotes
