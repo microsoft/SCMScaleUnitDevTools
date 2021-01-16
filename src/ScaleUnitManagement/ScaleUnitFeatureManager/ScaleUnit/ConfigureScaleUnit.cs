@@ -41,6 +41,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             WifServiceConfig.Update();
 
+
+            // TODO: Fix this part. Share between hub and spoke and fix mapping and binding for both. 
             // Update hosts file
             using (var hosts = new Hosts())
             {

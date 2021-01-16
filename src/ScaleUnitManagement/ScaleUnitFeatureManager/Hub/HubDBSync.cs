@@ -5,7 +5,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
     public class HubDBSync : IHubStep
     {
-        RunDBSync dbSync;
+        private readonly RunDBSync dbSync;
 
         public HubDBSync()
         {
