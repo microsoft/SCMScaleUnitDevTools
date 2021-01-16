@@ -44,8 +44,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             // Update hosts file
             using (var hosts = new Hosts())
             {
-                hosts.AddMapping("127.0.0.1", Config.ScaleUnitDomain());
                 hosts.AddMapping(Config.HubIp(), Config.HubDomain());
+                hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
             }
 
             // Configure IIS binding

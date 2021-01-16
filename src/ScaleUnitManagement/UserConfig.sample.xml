@@ -21,7 +21,7 @@
     <HubAosResourceId></HubAosResourceId>
     <ScaleUnitAosResourceId></ScaleUnitAosResourceId>
     <HubDomain>YOUR_HUB_ENVIRONMENT_URL</HubDomain>
-    <HubIpAddress>YOUR_HUB_ENVIRONMENT_IP</HubIpAddress>
+    <ScaleUnitIpAddress>YOUR_HUB_ENVIRONMENT_IP</ScaleUnitIpAddress>
     <ScaleUnitDomain>YOUR_SCALEUNIT_ENVIRONMENT_URL</ScaleUnitDomain>
     <InterAOSAppId></InterAOSAppId>
     <InterAOSAppSecret></InterAOSAppSecret>

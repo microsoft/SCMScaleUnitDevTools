@@ -54,6 +54,7 @@ namespace ScaleUnitManagement.Utilities
         public static string AADTenantId() { return UserConfiguration().AADConfiguration.AADTenantId; }
         public static string ScaleUnitId() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitId; }
         public static string HubIp() { return UserConfiguration().ScaleUnitConfiguration.HubIpAddress; }
+        public static string ScaleUnitIp() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitIpAddress; }
         public static string HubAosEndpoint() { return "https://" + HubDomain(); }
         public static string ScaleUnitAosEndpoint() { return "https://" + ScaleUnitDomain(); }
         public static string ScaleUnitName() { return UserConfiguration().ScaleUnitConfiguration.ScaleUnitName; }
@@ -214,6 +215,7 @@ namespace ScaleUnitManagement.Utilities
         public string HubDomain { get; set; }
         public string HubAosResourceId { get; set; }
         public string HubIpAddress { get; set; }
+        public string ScaleUnitIpAddress { get; set; }
         public string ScaleUnitDomain { get; set; }
         public string ScaleUnitAosResourceId { get; set; }
         public string ScaleUnitEnvironmentId { get; set; }
