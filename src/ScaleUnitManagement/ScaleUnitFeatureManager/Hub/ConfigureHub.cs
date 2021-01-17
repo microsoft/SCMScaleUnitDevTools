@@ -22,14 +22,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
         {
             using (var webConfig = new WebConfig(Config.HubWebConfigPath))
             {
-                if (!String.IsNullOrEmpty(Config.AADTenantId()))
+                if (!string.IsNullOrEmpty(Config.AADTenantId()))
                     webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
 
-                    if (!String.IsNullOrEmpty(Config.AzureStorageConnectionString()))
-                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", Config.AzureStorageConnectionString());
+                if (!string.IsNullOrEmpty(Config.AzureStorageConnectionString()))
+                    webConfig.UpdateXElement("AzureStorage.StorageConnectionString", Config.AzureStorageConnectionString());
 
-                    webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
-                }
+                webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
+
 
                 webConfig.AddKey("ScaleUnit.InstanceID", "@@");
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
