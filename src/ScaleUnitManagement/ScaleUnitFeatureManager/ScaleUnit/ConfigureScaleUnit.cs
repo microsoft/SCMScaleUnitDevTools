@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Web.Administration;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
@@ -7,17 +8,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
     public class ConfigureScaleUnit : IScaleUnitStep
     {
-        public  string Label()
+        public string Label()
         {
             return "Configure Scale unit";
         }
 
-        public  float Priority()
+        public float Priority()
         {
             return 2F;
         }
 
-        public  void Run()
+        public void Run()
         {
             using (var webConfig = new WebConfig())
             {
@@ -33,6 +34,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 string scaleUnitUrl = Config.ScaleUnitAosEndpoint() + "/";
                 webConfig.UpdateXElement("Infrastructure.HostUrl", scaleUnitUrl);
                 webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
+                webConfig.UpdateXElement("DataAccess.Database", "AxDbEmpty");
 
                 webConfig.AddKey("ScaleUnit.InstanceID", Config.ScaleUnitId());
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
@@ -41,21 +43,23 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             WifServiceConfig.Update();
 
-
-            // TODO: Fix this part. Share between hub and spoke and fix mapping and binding for both. 
-            // Update hosts file
             using (var hosts = new Hosts())
             {
-                hosts.AddMapping(Config.HubIp(), Config.HubDomain());
                 hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
             }
 
-            // Configure IIS binding
             using (ServerManager manager = new ServerManager())
             {
-                Site site = manager.Sites["AOSService"];
+                var siteName = "AOSServiceScaleUnit";
+                Site site = manager.Sites.FirstOrDefault((s) => s.Name.Equals(siteName));
+
+                if (site == null)
+                {
+                    manager.Sites.Add(siteName, @"C:\AOSService\webrootspoke", 443);
+                }
+
                 site.Bindings.Clear();
-                site.Bindings.Add("*:443:" + Config.ScaleUnitDomain(), "https");
+                site.Bindings.Add("127.0.0.11:443:" + Config.ScaleUnitDomain(), "https");
 
                 manager.CommitChanges();
             }

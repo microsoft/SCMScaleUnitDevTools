@@ -7,17 +7,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
     public class StartServices : ICommonStep
     {
-        public  string Label()
+        public string Label()
         {
             return "Start Services";
         }
 
-        public  float Priority()
+        public float Priority()
         {
             return 4F;
         }
 
-        public  void Run()
+        public void Run()
         {
             if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {

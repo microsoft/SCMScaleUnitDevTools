@@ -8,7 +8,6 @@ namespace CloudAndEdgeLibs.Contracts
     /// </summary>
     public sealed class TemporalAssignment
     {
-        // TODO: Plural of ownership is ownership. Perhpas find an alternative/better name.
         public const string WorkloadInstanceOwnerships = "workloadinstanceownerships";
 
         /// <summary>
