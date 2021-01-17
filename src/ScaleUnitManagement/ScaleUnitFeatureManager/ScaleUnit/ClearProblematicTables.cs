@@ -5,17 +5,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
     public class ClearProblematicTables : IScaleUnitStep
     {
-        public  string Label()
+        public string Label()
         {
             return "Truncate potentially problematic tables";
         }
 
-        public  float Priority()
+        public float Priority()
         {
             return 2.5F;
         }
 
-        public  void Run()
+        public void Run()
         {
             string sqlQuery = $@"
 USE {Config.AxScaleUnitDbName()};
