@@ -9,12 +9,16 @@ namespace ScaleUnitManagement.Utilities
     {
         public const int RetryCount = 5;
         public static string ConfigEncryptorExePath = ServiceVolume() + @"\AOSService\webroot\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe";
-        public static string WebConfigPath = ServiceVolume() + @"\AOSService\webroot\web.config";
-        public static string WifServicesConfigPath = ServiceVolume() + @"\AOSService\webroot\wif.services.config";
         public static string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
         public static string WorkloadDefinitionHash = "c2f309922ef4fc1f1a418ae31ebf85763f8a836e355062e6489ff12e3c438c0d";
         public static string ScaleUnitEnvironmentId = "a4557a4e-6980-4e1b-b7c7-661793b4a098";
 
+        // Hub Configs
+        public static string HubWebConfigPath = ServiceVolume() + @"\AOSService\webroot\web.config";
+
+        // ScaleUnit Configs
+        public static string ScaleUnitWebConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\web.config";
+        public static string ScaleUnitWifServicesConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\wif.services.config";
 
         private static CloudAndEdgeConfiguration UserConfig { get; set; }
 
@@ -115,7 +119,7 @@ namespace ScaleUnitManagement.Utilities
                 result.Add(new WorkloadInstanceIdWithName() { Name = "SYS", WorkloadInstanceId = id });
             }
 
-            foreach(ConfiguredWorkload configuredWorkload in configuredWorkloads)
+            foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
             {
                 result.Add(
                     new WorkloadInstanceIdWithName()

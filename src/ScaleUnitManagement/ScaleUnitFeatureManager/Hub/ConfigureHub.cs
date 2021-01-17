@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Web.Administration;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
@@ -19,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
         public void Run()
         {
-            using (var webConfig = new WebConfig())
+            using (var webConfig = new WebConfig(Config.HubWebConfigPath))
             {
                 if (!String.IsNullOrEmpty(Config.AADTenantId()))
                     webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
@@ -34,15 +35,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 hosts.AddMapping(Config.HubIp(), Config.HubDomain());
             }
 
-
-            using (ServerManager manager = new ServerManager())
-            {
-                Site site = manager.Sites["AOSService"];
-                site.Bindings.Clear();
-                site.Bindings.Add("127.0.0.10:443:" + Config.HubDomain(), "https");
-
-                manager.CommitChanges();
-            }
+            IISSiteHelper.CreateSite(
+                siteName: "AOSService",
+                siteRoot: @"C:\AOSService\webroot",
+                bindingInformation: "127.0.0.10:443:" + Config.HubDomain(),
+                certSubject: "*.cloud.onebox.dynamics.com",
+                appPoolName: "AOSService");
         }
     }
 }

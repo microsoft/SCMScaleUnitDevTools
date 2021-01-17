@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public void Run()
         {
-            using (var webConfig = new WebConfig())
+            using (var webConfig = new WebConfig(Config.ScaleUnitWebConfigPath))
             {
                 if (!String.IsNullOrEmpty(Config.AADTenantId()))
                 {
@@ -41,28 +41,19 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
             }
 
-            WifServiceConfig.Update();
+            new WifServiceConfig(Config.ScaleUnitWifServicesConfigPath).Update();
 
             using (var hosts = new Hosts())
             {
                 hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
             }
 
-            using (ServerManager manager = new ServerManager())
-            {
-                var siteName = "AOSServiceScaleUnit";
-                Site site = manager.Sites.FirstOrDefault((s) => s.Name.Equals(siteName));
-
-                if (site == null)
-                {
-                    manager.Sites.Add(siteName, @"C:\AOSService\webrootspoke", 443);
-                }
-
-                site.Bindings.Clear();
-                site.Bindings.Add("127.0.0.11:443:" + Config.ScaleUnitDomain(), "https");
-
-                manager.CommitChanges();
-            }
+            IISSiteHelper.CreateSite(
+                siteName: "AOSServiceScaleUnit",
+                siteRoot: @"C:\AOSService\webrootspoke",
+                bindingInformation: "127.0.0.11:443:" + Config.ScaleUnitDomain(),
+                certSubject: Config.ScaleUnitDomain(),
+                appPoolName: "AOSService");
         }
     }
 }

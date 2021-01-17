@@ -34,7 +34,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                     + " -verbosity=" + CommandExecutor.Quotes + "Diagnostic" + CommandExecutor.Quotes
                     + " -scaleUnitOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsScaleUnitFeatureEnabled" + CommandExecutor.Quotes + ": true, " + CommandExecutor.Quotes + "scaleUnitMnemonics" + CommandExecutor.Quotes + ":" + $"'{scaleUnitId}'" + " }" + CommandExecutor.Quotes
                     + " -triggerOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsEnabled" + CommandExecutor.Quotes + ": true}" + CommandExecutor.Quotes
-                    + " > DbSync.log";
+                    + $" > {dbName}DbSync.log";
 
                 Console.WriteLine(cmd);
 
