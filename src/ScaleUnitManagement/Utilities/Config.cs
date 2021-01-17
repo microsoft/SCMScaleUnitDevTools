@@ -174,6 +174,7 @@ namespace ScaleUnitManagement.Utilities
             ValidateValue("AppSecret", AppSecret());
             ValidateValue("Authority", Authority());
 
+            ValidateValue("AzureStorageConnectionString", AzureStorageConnectionString());
             ValidateValue("HubDomain", HubDomain());
             ValidateValue("ScaleUnitDomain", ScaleUnitDomain());
             ValidateValue("ScaleUnitName", ScaleUnitName());
