@@ -6,7 +6,7 @@ namespace CLI
 {
     class EnableScaleUnitFeatureOnScaleUnit : EnableScaleUnitFeature
     {
-        protected  List<IStep> GetAvailableSteps()
+        protected override List<IStep> GetAvailableSteps()
         {
             List<IStep> steps = base.GetAvailableSteps();
 
