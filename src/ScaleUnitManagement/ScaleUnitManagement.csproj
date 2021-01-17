@@ -21,6 +21,7 @@
     </None>
     <None Update="UserConfig.xml">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="UserConfig.sample.xml">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>

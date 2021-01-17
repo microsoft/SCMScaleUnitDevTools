@@ -10,7 +10,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             return from assembly in AppDomain.CurrentDomain.GetAssemblies()
                    from type in assembly.GetTypes()
-                   where type.IsClass && !type.IsAbstract && type.IsSubclassOf(superType)
+                   where type.IsClass && !type.IsAbstract && superType.IsAssignableFrom(type)
                    select type;
         }
 
