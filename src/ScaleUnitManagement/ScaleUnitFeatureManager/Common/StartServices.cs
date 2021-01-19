@@ -26,8 +26,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             string cmd =
                  $@"Start-Service -Name {batchName}; " +
-                 $@"%SYSTEMROOT%\System32\inetsrv\appcmd start apppool /apppool.name:{appPoolName}; " +
-                 $@"%SYSTEMROOT%\System32\inetsrv\appcmd start site /site.name:{siteName}; ";
+                 $@".$env:systemroot\System32\inetsrv\appcmd.exe start apppool /apppool.name:{appPoolName}; " +
+                 $@".$env:systemroot\System32\inetsrv\appcmd.exe start site /site.name:{siteName}; ";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);

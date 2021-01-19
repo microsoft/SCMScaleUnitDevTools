@@ -26,8 +26,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             string cmd =
                 $@"Stop-Service -Name {batchName}; " +
-                $@"%SYSTEMROOT%\System32\inetsrv\appcmd stop apppool /apppool.name:{appPoolName}; " +
-                $@"%SYSTEMROOT%\System32\inetsrv\appcmd stop site /site.name:{siteName}; ";
+                $@".$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{appPoolName}; " +
+                $@".$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{siteName}; ";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
