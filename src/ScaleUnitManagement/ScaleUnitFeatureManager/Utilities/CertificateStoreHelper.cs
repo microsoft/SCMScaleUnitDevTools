@@ -34,5 +34,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             localMachineStore.Close();
             return certificates;
         }
+
+        internal static string PersonalCertificateStoreName => "MY";
     }
 }

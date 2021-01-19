@@ -6,7 +6,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
     public sealed class ScaleUnitWhitelistToolAADClient : IScaleUnitStep
     {
         private AddToolClientToSysAADClientTable AddToolClientToSysAADClientTable
-   => new AddToolClientToSysAADClientTable();
+            => new AddToolClientToSysAADClientTable();
 
         public string Label()
         {

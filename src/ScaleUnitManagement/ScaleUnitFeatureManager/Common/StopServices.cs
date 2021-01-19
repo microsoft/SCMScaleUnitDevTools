@@ -24,10 +24,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
             }
 
-            //string cmd = "Stop-Service -Name DynamicsAxBatch; iisreset /stop";
+            string cmd = "Stop-Service -Name DynamicsAxBatch; iisreset /stop";
 
-            //CommandExecutor ce = new CommandExecutor();
-            //ce.RunCommand(cmd);
+            CommandExecutor ce = new CommandExecutor();
+            ce.RunCommand(cmd);
         }
     }
 }

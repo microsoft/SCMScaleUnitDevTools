@@ -22,7 +22,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         {
             using (var webConfig = new WebConfig(Config.ScaleUnitWebConfigPath))
             {
-                if (!String.IsNullOrEmpty(Config.AADTenantId()))
+                if (!string.IsNullOrEmpty(Config.AADTenantId()))
                 {
                     webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
                 }
@@ -48,12 +48,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
             }
 
-            IISSiteHelper.CreateSite(
-                siteName: "AOSServiceScaleUnit",
+            IISAdministrationHelper.CreateSite(
+                siteName: IISAdministrationHelper.ScaleUnitAppPoolName,
                 siteRoot: @"C:\AOSService\webrootspoke",
                 bindingInformation: "127.0.0.11:443:" + Config.ScaleUnitDomain(),
                 certSubject: Config.ScaleUnitDomain(),
-                appPoolName: "AOSService");
+                appPoolName: IISAdministrationHelper.ScaleUnitAppPoolName);
         }
     }
 }

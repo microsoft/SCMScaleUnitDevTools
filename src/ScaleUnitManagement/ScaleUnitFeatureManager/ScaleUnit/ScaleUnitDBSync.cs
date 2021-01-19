@@ -3,7 +3,8 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ScaleUnitDBSync : IScaleUnitStep
+    public class ScaleUnitDBSync 
+        // TODO: : IScaleUnitStep
     {
         RunDBSync dbSync;
 

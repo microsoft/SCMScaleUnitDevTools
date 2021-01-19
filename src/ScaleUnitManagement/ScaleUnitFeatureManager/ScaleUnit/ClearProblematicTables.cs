@@ -3,7 +3,8 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ClearProblematicTables : IScaleUnitStep
+    public class ClearProblematicTables
+    // TODO : IScaleUnitStep
     {
         public string Label()
         {

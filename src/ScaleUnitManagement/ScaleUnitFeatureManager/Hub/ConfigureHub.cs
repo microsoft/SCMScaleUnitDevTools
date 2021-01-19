@@ -41,12 +41,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 hosts.AddMapping(Config.HubIp(), Config.HubDomain());
             }
 
-            IISSiteHelper.CreateSite(
-                siteName: "AOSService",
+            IISAdministrationHelper.CreateSite(
+                siteName: IISAdministrationHelper.HubAppPoolName,
                 siteRoot: @"C:\AOSService\webroot",
                 bindingInformation: "127.0.0.10:443:" + Config.HubDomain(),
                 certSubject: "*.cloud.onebox.dynamics.com",
-                appPoolName: "AOSService");
+                appPoolName: IISAdministrationHelper.HubAppPoolName);
         }
     }
 }

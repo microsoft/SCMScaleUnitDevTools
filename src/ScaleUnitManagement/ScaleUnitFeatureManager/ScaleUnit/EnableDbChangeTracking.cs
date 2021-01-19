@@ -3,7 +3,8 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class EnableDbChangeTracking : IScaleUnitStep
+    public class EnableDbChangeTracking 
+        // TODO : IScaleUnitStep
     {
         public string Label()
         {
