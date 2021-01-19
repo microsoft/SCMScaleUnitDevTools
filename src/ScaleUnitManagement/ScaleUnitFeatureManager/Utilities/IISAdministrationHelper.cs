@@ -48,6 +48,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 return;
             }
 
+            CloneScaleUnitWebRoot();
+
             using (ServerManager manager = new ServerManager())
             {
                 var hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(Config.HubAppPoolName));
@@ -71,6 +73,20 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
                 manager.CommitChanges();
             }
+        }
+
+        private static void CloneScaleUnitWebRoot()
+        {
+            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
+            {
+                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
+            }
+
+            string cmd =
+                $@"robocopy {Config.HubSiteRoot} {Config.ScaleUnitSiteRoot} /MIR /MT; ";
+
+            CommandExecutor ce = new CommandExecutor();
+            ce.RunCommand(cmd);
         }
     }
 }

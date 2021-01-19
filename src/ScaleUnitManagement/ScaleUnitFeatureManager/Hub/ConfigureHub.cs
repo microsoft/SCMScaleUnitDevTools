@@ -20,6 +20,18 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
         public void Run()
         {
+            IISAdministrationHelper.CreateSite(
+                siteName: Config.HubAppPoolName,
+                siteRoot: @"C:\AOSService\webroot",
+                bindingInformation: "127.0.0.10:443:" + Config.HubDomain(),
+                certSubject: "*.cloud.onebox.dynamics.com",
+                appPoolName: Config.HubAppPoolName);
+
+            using (var hosts = new Hosts())
+            {
+                hosts.AddMapping(Config.HubIp(), Config.HubDomain());
+            }
+
             using (var webConfig = new WebConfig(Config.HubWebConfigPath))
             {
                 if (!string.IsNullOrEmpty(Config.AADTenantId()))
@@ -35,18 +47,6 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
             }
-
-            using (var hosts = new Hosts())
-            {
-                hosts.AddMapping(Config.HubIp(), Config.HubDomain());
-            }
-
-            IISAdministrationHelper.CreateSite(
-                siteName: Config.HubAppPoolName,
-                siteRoot: @"C:\AOSService\webroot",
-                bindingInformation: "127.0.0.10:443:" + Config.HubDomain(),
-                certSubject: "*.cloud.onebox.dynamics.com",
-                appPoolName: Config.HubAppPoolName);
         }
     }
 }

@@ -8,19 +8,22 @@ namespace ScaleUnitManagement.Utilities
     public class Config
     {
         public const int RetryCount = 5;
-        public static string ConfigEncryptorExePath = ServiceVolume() + @"\AOSService\webroot\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe";
+        public static string ConfigEncryptorExePath = $@"{ServiceVolume()}\AOSService\webroot\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe";
         public static string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
         public static string WorkloadDefinitionHash = "c2f309922ef4fc1f1a418ae31ebf85763f8a836e355062e6489ff12e3c438c0d";
         public static string ScaleUnitEnvironmentId = "a4557a4e-6980-4e1b-b7c7-661793b4a098";
+        public static string DynamicsBatchExePath = $@"{ServiceVolume()}\AOSService\webroot\bin\Batch.exe";
 
         // Hub Configs
-        public static string HubWebConfigPath = ServiceVolume() + @"\AOSService\webroot\web.config";
+        public static string HubSiteRoot = $@"{ServiceVolume()}\AOSService\webroot";
+        public static string HubWebConfigPath = $@"{HubSiteRoot}\web.config";
         public static string HubBatchName = "DynamicsAxBatch";
         public static string HubAppPoolName = "AOSService";
 
         // ScaleUnit Configs
-        public static string ScaleUnitWebConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\web.config";
-        public static string ScaleUnitWifServicesConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\wif.services.config";
+        public static string ScaleUnitSiteRoot = $@"{ServiceVolume()}\AOSService\webrootspoke";
+        public static string ScaleUnitWebConfigPath = $@"{ScaleUnitSiteRoot}\web.config";
+        public static string ScaleUnitWifServicesConfigPath = $@"{ScaleUnitSiteRoot}\wif.services.config";
         public static string ScaleUnitBatchName = "DynamicsAXScaleUnitBatch";
         public static string ScaleUnitAppPoolName = "AOSServiceScaleUnit";
 

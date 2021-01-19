@@ -19,18 +19,18 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         public void Run()
         {
             string sqlQuery = $@"
-USE {Config.AxScaleUnitDbName()};
-EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
+                USE {Config.AxScaleUnitDbName()};
+                EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
-DELETE FROM SysFeatureStateV0;
-DELETE FROM FeatureManagementState;
-DELETE FROM FeatureManagementMetadata;
-DELETE FROM SysFlighting;
+                DELETE FROM SysFeatureStateV0;
+                DELETE FROM FeatureManagementState;
+                DELETE FROM FeatureManagementMetadata;
+                DELETE FROM SysFlighting;
 
-TRUNCATE TABLE NumberSequenceScope;
+                TRUNCATE TABLE NumberSequenceScope;
 
-EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
-";
+                EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
+            ";
 
             string cmd = "Invoke-Sqlcmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
 

@@ -24,10 +24,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
             }
 
-            string cmd =
-                $@"Stop-Service -Name {batchName}; " +
-                $@".$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{appPoolName}; " +
-                $@".$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{siteName}; ";
+            string cmd = $@"
+                Stop-Service -Name {batchName};
+                .$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{appPoolName};
+                .$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{siteName}; 
+            ";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);

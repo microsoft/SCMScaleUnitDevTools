@@ -20,6 +20,18 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public void Run()
         {
+            IISAdministrationHelper.CreateSite(
+                siteName: Config.ScaleUnitAppPoolName,
+                siteRoot: Config.ScaleUnitSiteRoot,
+                bindingInformation: "127.0.0.11:443:" + Config.ScaleUnitDomain(),
+                certSubject: Config.ScaleUnitDomain(),
+                appPoolName: Config.ScaleUnitAppPoolName);
+
+            using (var hosts = new Hosts())
+            {
+                hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
+            }
+
             using (var webConfig = new WebConfig(Config.ScaleUnitWebConfigPath))
             {
                 if (!string.IsNullOrEmpty(Config.AADTenantId()))
@@ -43,17 +55,24 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             new WifServiceConfig(Config.ScaleUnitWifServicesConfigPath).Update();
 
-            using (var hosts = new Hosts())
+            CreateScaleUnitBatch();
+        }
+
+        private void CreateScaleUnitBatch()
+        {
+            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {
-                hosts.AddMapping(Config.ScaleUnitIp(), Config.ScaleUnitDomain());
+                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
             }
 
-            IISAdministrationHelper.CreateSite(
-                siteName: Config.ScaleUnitAppPoolName,
-                siteRoot: @"C:\AOSService\webrootspoke",
-                bindingInformation: "127.0.0.11:443:" + Config.ScaleUnitDomain(),
-                certSubject: Config.ScaleUnitDomain(),
-                appPoolName: Config.ScaleUnitAppPoolName);
+            string cmd = $@"
+                sc delete {Config.ScaleUnitBatchName}; 
+                New-Service -Name '{Config.ScaleUnitBatchName}' 
+                    -BinaryPathName '{Config.DynamicsBatchExePath} -service {Config.ScaleUnitWebConfigPath}'
+            ";
+
+            CommandExecutor ce = new CommandExecutor();
+            ce.RunCommand(cmd);
         }
     }
 }

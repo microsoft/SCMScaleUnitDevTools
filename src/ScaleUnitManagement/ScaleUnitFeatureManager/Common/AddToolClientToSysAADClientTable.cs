@@ -24,7 +24,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                     INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{Config.AppId()}', 'Admin', 'Scale Unit Management Tool');
                 ";
 
-            string cmd = "Invoke-SqlCmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
+            string cmd = $"Invoke-SqlCmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
