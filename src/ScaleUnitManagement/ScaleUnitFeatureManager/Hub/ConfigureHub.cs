@@ -42,11 +42,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
             }
 
             IISAdministrationHelper.CreateSite(
-                siteName: IISAdministrationHelper.HubAppPoolName,
+                siteName: Config.HubAppPoolName,
                 siteRoot: @"C:\AOSService\webroot",
                 bindingInformation: "127.0.0.10:443:" + Config.HubDomain(),
                 certSubject: "*.cloud.onebox.dynamics.com",
-                appPoolName: IISAdministrationHelper.HubAppPoolName);
+                appPoolName: Config.HubAppPoolName);
         }
     }
 }

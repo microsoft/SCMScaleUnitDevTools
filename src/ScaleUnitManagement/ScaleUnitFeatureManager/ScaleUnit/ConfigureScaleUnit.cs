@@ -49,11 +49,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             }
 
             IISAdministrationHelper.CreateSite(
-                siteName: IISAdministrationHelper.ScaleUnitAppPoolName,
+                siteName: Config.ScaleUnitAppPoolName,
                 siteRoot: @"C:\AOSService\webrootspoke",
                 bindingInformation: "127.0.0.11:443:" + Config.ScaleUnitDomain(),
                 certSubject: Config.ScaleUnitDomain(),
-                appPoolName: IISAdministrationHelper.ScaleUnitAppPoolName);
+                appPoolName: Config.ScaleUnitAppPoolName);
         }
     }
 }

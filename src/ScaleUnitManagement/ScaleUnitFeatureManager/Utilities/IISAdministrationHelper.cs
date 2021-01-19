@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft;
 using Microsoft.Web.Administration;
+using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
@@ -42,14 +43,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         private static void CreateAppPool(string appPoolName)
         {
             // we are assuming HubAppPool is already and doesnt need changes. 
-            if (appPoolName.Equals(HubAppPoolName))
+            if (appPoolName.Equals(Config.HubAppPoolName))
             {
                 return;
             }
 
             using (ServerManager manager = new ServerManager())
             {
-                var hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(HubAppPoolName));
+                var hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(Config.HubAppPoolName));
 
                 if (hubAppPool == null)
                 {
@@ -71,8 +72,5 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 manager.CommitChanges();
             }
         }
-
-        internal static string HubAppPoolName => "AOSService";
-        internal static string ScaleUnitAppPoolName => "AOSServiceScaleUnit";
     }
 }

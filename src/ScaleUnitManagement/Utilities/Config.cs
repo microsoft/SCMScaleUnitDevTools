@@ -15,10 +15,14 @@ namespace ScaleUnitManagement.Utilities
 
         // Hub Configs
         public static string HubWebConfigPath = ServiceVolume() + @"\AOSService\webroot\web.config";
+        public static string HubBatchName = "DynamicsAxBatch";
+        public static string HubAppPoolName = "AOSService";
 
         // ScaleUnit Configs
         public static string ScaleUnitWebConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\web.config";
         public static string ScaleUnitWifServicesConfigPath = ServiceVolume() + @"\AOSService\webrootspoke\wif.services.config";
+        public static string ScaleUnitBatchName = "DynamicsAXScaleUnitBatch";
+        public static string ScaleUnitAppPoolName = "AOSServiceScaleUnit";
 
         private static CloudAndEdgeConfiguration UserConfig { get; set; }
 
