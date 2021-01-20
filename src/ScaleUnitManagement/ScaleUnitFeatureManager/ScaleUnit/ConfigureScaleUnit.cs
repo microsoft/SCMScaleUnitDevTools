@@ -66,9 +66,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             }
 
             string cmd = $@"
-                sc delete {Config.ScaleUnitBatchName}; 
-                New-Service -Name '{Config.ScaleUnitBatchName}' 
-                    -BinaryPathName '{Config.DynamicsBatchExePath} -service {Config.ScaleUnitWebConfigPath}'
+                .$env:systemroot\system32\sc.exe delete {Config.ScaleUnitBatchName}; 
+                $secpasswd = (new-object System.Security.SecureString);
+                $creds = New-Object System.Management.Automation.PSCredential ('NT AUTHORITY\NETWORK SERVICE', $secpasswd);
+                New-Service -Name '{Config.ScaleUnitBatchName}' -BinaryPathName '{Config.DynamicsBatchExePath} -service {Config.ScaleUnitWebConfigPath}' -credential $creds -startupType Manual;
             ";
 
             CommandExecutor ce = new CommandExecutor();

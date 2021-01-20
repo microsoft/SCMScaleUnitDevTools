@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft;
 using Microsoft.Web.Administration;
@@ -86,7 +87,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 $@"robocopy {Config.HubSiteRoot} {Config.ScaleUnitSiteRoot} /MIR /MT; ";
 
             CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            ce.RunCommand(cmd, new List<int>() { 0, 1 });
         }
     }
 }
