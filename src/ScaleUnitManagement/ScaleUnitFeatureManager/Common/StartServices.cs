@@ -1,8 +1,6 @@
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
-// TODO: Needs to differentiate between batches.
-
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
     public class StartServices

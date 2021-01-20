@@ -3,8 +3,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
-    public class HubDBSync
-    // TODO: Add this back: IHubStep
+    public class HubDBSync : IHubStep
     {
         private readonly RunDBSync dbSync;
 
