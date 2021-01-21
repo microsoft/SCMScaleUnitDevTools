@@ -39,6 +39,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                     webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
                 }
 
+                webConfig.UpdateXElement("AzureStorage.StorageConnectionString", Config.StorageEmulatorConnectionString);
+                webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "true");
+
+
                 webConfig.UpdateXElement("Infrastructure.FullyQualifiedDomainName", Config.ScaleUnitDomain());
                 webConfig.UpdateXElement("Infrastructure.HostName", Config.ScaleUnitDomain());
                 webConfig.UpdateXElement("Infrastructure.HostedServiceName", Config.ScaleUnitUrlName());

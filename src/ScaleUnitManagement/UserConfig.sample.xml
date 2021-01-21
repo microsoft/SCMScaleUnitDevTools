@@ -1,74 +1,75 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CloudAndEdgeConfiguration>
-  <!--EnivronmentType represents the infrastructure you host on.
+    <!--EnivronmentType represents the infrastructure you host on.
       It should be VHD if you have OneBox or LCSVHD.
       It should be LCSHosted if you have an LCS cloud-hosted devbox.-->
-  <EnvironmentType>LCSHosted</EnvironmentType>
-  <AxDbName>AxDB</AxDbName>
+    <EnvironmentType>LCSHosted</EnvironmentType>
+    <AxDbName>AxDB</AxDbName>
 
-  <AADConfiguration>
-    <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
-    <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
-    <AppId></AppId>
-    <AppSecret></AppSecret>
-    <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
-    <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
-    <AADTenantId></AADTenantId>
-    <AzureStorageConnectionString></AzureStorageConnectionString>
-  </AADConfiguration>
+    <AADConfiguration>
+        <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
+        <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
+        <AppId></AppId>
+        <AppSecret></AppSecret>
+        <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
+        <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
+        <AADTenantId></AADTenantId>
+        <AzureStorageConnectionString></AzureStorageConnectionString>
+    </AADConfiguration>
 
-  <ScaleUnitConfiguration>
-    <HubAosResourceId></HubAosResourceId>
-    <ScaleUnitAosResourceId></ScaleUnitAosResourceId>
-    <HubDomain>YOUR_HUB_ENVIRONMENT_URL</HubDomain>
-    <ScaleUnitIpAddress>YOUR_HUB_ENVIRONMENT_IP</ScaleUnitIpAddress>
-    <ScaleUnitDomain>YOUR_SCALEUNIT_ENVIRONMENT_URL</ScaleUnitDomain>
-    <InterAOSAppId></InterAOSAppId>
-    <InterAOSAppSecret></InterAOSAppSecret>
-    <ScaleUnitName>spoke</ScaleUnitName>
-    <!--Note: This should be always the scale unit id. Don't use @@ here as it's reserved for the hub.-->
-    <ScaleUnitId>@A</ScaleUnitId>
-  </ScaleUnitConfiguration>
+    <ScaleUnitConfiguration>
+        <HubAosResourceId></HubAosResourceId>
+        <ScaleUnitAosResourceId></ScaleUnitAosResourceId>
+        <HubIpAddress>127.0.0.10</HubIpAddress>
+        <HubDomain>usnconeboxax1aos.cloud.onebox.dynamics.com</HubDomain>
+        <ScaleUnitIpAddress>127.0.0.11</ScaleUnitIpAddress>
+        <ScaleUnitDomain>spoke.cloudax.test.dynamics.com</ScaleUnitDomain>
+        <InterAOSAppId></InterAOSAppId>
+        <InterAOSAppSecret></InterAOSAppSecret>
+        <ScaleUnitName>spoke</ScaleUnitName>
+        <!--Note: This should be always the scale unit id. Don't use @@ here as it's reserved for the hub.-->
+        <ScaleUnitId>@A</ScaleUnitId>
+    </ScaleUnitConfiguration>
 
-  <!--Drive which contains AOSService-->
-  <ServiceVolume>
-    C:
-  </ServiceVolume>
+    <!--Drive which contains AOSService-->
+    <ServiceVolume>
+        C:
+    </ServiceVolume>
 
-  <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
+    <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
   You can also add the same workload with different dynamic constraints if you want to deploy multiple warehouses/sites, etc.-->
-  <Workloads>
-    <ConfiguredWorkload>
-      <WorkloadInstanceId>ccbcebb2-5516-433e-8ca3-7b4d39b9dad1</WorkloadInstanceId>
-      <Name>MES</Name>
-      <ConfiguredDynamicConstraintValues>
-        <ConfiguredDynamicConstraintValue>
-          <DomainName>LegalEntity</DomainName>
-          <Value>USMF</Value>
-        </ConfiguredDynamicConstraintValue>
-        <ConfiguredDynamicConstraintValue>
-          <DomainName>Site</DomainName>
-          <Value>1</Value>
-        </ConfiguredDynamicConstraintValue>
-      </ConfiguredDynamicConstraintValues>
-    </ConfiguredWorkload>
-    <ConfiguredWorkload>
-      <WorkloadInstanceId>918744a0-bddc-4827-ae89-683eaa9be1ac</WorkloadInstanceId>
-      <Name>WES</Name>
-      <ConfiguredDynamicConstraintValues>
-        <ConfiguredDynamicConstraintValue>
-          <DomainName>LegalEntity</DomainName>
-          <Value>USMF</Value>
-        </ConfiguredDynamicConstraintValue>
-        <ConfiguredDynamicConstraintValue>
-          <DomainName>Site</DomainName>
-          <Value>2</Value>
-        </ConfiguredDynamicConstraintValue>
-        <ConfiguredDynamicConstraintValue>
-          <DomainName>Warehouse</DomainName>
-          <Value>24</Value>
-        </ConfiguredDynamicConstraintValue>
-      </ConfiguredDynamicConstraintValues>
-    </ConfiguredWorkload>
-  </Workloads>
+    <Workloads>
+        <ConfiguredWorkload>
+            <WorkloadInstanceId>ccbcebb2-5516-433e-8ca3-7b4d39b9dad1</WorkloadInstanceId>
+            <Name>MES</Name>
+            <ConfiguredDynamicConstraintValues>
+                <ConfiguredDynamicConstraintValue>
+                    <DomainName>LegalEntity</DomainName>
+                    <Value>USMF</Value>
+                </ConfiguredDynamicConstraintValue>
+                <ConfiguredDynamicConstraintValue>
+                    <DomainName>Site</DomainName>
+                    <Value>1</Value>
+                </ConfiguredDynamicConstraintValue>
+            </ConfiguredDynamicConstraintValues>
+        </ConfiguredWorkload>
+        <ConfiguredWorkload>
+            <WorkloadInstanceId>918744a0-bddc-4827-ae89-683eaa9be1ac</WorkloadInstanceId>
+            <Name>WES</Name>
+            <ConfiguredDynamicConstraintValues>
+                <ConfiguredDynamicConstraintValue>
+                    <DomainName>LegalEntity</DomainName>
+                    <Value>USMF</Value>
+                </ConfiguredDynamicConstraintValue>
+                <ConfiguredDynamicConstraintValue>
+                    <DomainName>Site</DomainName>
+                    <Value>2</Value>
+                </ConfiguredDynamicConstraintValue>
+                <ConfiguredDynamicConstraintValue>
+                    <DomainName>Warehouse</DomainName>
+                    <Value>24</Value>
+                </ConfiguredDynamicConstraintValue>
+            </ConfiguredDynamicConstraintValues>
+        </ConfiguredWorkload>
+    </Workloads>
 </CloudAndEdgeConfiguration>

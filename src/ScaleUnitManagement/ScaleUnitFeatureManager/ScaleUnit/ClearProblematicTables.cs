@@ -18,7 +18,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         public void Run()
         {
             string sqlQuery = $@"
-                USE {Config.AxScaleUnitDbName()};
+                USE {Config.AxScaleUnitDbName};
                 EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
                 DELETE FROM SysFeatureStateV0;

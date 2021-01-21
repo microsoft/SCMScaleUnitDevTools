@@ -9,10 +9,11 @@ namespace ScaleUnitManagement.Utilities
     {
         public const int RetryCount = 5;
         public static string ConfigEncryptorExePath = $@"{ServiceVolume()}\AOSService\webroot\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe";
-        public static string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
-        public static string WorkloadDefinitionHash = "c2f309922ef4fc1f1a418ae31ebf85763f8a836e355062e6489ff12e3c438c0d";
-        public static string ScaleUnitEnvironmentId = "a4557a4e-6980-4e1b-b7c7-661793b4a098";
+        public const string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
+        public const string WorkloadDefinitionHash = "c2f309922ef4fc1f1a418ae31ebf85763f8a836e355062e6489ff12e3c438c0d";
+        public const string ScaleUnitEnvironmentId = "a4557a4e-6980-4e1b-b7c7-661793b4a098";
         public static string DynamicsBatchExePath = $@"{ServiceVolume()}\AOSService\webroot\bin\Batch.exe";
+        public const string StorageEmulatorConnectionString = "UseDevelopmentStorage=true";
 
         // Hub Configs
         public static string HubSiteRoot = $@"{ServiceVolume()}\AOSService\webroot";
@@ -26,6 +27,7 @@ namespace ScaleUnitManagement.Utilities
         public static string ScaleUnitWifServicesConfigPath = $@"{ScaleUnitSiteRoot}\wif.services.config";
         public static string ScaleUnitBatchName = "DynamicsAXScaleUnitBatch";
         public static string ScaleUnitAppPoolName = "AOSServiceScaleUnit";
+        public const string AxScaleUnitDbName = "AxDbEmpty";
 
         private static CloudAndEdgeConfiguration UserConfig { get; set; }
 
@@ -55,7 +57,6 @@ namespace ScaleUnitManagement.Utilities
         }
 
         public static string AxDbName() { return UserConfiguration().AxDbName; }
-        public static string AxScaleUnitDbName() { return UserConfiguration().AxScaleUnitDbName; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
@@ -204,7 +205,6 @@ namespace ScaleUnitManagement.Utilities
     public class CloudAndEdgeConfiguration
     {
         public string AxDbName { get; set; }
-        public string AxScaleUnitDbName { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
         public ScaleUnitConfiguration ScaleUnitConfiguration { get; set; }
         public LogicalEnvIdAndHash LogicalEnvIdAndHash { get; set; }

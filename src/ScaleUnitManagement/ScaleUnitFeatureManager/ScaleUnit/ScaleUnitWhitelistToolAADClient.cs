@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public void Run()
         {
-            this.AddToolClientToSysAADClientTable.Run(Config.AxScaleUnitDbName());
+            this.AddToolClientToSysAADClientTable.Run(Config.AxScaleUnitDbName);
         }
     }
 }

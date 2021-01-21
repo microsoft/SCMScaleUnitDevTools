@@ -5,7 +5,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
     public class ScaleUnitDBSync : IScaleUnitStep
     {
-        RunDBSync dbSync;
+        readonly RunDBSync dbSync;
 
         public ScaleUnitDBSync()
         {
@@ -24,7 +24,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public void Run()
         {
-            dbSync.Run(Config.ScaleUnitId(), Config.AxScaleUnitDbName());
+            dbSync.Run(Config.ScaleUnitId(), Config.AxScaleUnitDbName);
         }
     }
 }
