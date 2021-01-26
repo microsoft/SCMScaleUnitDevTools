@@ -20,7 +20,7 @@ namespace CLI
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ConfigureScaleUnit });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Type of environment to configure:\n", "\nWould you like to configure the environment as the hub or a scale unit?: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Available deployments:\n", "\nWhich deployment would you like to configure?: ");
             await CLIMenu.ShowScreen(screen);
         }
 

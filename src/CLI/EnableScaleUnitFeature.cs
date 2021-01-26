@@ -24,7 +24,7 @@ namespace CLI
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = PrintAvailableStepsForScaleUnit });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Scale unit to enable:\n", "\nSelect scale unit to enable: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
