@@ -36,7 +36,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             Console.WriteLine("Done.");
         }
 
-        public async Task InstallationStatus(int input, string selectionHistory)
+        public async Task InstallationStatus()
         {
             await EnsureClientInitialized();
 
