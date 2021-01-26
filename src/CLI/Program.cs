@@ -8,9 +8,9 @@ namespace CLI
     {
         public static async Task Main(string[] args)
         {
-            CLIOption enableScaleUnitFeatureOption = new CLIOption() { Name = "Enable the environment as the hub or a scale unit", Command = EnableScaleUnitFeature.SelectScaleUnit };
-            CLIOption configureEnvironmentOption = new CLIOption() { Name = "Configure the environment", Command = ConfigureEnvironment.Show };
-            CLIOption installWorkloadsOption = new CLIOption() { Name = "Install workloads on environment", Command = InstallWorkloads.Show };
+            CLIOption enableScaleUnitFeatureOption = new CLIOption() { Name = "Configure the environment", Command = EnableScaleUnitFeature.SelectScaleUnit };
+            CLIOption configureEnvironmentOption = new CLIOption() { Name = "Configure AX", Command = ConfigureEnvironment.Show };
+            CLIOption installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
             CLIOption workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
 
             var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installWorkloadsOption, workloadsInstallationStatusOption };
