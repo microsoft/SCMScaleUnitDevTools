@@ -38,7 +38,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             }
         }
 
-        public async Task Configure(int input, string selectionHistory)
+        public async Task Configure()
         {
             await ConfigureScaleUnit();
             await WaitForScaleUnitReadiness();

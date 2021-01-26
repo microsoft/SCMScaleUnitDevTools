@@ -21,7 +21,7 @@ namespace CLI
 
             foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
             {
-                options.Add(new CLIOption() { Name = scaleUnit.ScaleUnitId, Command = PrintAvailableStepsForScaleUnit });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = PrintAvailableStepsForScaleUnit });
             }
 
             CLIScreen screen = new CLIScreen(options, selectionHistory, "Scale unit to enable:\n", "\nSelect scale unit to enable: ");
@@ -60,7 +60,8 @@ namespace CLI
                 options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Tasks to run for scale unit {ScaleUnitContext.GetScaleUnitId()} :\n", "\nSelect task to start from: ");
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Tasks to run for scale unit {scaleUnit.PrintableName()} :\n", "\nSelect task to start from: ");
             await CLIMenu.ShowScreen(screen);
         }
 

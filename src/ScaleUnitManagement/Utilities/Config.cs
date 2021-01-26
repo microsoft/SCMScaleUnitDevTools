@@ -238,6 +238,8 @@ namespace ScaleUnitManagement.Utilities
 
             return this.ScaleUnitId.CompareTo(other.ScaleUnitId);
         }
+
+        public string PrintableName() { return $"{ScaleUnitName} ({ScaleUnitId})"; }
     }
 
     public class ConfiguredWorkload
