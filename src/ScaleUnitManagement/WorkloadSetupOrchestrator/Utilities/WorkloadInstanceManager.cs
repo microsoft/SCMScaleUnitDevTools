@@ -56,6 +56,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             throw new Exception("Expected domainNames of dynamic constraints for " + workload.Name + " don't match with what is in UserConfig file.");
                         }
 
+                        ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
+
                         WorkloadInstance workloadInstance = new WorkloadInstance()
                         {
                             Id = configuredworkload.WorkloadInstanceId,
@@ -68,8 +70,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                                     Environment = new PhysicalEnvironmentReference()
                                     {
                                         Id = Config.ScaleUnitEnvironmentId,
-                                        Name = Config.ScaleUnitName(),
-                                        ScaleUnitId = Config.ScaleUnitId(),
+                                        Name = scaleUnit.ScaleUnitName,
+                                        ScaleUnitId = scaleUnit.ScaleUnitId,
                                     },
                                 },
                             },
@@ -250,8 +252,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             Environment = new PhysicalEnvironmentReference()
                             {
                                 Id = Config.ScaleUnitEnvironmentId,
-                                Name = Config.ScaleUnitName(),
-                                ScaleUnitId = Config.ScaleUnitId(),
+                                Name = Config.NonHubScaleUnit().ScaleUnitName,
+                                ScaleUnitId = Config.NonHubScaleUnit().ScaleUnitId
                             },
                         },
                     },

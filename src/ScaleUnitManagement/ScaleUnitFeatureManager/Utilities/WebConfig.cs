@@ -7,12 +7,18 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
     public class WebConfig : IDisposable
     {
-        private XDocument doc;
-        private XElement appSettingsElement;
+        private readonly XDocument doc;
+        private readonly XElement appSettingsElement;
+        private readonly string webConfigPath;
+        private readonly string configEncryptorExePath;
 
         public WebConfig()
         {
-            doc = XDocument.Load(Config.WebConfigPath);
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            webConfigPath = scaleUnit.WebConfigPath();
+            configEncryptorExePath = scaleUnit.ConfigEncryptorExePath();
+
+            doc = XDocument.Load(webConfigPath);
 
             appSettingsElement = doc.Descendants()
                     .Where(x => (string)x.Name.LocalName == "appSettings")
@@ -51,10 +57,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public void Dispose()
         {
-            doc.Save(Config.WebConfigPath);
+            doc.Save(webConfigPath);
 
             //Encrypt config file
-            string encryptConfigFileCommand = Config.ConfigEncryptorExePath + " -encrypt " + Config.WebConfigPath;
+            string encryptConfigFileCommand = configEncryptorExePath + " -encrypt " + webConfigPath;
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(encryptConfigFileCommand);

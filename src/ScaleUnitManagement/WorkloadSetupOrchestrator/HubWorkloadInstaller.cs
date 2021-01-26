@@ -13,12 +13,18 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     public class HubWorkloadInstaller
     {
         private AOSClient hubAosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public HubWorkloadInstaller()
+        {
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (hubAosClient is null)
             {
-                hubAosClient = await AOSClient.Construct(Config.HubAosResourceId(), Config.HubAosEndpoint());
+                hubAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 

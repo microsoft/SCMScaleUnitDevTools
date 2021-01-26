@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
@@ -12,12 +11,18 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     public class ScaleUnitWorkloadInstaller
     {
         private AOSClient scaleUnitAosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public ScaleUnitWorkloadInstaller()
+        {
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(Config.ScaleUnitAosResourceId(), Config.ScaleUnitAosEndpoint());
+                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 
@@ -84,7 +89,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                AOSClient hubAosClient = await AOSClient.Construct(Config.HubAosResourceId(), Config.HubAosEndpoint());
+                AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit().ResourceId(), Config.HubScaleUnit().Endpoint());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
 

@@ -19,41 +19,43 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public override void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
             using (var webConfig = new WebConfig())
             {
-                if (Config.EnvironmentType() == EnvironmentType.VHD)
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
                 {
                     if (!String.IsNullOrEmpty(Config.AADTenantId()))
                     {
                         webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
                     }
 
-                    if (!String.IsNullOrEmpty(Config.AzureStorageConnectionString()))
-                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", Config.AzureStorageConnectionString());
+                    if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
+                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
 
-                    webConfig.UpdateXElement("Infrastructure.FullyQualifiedDomainName", Config.ScaleUnitDomain());
-                    webConfig.UpdateXElement("Infrastructure.HostName", Config.ScaleUnitDomain());
-                    webConfig.UpdateXElement("Infrastructure.HostedServiceName", Config.ScaleUnitUrlName());
+                    webConfig.UpdateXElement("Infrastructure.FullyQualifiedDomainName", scaleUnit.DomainSafe());
+                    webConfig.UpdateXElement("Infrastructure.HostName", scaleUnit.DomainSafe());
+                    webConfig.UpdateXElement("Infrastructure.HostedServiceName", scaleUnit.ScaleUnitUrlName());
 
-                    string scaleUnitUrl = Config.ScaleUnitAosEndpoint() + "/";
+                    string scaleUnitUrl = scaleUnit.Endpoint() + "/";
                     webConfig.UpdateXElement("Infrastructure.HostUrl", scaleUnitUrl);
                     webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
                 }
 
-                webConfig.AddKey("ScaleUnit.InstanceID", Config.ScaleUnitId());
+                webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
             }
 
             WifServiceConfig.Update();
 
-            if (Config.EnvironmentType() == EnvironmentType.VHD)
+            if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
             {
                 // Update hosts file
                 using (var hosts = new Hosts())
                 {
-                    hosts.AddMapping("127.0.0.1", Config.ScaleUnitDomain());
-                    hosts.AddMapping(Config.HubIp(), Config.HubDomain());
+                    hosts.AddMapping("127.0.0.1", scaleUnit.DomainSafe());
+                    hosts.AddMapping(Config.HubScaleUnit().IpAddress, Config.HubScaleUnit().DomainSafe());
                 }
 
                 // Configure IIS binding
@@ -61,7 +63,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 {
                     Site site = manager.Sites["AOSService"];
                     site.Bindings.Clear();
-                    site.Bindings.Add("*:443:" + Config.ScaleUnitDomain(), "https");
+                    site.Bindings.Add("*:443:" + scaleUnit.DomainSafe(), "https");
 
                     manager.CommitChanges();
                 }

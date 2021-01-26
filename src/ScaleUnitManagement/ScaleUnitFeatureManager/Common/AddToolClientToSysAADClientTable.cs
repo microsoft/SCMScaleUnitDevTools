@@ -17,8 +17,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         public override void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             string sqlQuery = $@"
-USE {Config.AxDbName()};
+USE {scaleUnit.AxDbName};
 
 IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{Config.AppId()}')
     INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{Config.AppId()}', 'Admin', 'Scale Unit Management Tool');

@@ -19,20 +19,22 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
         public override void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
             using (var webConfig = new WebConfig())
             {
-                if (Config.EnvironmentType() == EnvironmentType.VHD)
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
                 {
                     if (!String.IsNullOrEmpty(Config.AADTenantId()))
                         webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
 
-                    if (!String.IsNullOrEmpty(Config.AzureStorageConnectionString()))
-                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", Config.AzureStorageConnectionString());
+                    if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
+                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
 
                     webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
                 }
 
-                webConfig.AddKey("ScaleUnit.InstanceID", "@@");
+                webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
             }

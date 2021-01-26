@@ -5,7 +5,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
     public class HubDBSync : HubStep
     {
-        RunDBSync dbSync;
+        private readonly RunDBSync dbSync;
 
         public HubDBSync()
         {
@@ -24,7 +24,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
         public override void Run()
         {
-            dbSync.Run("@@");
+            dbSync.Run();
         }
     }
 }

@@ -17,7 +17,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public override void Run()
         {
-            string sqlQuery = $"USE master; IF NOT EXISTS (SELECT * FROM sys.change_tracking_databases WHERE database_id=DB_ID('{Config.AxDbName()}')) ALTER DATABASE {Config.AxDbName()} SET CHANGE_TRACKING = ON(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON)";
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
+            string sqlQuery = $"USE master; IF NOT EXISTS (SELECT * FROM sys.change_tracking_databases WHERE database_id=DB_ID('{scaleUnit.AxDbName}')) ALTER DATABASE {scaleUnit.AxDbName} SET CHANGE_TRACKING = ON(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON)";
             string cmd = "Invoke-Sqlcmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
 
             CommandExecutor ce = new CommandExecutor();

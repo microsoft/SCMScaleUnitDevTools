@@ -17,8 +17,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public override void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
             string sqlQuery = $@"
-USE {Config.AxDbName()};
+USE {scaleUnit.AxDbName};
 EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
 DELETE FROM SysFeatureStateV0;

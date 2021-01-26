@@ -5,7 +5,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
     public class ScaleUnitDBSync : ScaleUnitStep
     {
-        RunDBSync dbSync;
+        private readonly RunDBSync dbSync;
 
         public ScaleUnitDBSync()
         {
@@ -24,7 +24,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public override void Run()
         {
-            dbSync.Run(Config.ScaleUnitId());
+            dbSync.Run();
         }
     }
 }
