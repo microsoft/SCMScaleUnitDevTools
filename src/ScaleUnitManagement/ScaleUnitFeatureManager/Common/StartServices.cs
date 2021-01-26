@@ -1,28 +1,35 @@
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
+using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class StartServices : CommonStep
+    public class StartServices : ICommonStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Start Services";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 4F;
         }
 
-        public override void Run()
+        public void Run()
         {
             if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {
                 throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
             }
 
-            string cmd = "Start-Service -Name DynamicsAxBatch; iisreset /start";
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
+            string cmd = $@"
+                 Start-Service -Name {scaleUnit.BatchServiceName()};
+                 .$env:systemroot\System32\inetsrv\appcmd.exe start apppool /apppool.name:{scaleUnit.AppPoolName()};
+                 .$env:systemroot\System32\inetsrv\appcmd.exe start site /site.name:{scaleUnit.SiteName()}; 
+            ";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);

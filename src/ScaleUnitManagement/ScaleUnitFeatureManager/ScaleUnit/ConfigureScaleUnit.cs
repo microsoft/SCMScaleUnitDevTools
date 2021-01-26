@@ -1,29 +1,45 @@
 using System;
-using Microsoft.Web.Administration;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ConfigureScaleUnit : ScaleUnitStep
+    public class ConfigureScaleUnit : IScaleUnitStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Configure Scale unit";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 2F;
         }
 
-        public override void Run()
+        public void Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
+            if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
+            {
+                // Update hosts file
+                using (var hosts = new Hosts())
+                {
+                    hosts.AddMapping(scaleUnit.IpAddress, scaleUnit.DomainSafe());
+                    hosts.AddMapping(Config.HubScaleUnit().IpAddress, Config.HubScaleUnit().DomainSafe());
+                }
+
+                IISAdministrationHelper.CreateSite(
+                    siteName: scaleUnit.SiteName(),
+                    siteRoot: scaleUnit.SiteRoot(),
+                    bindingInformation: scaleUnit.IpAddress + ":443:" + scaleUnit.DomainSafe(),
+                    certSubject: scaleUnit.DomainSafe(),
+                    appPoolName: scaleUnit.AppPoolName());
+            }
+
             using (var webConfig = new WebConfig())
             {
-                if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleEnvironment())
                 {
                     if (!String.IsNullOrEmpty(Config.AADTenantId()))
                     {
@@ -49,25 +65,28 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             WifServiceConfig.Update();
 
-            if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
+            if (Config.UseSingleEnvironment())
             {
-                // Update hosts file
-                using (var hosts = new Hosts())
-                {
-                    hosts.AddMapping("127.0.0.1", scaleUnit.DomainSafe());
-                    hosts.AddMapping(Config.HubScaleUnit().IpAddress, Config.HubScaleUnit().DomainSafe());
-                }
-
-                // Configure IIS binding
-                using (ServerManager manager = new ServerManager())
-                {
-                    Site site = manager.Sites["AOSService"];
-                    site.Bindings.Clear();
-                    site.Bindings.Add("*:443:" + scaleUnit.DomainSafe(), "https");
-
-                    manager.CommitChanges();
-                }
+                CreateScaleUnitBatchService(scaleUnit);
             }
+        }
+
+        private void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
+        {
+            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
+            {
+                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
+            }
+
+            string cmd = $@"
+                .$env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()}; 
+                $secpasswd = (new-object System.Security.SecureString);
+                $creds = New-Object System.Management.Automation.PSCredential ('NT AUTHORITY\NETWORK SERVICE', $secpasswd);
+                New-Service -Name '{scaleUnit.BatchServiceName()}' -BinaryPathName '{scaleUnit.DynamicsBatchExePath()} -service {scaleUnit.WebConfigPath()}' -credential $creds -startupType Manual;
+            ";
+
+            CommandExecutor ce = new CommandExecutor();
+            ce.RunCommand(cmd);
         }
     }
 }

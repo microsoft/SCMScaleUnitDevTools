@@ -3,7 +3,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ScaleUnitDBSync : ScaleUnitStep
+    public class ScaleUnitDBSync : IScaleUnitStep
     {
         private readonly RunDBSync dbSync;
 
@@ -12,17 +12,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             dbSync = new RunDBSync();
         }
 
-        public override string Label()
+        public string Label()
         {
             return dbSync.Label();
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return dbSync.Priority();
         }
 
-        public override void Run()
+        public void Run()
         {
             dbSync.Run();
         }

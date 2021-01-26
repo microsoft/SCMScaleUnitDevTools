@@ -2,7 +2,7 @@ using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class CommonStep : Step
+    public interface ICommonStep : IStep
     {
     }
 }

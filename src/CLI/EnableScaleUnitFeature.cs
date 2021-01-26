@@ -10,7 +10,7 @@ namespace CLI
 {
     class EnableScaleUnitFeature
     {
-        protected List<Step> AvailableSteps;
+        protected List<IStep> AvailableSteps;
 
         public static async Task SelectScaleUnit(int input, string selectionHistory)
         {
@@ -42,10 +42,10 @@ namespace CLI
             }
         }
 
-        protected virtual List<Step> GetAvailableSteps()
+        protected virtual List<IStep> GetAvailableSteps()
         {
             StepFactory sf = new StepFactory();
-            List<Step> steps = sf.GetStepsOfType<CommonStep>();
+            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
             return steps;
         }
 
@@ -55,7 +55,7 @@ namespace CLI
             AvailableSteps = GetAvailableSteps();
             AvailableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (Step s in AvailableSteps)
+            foreach (IStep s in AvailableSteps)
             {
                 options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
             }

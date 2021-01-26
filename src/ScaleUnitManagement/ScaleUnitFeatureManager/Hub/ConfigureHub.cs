@@ -4,20 +4,20 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
-    public class ConfigureHub : HubStep
+    public class ConfigureHub : IHubStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Configure Hub";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 2F;
         }
 
 
-        public override void Run()
+        public void Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -37,6 +37,23 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
                 webConfig.AddKey("ScaleUnit.Enabled", "true");
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
+            }
+
+            if (Config.UseSingleEnvironment())
+            {
+                // Update hosts file
+                using (var hosts = new Hosts())
+                {
+                    hosts.AddMapping(scaleUnit.IpAddress, scaleUnit.DomainSafe());
+                }
+
+                // Update IIS binding
+                IISAdministrationHelper.CreateSite(
+                    siteName: scaleUnit.SiteName(),
+                    siteRoot: scaleUnit.SiteRoot(),
+                    bindingInformation: scaleUnit.IpAddress + ":443:" + scaleUnit.DomainSafe(),
+                    certSubject: scaleUnit.DomainSafe(),
+                    appPoolName: scaleUnit.AppPoolName());
             }
         }
     }

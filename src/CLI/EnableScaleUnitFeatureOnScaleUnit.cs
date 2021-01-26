@@ -6,12 +6,12 @@ namespace CLI
 {
     class EnableScaleUnitFeatureOnScaleUnit : EnableScaleUnitFeature
     {
-        protected override List<Step> GetAvailableSteps()
+        protected override List<IStep> GetAvailableSteps()
         {
-            List<Step> steps = base.GetAvailableSteps();
+            List<IStep> steps = base.GetAvailableSteps();
 
             StepFactory sf = new StepFactory();
-            steps.AddRange(sf.GetStepsOfType<ScaleUnitStep>());
+            steps.AddRange(sf.GetStepsOfType<IScaleUnitStep>());
 
             return steps;
         }

@@ -3,19 +3,19 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class EnableDbChangeTracking : ScaleUnitStep
+    public class EnableDbChangeTracking : IScaleUnitStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Enable DB change tracking";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 3.5F;
         }
 
-        public override void Run()
+        public void Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 

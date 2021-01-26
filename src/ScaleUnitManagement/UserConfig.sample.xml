@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CloudAndEdgeConfiguration>
+  <UseSingleEnvironment>false</UseSingleEnvironment>
+  
   <AADConfiguration>
     <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
     <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
@@ -42,8 +44,7 @@
         C:
       </ServiceVolume>
     </ScaleUnitInstance>
-  
-</ScaleUnitConfiguration>
+  </ScaleUnitConfiguration>
 
   <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
   You can also add the same workload with different dynamic constraints if you want to deploy multiple warehouses/sites, etc.-->

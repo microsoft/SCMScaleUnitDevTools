@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Web.Administration;
 
 namespace ScaleUnitManagement.Utilities
 {
@@ -27,6 +27,7 @@ namespace ScaleUnitManagement.Utilities
             return UserConfig;
         }
 
+        public static bool UseSingleEnvironment() { return UserConfiguration().UseSingleEnvironment; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
@@ -181,6 +182,7 @@ namespace ScaleUnitManagement.Utilities
 
     public class CloudAndEdgeConfiguration
     {
+        public bool UseSingleEnvironment { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
         public List<ScaleUnitInstance> ScaleUnitConfiguration { get; set; }
         public List<ConfiguredWorkload> Workloads { get; set; }
@@ -225,18 +227,44 @@ namespace ScaleUnitManagement.Utilities
         public string Endpoint() { return "https://" + DomainSafe(); }
         public string ScaleUnitUrlName() { return DomainSafe().Split('.')[0]; }
 
-        public string ConfigEncryptorExePath() { return $@"{ServiceVolume}\AOSService\webroot\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe"; }
-        public string WebConfigPath() { return $@"{ServiceVolume}\AOSService\webroot\web.config"; }
-        public string WifServicesConfigPath() { return $@"{ServiceVolume}\AOSService\webroot\wif.services.config"; }
+        public string BatchServiceName()
+        {
+            if (!Config.UseSingleEnvironment() || this.IsHub())
+                return "DynamicsAxBatch";
+
+            return $"DynamicsAx{PrintableName()}Batch";
+        }
+
+        public string AppPoolName()
+        {
+            if (!Config.UseSingleEnvironment() || this.IsHub())
+                return "AOSService";
+
+            return $"AOSService{PrintableName()}";
+        }
+
+        public string SiteName() { return AppPoolName(); }
+
+        public string SiteRoot() { return $@"{ServiceVolume}\{AppPoolName()}\webroot"; }
+
+        public string ConfigEncryptorExePath() { return $@"{SiteRoot()}\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe"; }
+        public string WebConfigPath() { return $@"{SiteRoot()}\web.config"; }
+        public string WifServicesConfigPath() { return $@"{SiteRoot()}\wif.services.config"; }
+        public string DynamicsBatchExePath() { return $@"{SiteRoot()}\bin\Batch.exe"; }
 
         public int CompareTo(ScaleUnitInstance other)
         {
-            if (this.ScaleUnitId == "@@")
+            if (this.IsHub())
                 return -1;
-            if (other.ScaleUnitId == "@@")
+            if (other.IsHub())
                 return 1;
 
             return this.ScaleUnitId.CompareTo(other.ScaleUnitId);
+        }
+
+        public bool IsHub()
+        {
+            return ScaleUnitId == "@@";
         }
 
         public string PrintableName() { return $"{ScaleUnitName} ({ScaleUnitId})"; }

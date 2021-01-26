@@ -3,19 +3,19 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public sealed class AddToolClientToSysAADClientTable : CommonStep
+    public sealed class AddToolClientToSysAADClientTable : ICommonStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Add CLI tool App to SysAADClientTable";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 6F;
         }
 
-        public override void Run()
+        public void Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             string sqlQuery = $@"
