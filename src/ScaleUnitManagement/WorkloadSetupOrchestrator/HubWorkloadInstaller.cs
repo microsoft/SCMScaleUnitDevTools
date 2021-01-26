@@ -28,7 +28,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             }
         }
 
-        public async Task Install(int input, string selectionHistory)
+        public async Task Install()
         {
             await InstallWorkloadsOnHub();
             await WaitForWorkloadInstanceReadinessOnHub();
