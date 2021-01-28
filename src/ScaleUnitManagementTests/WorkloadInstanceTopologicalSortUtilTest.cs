@@ -139,7 +139,7 @@ namespace ScaleUnitManagementTests
 
             // Assert
             List<WorkloadInstance> expectedSortedList = new List<WorkloadInstance> { w4, w2, w1, w3 };
-            
+
             for (int i = 0; i < sortedWorkloadInstances.Count; i++)
             {
                 sortedWorkloadInstances[i].Should().Be(expectedSortedList[i]);

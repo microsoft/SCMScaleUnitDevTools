@@ -19,7 +19,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             Requires.NotNull(appPoolName, nameof(appPoolName));
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            
+
             if (!scaleUnit.IsHub() && Config.UseSingleEnvironment())
                 CreateAppPoolForScaleUnit(scaleUnit, appPoolName);
 
