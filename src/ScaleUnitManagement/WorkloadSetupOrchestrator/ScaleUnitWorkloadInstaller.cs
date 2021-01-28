@@ -105,7 +105,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                         await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                     }
 
-                    await WaitForWorkloadInstallation(workloadInstance);
+                    //await WaitForWorkloadInstallation(workloadInstance);
                 }
             }, "Install workload on scale unit");
         }
