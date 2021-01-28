@@ -105,7 +105,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                         await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                     }
 
-                    if (AxDeployment.IsApplicationVersionLaterThan("10.8.581.0"))
+                    if (AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
                         await WaitForWorkloadInstallation(workloadInstance);
                 }
             }, "Install workload on scale unit");

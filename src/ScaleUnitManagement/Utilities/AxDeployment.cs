@@ -34,7 +34,7 @@ namespace ScaleUnitManagement.Utilities
             return Instance().ApplicationVersion;
         }
 
-        public static bool IsApplicationVersionLaterThan(string version)
+        public static bool IsApplicationVersionMoreRecentThan(string version)
         {
             string[] deployedApplicationVersion = GetApplicationVersion().Split('.');
             string[] compareToVersion = version.Split('.');
@@ -42,9 +42,9 @@ namespace ScaleUnitManagement.Utilities
             for (int i = 0; i < deployedApplicationVersion.Length && i < compareToVersion.Length; i++)
             {
                 if (Int32.Parse(deployedApplicationVersion[i]) < Int32.Parse(compareToVersion[i]))
-                    return true;
-                else if (Int32.Parse(deployedApplicationVersion[i]) > Int32.Parse(compareToVersion[i]))
                     return false;
+                else if (Int32.Parse(deployedApplicationVersion[i]) > Int32.Parse(compareToVersion[i]))
+                    return true;
             }
 
             return false;

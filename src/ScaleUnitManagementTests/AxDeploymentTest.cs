@@ -17,39 +17,39 @@ namespace ScaleUnitManagementTests
         }
 
         [TestMethod]
-        public void IsApplicationVersionLaterThan_WithLaterVersion_ReturnsTrue()
+        public void IsApplicationVersionMoreRecentThan_WithLaterVersion_ReturnsFalse()
         {
             // Arrange
             AxDeploymentTestable.SetApplicationVersion("10.8.107.1233");
 
             // Act + Assert
-            AxDeployment.IsApplicationVersionLaterThan("10.8.107.1234").Should().BeTrue();
-            AxDeployment.IsApplicationVersionLaterThan("10.8.108.0").Should().BeTrue();
-            AxDeployment.IsApplicationVersionLaterThan("10.9.10.0").Should().BeTrue();
-            AxDeployment.IsApplicationVersionLaterThan("11.0.107.1234").Should().BeTrue();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.8.107.1234").Should().BeFalse();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.8.108.0").Should().BeFalse();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.9.10.0").Should().BeFalse();
+            AxDeployment.IsApplicationVersionMoreRecentThan("11.0.107.1234").Should().BeFalse();
         }
 
         [TestMethod]
-        public void IsApplicationVersionLaterThan_WithPreviousVersion_ReturnsFalse()
+        public void IsApplicationVersionMoreRecentThan_WithPreviousVersion_ReturnsTrue()
         {
             // Arrange
             AxDeploymentTestable.SetApplicationVersion("10.8.107.1233");
 
             // Act + Assert
-            AxDeployment.IsApplicationVersionLaterThan("10.8.107.1232").Should().BeFalse();
-            AxDeployment.IsApplicationVersionLaterThan("10.8.106.1333").Should().BeFalse();
-            AxDeployment.IsApplicationVersionLaterThan("10.7.120.1230").Should().BeFalse();
-            AxDeployment.IsApplicationVersionLaterThan("9.1000.1.1234").Should().BeFalse();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.8.107.1232").Should().BeTrue();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.8.106.1333").Should().BeTrue();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.7.120.1230").Should().BeTrue();
+            AxDeployment.IsApplicationVersionMoreRecentThan("9.1000.1.1234").Should().BeTrue();
         }
 
         [TestMethod]
-        public void IsApplicationVersionLaterThan_WithEqualVersion_ReturnsFalse()
+        public void IsApplicationVersionMoreRecentThan_WithEqualVersion_ReturnsFalse()
         {
             // Arrange
             AxDeploymentTestable.SetApplicationVersion("10.8.107.1233");
 
             // Act + Assert
-            AxDeployment.IsApplicationVersionLaterThan("10.8.107.1233").Should().BeFalse();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.8.107.1233").Should().BeFalse();
         }
     }
 }
