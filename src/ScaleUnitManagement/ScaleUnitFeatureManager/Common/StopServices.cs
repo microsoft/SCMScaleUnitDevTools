@@ -32,7 +32,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             ";
 
             CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+
+            try
+            {
+                ce.RunCommand(cmd);
+            }
+            catch (Exception e)
+            {
+                if (!Config.UseSingleEnvironment())
+                    throw e;
+            }
         }
     }
 }

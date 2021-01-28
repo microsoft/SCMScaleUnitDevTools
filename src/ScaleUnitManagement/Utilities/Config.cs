@@ -232,7 +232,7 @@ namespace ScaleUnitManagement.Utilities
             if (!Config.UseSingleEnvironment() || this.IsHub())
                 return "DynamicsAxBatch";
 
-            return $"DynamicsAx{PrintableName()}Batch";
+            return $"DynamicsAx{ScaleUnitUrlName()}Batch";
         }
 
         public string AppPoolName()
@@ -240,12 +240,18 @@ namespace ScaleUnitManagement.Utilities
             if (!Config.UseSingleEnvironment() || this.IsHub())
                 return "AOSService";
 
-            return $"AOSService{PrintableName()}";
+            return $"AOSService{ScaleUnitUrlName()}";
         }
 
         public string SiteName() { return AppPoolName(); }
 
-        public string SiteRoot() { return $@"{ServiceVolume}\{AppPoolName()}\webroot"; }
+        public string SiteRoot()
+        {
+            if (!Config.UseSingleEnvironment() || this.IsHub())
+                return $@"{ServiceVolume}\AOSService\webroot";
+
+            return $@"{ServiceVolume}\AOSService\webroot{ScaleUnitUrlName()}";
+        }
 
         public string ConfigEncryptorExePath() { return $@"{SiteRoot()}\bin\Microsoft.Dynamics.AX.Framework.ConfigEncryptor.exe"; }
         public string WebConfigPath() { return $@"{SiteRoot()}\web.config"; }

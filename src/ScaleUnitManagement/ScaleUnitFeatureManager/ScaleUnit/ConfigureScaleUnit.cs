@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
+            if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleEnvironment())
             {
                 // Update hosts file
                 using (var hosts = new Hosts())
@@ -56,6 +56,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                     string scaleUnitUrl = scaleUnit.Endpoint() + "/";
                     webConfig.UpdateXElement("Infrastructure.HostUrl", scaleUnitUrl);
                     webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
+
+                    webConfig.UpdateXElement("DataAccess.Database", scaleUnit.AxDbName);
                 }
 
                 webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
