@@ -140,7 +140,6 @@ namespace ScaleUnitManagement.Utilities
                 Console.WriteLine($"Validating ScaleUnitInstance {scaleUnit.ScaleUnitId}");
                 ValidateValue("ScaleUnitId", scaleUnit.ScaleUnitId);
                 ValidateValue("Domain", scaleUnit.Domain);
-                ValidateValue("IpAddress", scaleUnit.IpAddress);
                 ValidateValue("AxDbName", scaleUnit.AxDbName);
                 ValidateValue("ScaleUnitName", scaleUnit.ScaleUnitName);
                 ValidateValue("ServiceVolume", scaleUnit.ServiceVolume);
@@ -157,10 +156,17 @@ namespace ScaleUnitManagement.Utilities
                     }
                 }
 
-
                 if (scaleUnit.EnvironmentType == ScaleUnitManagement.Utilities.EnvironmentType.VHD)
                 {
+                    if (scaleUnit.IsHub())
+                        ValidateValue("IpAddress", scaleUnit.IpAddress);
+
                     ValidateValue("AzureStorageConnectionString", scaleUnit.AzureStorageConnectionString);
+                }
+
+                if (Config.UseSingleEnvironment())
+                {
+                    ValidateValue("IpAddress", scaleUnit.IpAddress);
                 }
             }
 
