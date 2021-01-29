@@ -167,6 +167,9 @@ namespace ScaleUnitManagement.Utilities
                 if (Config.UseSingleEnvironment())
                 {
                     ValidateValue("IpAddress", scaleUnit.IpAddress);
+
+                    if (!scaleUnit.IsHub())
+                        ValidateValue("AzureStorageConnectionString", scaleUnit.AzureStorageConnectionString);
                 }
             }
 
