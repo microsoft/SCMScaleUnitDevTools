@@ -37,10 +37,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             {
                 ce.RunCommand(cmd);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!Config.UseSingleOneBox())
-                    throw e;
+                    throw;
             }
         }
     }

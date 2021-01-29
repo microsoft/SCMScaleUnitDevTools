@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CloudAndEdgeConfiguration>
   
-  <!-- Use this flag to indicate whether you want to use on single on-box to host both teh hub and the scale unit -->
+  <!-- Use this flag to indicate whether you want to use one single one-box to host both the hub and the scale unit -->
   <UseSingleOneBox>false</UseSingleOneBox>
   
   <!-- The AAD configuration contains the information that is needed to authorize the connection 
@@ -24,7 +24,7 @@
     <AADTenantId></AADTenantId>
   </AADConfiguration>
   
-  <!-- This sections lists your environment, beeing the hub and your scale unit.-->
+  <!-- This section lists your environments, one being the hub and any other being scale units.-->
   <ScaleUnitConfiguration>
     <!-- Specify first your hub environment. The always has the ScaleUnitId '@@' -->
     <ScaleUnitInstance>
