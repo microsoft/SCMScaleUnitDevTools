@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
@@ -12,23 +11,29 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     public class ScaleUnitWorkloadInstaller
     {
         private AOSClient scaleUnitAosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public ScaleUnitWorkloadInstaller()
+        {
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(Config.ScaleUnitAosResourceId(), Config.ScaleUnitAosEndpoint());
+                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 
-        public async Task Install(int input, string selectionHistory)
+        public async Task Install()
         {
             await InstallWorkloadsOnScaleUnit();
 
             Console.WriteLine("Done.");
         }
 
-        public async Task InstallationStatus(int input, string selectionHistory)
+        public async Task InstallationStatus()
         {
             await EnsureClientInitialized();
 
@@ -84,7 +89,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                AOSClient hubAosClient = await AOSClient.Construct(Config.HubAosResourceId(), Config.HubAosEndpoint());
+                AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit().ResourceId(), Config.HubScaleUnit().Endpoint());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
 
@@ -100,7 +105,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                         await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                     }
 
-                    await WaitForWorkloadInstallation(workloadInstance);
+                    if (AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
+                        await WaitForWorkloadInstallation(workloadInstance);
                 }
             }, "Install workload on scale unit");
         }

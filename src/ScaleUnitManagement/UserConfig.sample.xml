@@ -1,39 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CloudAndEdgeConfiguration>
-  <!--EnivronmentType represents the infrastructure you host on.
-      It should be VHD if you have OneBox or LCSVHD.
-      It should be LCSHosted if you have an LCS cloud-hosted devbox.-->
-  <EnvironmentType>LCSHosted</EnvironmentType>
-  <AxDbName>AxDB</AxDbName>
-
+  
+  <!-- Use this flag to indicate whether you want to use one single one-box to host both the hub and the scale unit -->
+  <UseSingleOneBox>false</UseSingleOneBox>
+  
+  <!-- The AAD configuration contains the information that is needed to authorize the connection 
+  of the configuration to the environments and between hub and scale units. -->
   <AADConfiguration>
+    <!-- This refers to the AAD application enabling communication of the communication tool to the environments-->
     <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
     <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
     <AppId></AppId>
     <AppSecret></AppSecret>
-    <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
-    <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
-    <AADTenantId></AADTenantId>
-    <AzureStorageConnectionString></AzureStorageConnectionString>
-  </AADConfiguration>
-
-  <ScaleUnitConfiguration>
-    <HubAosResourceId></HubAosResourceId>
-    <ScaleUnitAosResourceId></ScaleUnitAosResourceId>
-    <HubDomain>YOUR_HUB_ENVIRONMENT_URL</HubDomain>
-    <HubIpAddress>YOUR_HUB_ENVIRONMENT_IP</HubIpAddress>
-    <ScaleUnitDomain>YOUR_SCALEUNIT_ENVIRONMENT_URL</ScaleUnitDomain>
+    
+    <!-- This refers to the AAD application enabling communication between hub and scale unit-->
     <InterAOSAppId></InterAOSAppId>
     <InterAOSAppSecret></InterAOSAppSecret>
-    <ScaleUnitName>spoke</ScaleUnitName>
-    <!--Note: This should be always the scale unit id. Don't use @@ here as it's reserved for the hub.-->
-    <ScaleUnitId>@A</ScaleUnitId>
+    
+    <!-- Specify the URL of the authority endpoint of your tenant-->
+    <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
+    
+    <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
+    <AADTenantId></AADTenantId>
+  </AADConfiguration>
+  
+  <!-- This section lists your environments, one being the hub and any other being scale units.-->
+  <ScaleUnitConfiguration>
+    <!-- Specify first your hub environment. The always has the ScaleUnitId '@@' -->
+    <ScaleUnitInstance>
+      <Domain>YOUR_HUB_ENVIRONMENT_URL</Domain>
+      <IpAddress>YOUR_HUB_ENVIRONMENT_IP</IpAddress>
+      <AzureStorageConnectionString></AzureStorageConnectionString>
+      <AxDbName>AxDB</AxDbName>
+      <ScaleUnitName>hub</ScaleUnitName>
+      <ScaleUnitId>@@</ScaleUnitId>
+      <!--EnivronmentType represents the infrastructure you host on.
+      It should be VHD if you have OneBox or LCSVHD.
+      It should be LCSHosted if you have an LCS cloud-hosted devbox.-->
+      <EnvironmentType>LCSHosted</EnvironmentType>
+      <!--Drive which contains AOSService-->
+      <ServiceVolume>
+        C:
+      </ServiceVolume>
+    </ScaleUnitInstance>
+    
+    <!-- Specify here your scale unit environment. You can keep the ScaleUnitId '@A' 
+         (we are considering support for multiple scale units for the future) -->
+    <ScaleUnitInstance>
+      <Domain>YOUR_SCALEUNIT_ENVIRONMENT_URL</Domain>
+      <!--The ip address is only necessry for single VM deployment-->
+      <IpAddress></IpAddress>
+      <AzureStorageConnectionString></AzureStorageConnectionString>
+      <AxDbName>AxDB</AxDbName>
+      <ScaleUnitName>spoke1</ScaleUnitName>
+      <ScaleUnitId>@A</ScaleUnitId>
+      <EnvironmentType>LCSHosted</EnvironmentType>
+      <ServiceVolume>
+        C:
+      </ServiceVolume>
+    </ScaleUnitInstance>
   </ScaleUnitConfiguration>
-
-  <!--Drive which contains AOSService-->
-  <ServiceVolume>
-    C:
-  </ServiceVolume>
 
   <!--Fill in the dynamic constraints that will be used in the workload instances that you would like to install.
   You can also add the same workload with different dynamic constraints if you want to deploy multiple warehouses/sites, etc.-->
@@ -41,6 +67,7 @@
     <ConfiguredWorkload>
       <WorkloadInstanceId>ccbcebb2-5516-433e-8ca3-7b4d39b9dad1</WorkloadInstanceId>
       <Name>MES</Name>
+      <ScaleUnitId>@A</ScaleUnitId>
       <ConfiguredDynamicConstraintValues>
         <ConfiguredDynamicConstraintValue>
           <DomainName>LegalEntity</DomainName>
@@ -55,6 +82,7 @@
     <ConfiguredWorkload>
       <WorkloadInstanceId>918744a0-bddc-4827-ae89-683eaa9be1ac</WorkloadInstanceId>
       <Name>WES</Name>
+      <ScaleUnitId>@A</ScaleUnitId>
       <ConfiguredDynamicConstraintValues>
         <ConfiguredDynamicConstraintValue>
           <DomainName>LegalEntity</DomainName>

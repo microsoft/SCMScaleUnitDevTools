@@ -13,16 +13,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     public class HubWorkloadInstaller
     {
         private AOSClient hubAosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public HubWorkloadInstaller()
+        {
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (hubAosClient is null)
             {
-                hubAosClient = await AOSClient.Construct(Config.HubAosResourceId(), Config.HubAosEndpoint());
+                hubAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 
-        public async Task Install(int input, string selectionHistory)
+        public async Task Install()
         {
             await InstallWorkloadsOnHub();
             await WaitForWorkloadInstanceReadinessOnHub();
@@ -30,7 +36,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             Console.WriteLine("Done.");
         }
 
-        public async Task InstallationStatus(int input, string selectionHistory)
+        public async Task InstallationStatus()
         {
             await EnsureClientInitialized();
 

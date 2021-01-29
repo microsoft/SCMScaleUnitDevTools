@@ -6,12 +6,12 @@ namespace CLI
 {
     class EnableScaleUnitFeatureOnHub : EnableScaleUnitFeature
     {
-        protected override List<Step> GetAvailableSteps()
+        protected override List<IStep> GetAvailableSteps()
         {
-            List<Step> steps = base.GetAvailableSteps();
+            List<IStep> steps = base.GetAvailableSteps();
 
             StepFactory sf = new StepFactory();
-            steps.AddRange(sf.GetStepsOfType<HubStep>());
+            steps.AddRange(sf.GetStepsOfType<IHubStep>());
 
             return steps;
         }

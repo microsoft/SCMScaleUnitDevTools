@@ -3,28 +3,28 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
-    public class HubDBSync : HubStep
+    public class HubDBSync : IHubStep
     {
-        RunDBSync dbSync;
+        private readonly RunDBSync dbSync;
 
         public HubDBSync()
         {
             dbSync = new RunDBSync();
         }
 
-        public override string Label()
+        public string Label()
         {
             return dbSync.Label();
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return dbSync.Priority();
         }
 
-        public override void Run()
+        public void Run()
         {
-            dbSync.Run("@@");
+            dbSync.Run();
         }
     }
 }

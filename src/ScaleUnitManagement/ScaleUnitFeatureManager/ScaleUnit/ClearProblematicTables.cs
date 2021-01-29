@@ -3,22 +3,24 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class ClearProblematicTables : ScaleUnitStep
+    public class ClearProblematicTables : IScaleUnitStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Truncate potentially problematic tables";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 2.5F;
         }
 
-        public override void Run()
+        public void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
             string sqlQuery = $@"
-USE {Config.AxDbName()};
+USE {scaleUnit.AxDbName};
 EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
 DELETE FROM SysFeatureStateV0;

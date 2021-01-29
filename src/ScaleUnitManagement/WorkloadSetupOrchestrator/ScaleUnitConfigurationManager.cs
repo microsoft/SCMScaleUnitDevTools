@@ -12,26 +12,33 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     public class ScaleUnitConfigurationManager
     {
         private AOSClient scaleUnitAosClient = null;
+        private readonly ScaleUnitEnvironmentConfiguration scaleUnitConfig;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public ScaleUnitConfigurationManager()
+        {
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
+            scaleUnitConfig = new ScaleUnitEnvironmentConfiguration()
+            {
+                AppId = Config.InterAOSAppId(),
+                AppTenant = Config.Authority(),
+                HubResourceId = Config.HubScaleUnit().ResourceId(),
+                HubUrl = Config.HubScaleUnit().Endpoint(),
+                HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
+                ScaleUnitType = "1",
+            };
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(Config.ScaleUnitAosResourceId(), Config.ScaleUnitAosEndpoint());
+                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 
-        private static readonly ScaleUnitEnvironmentConfiguration ScaleUnitConfig = new ScaleUnitEnvironmentConfiguration()
-        {
-            AppId = Config.InterAOSAppId(),
-            AppTenant = Config.Authority(),
-            HubResourceId = Config.HubAosResourceId(),
-            HubUrl = Config.HubAosEndpoint(),
-            HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
-            ScaleUnitType = "1",
-        };
-
-        public async Task Configure(int input, string selectionHistory)
+        public async Task Configure()
         {
             await ConfigureScaleUnit();
             await WaitForScaleUnitReadiness();
@@ -45,11 +52,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                ScaleUnitEnvironmentConfiguration configuration = await scaleUnitAosClient.WriteScaleUnitConfiguration(ScaleUnitConfig);
+                ScaleUnitEnvironmentConfiguration configuration = await scaleUnitAosClient.WriteScaleUnitConfiguration(scaleUnitConfig);
 
                 configuration.Should().NotBeNull("The AOS should have returned the configuration");
-                configuration.WithDeepEqual(ScaleUnitConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
-                configuration.HubS2SEncryptedSecret.Should().NotBe(ScaleUnitConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
+                configuration.WithDeepEqual(scaleUnitConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
+                configuration.HubS2SEncryptedSecret.Should().NotBe(scaleUnitConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
             }, "Scale unit configuration");
         }
 

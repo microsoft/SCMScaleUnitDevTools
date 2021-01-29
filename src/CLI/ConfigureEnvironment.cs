@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
+using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
@@ -9,13 +10,32 @@ namespace CLI
     {
         public static async Task Show(int input, string selectionHistory)
         {
-            CLIOption configureHubOption = new CLIOption() { Name = "Hub", Command = new HubConfigurationManager().Configure };
-            CLIOption configureScaleUnitOption = new CLIOption() { Name = "Scale unit", Command = new ScaleUnitConfigurationManager().Configure };
+            var options = new List<CLIOption>();
 
-            var options = new List<CLIOption>() { configureHubOption, configureScaleUnitOption };
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Type of environment to configure:\n", "\nWould you like to configure the environment as the hub or a scale unit?: ");
+            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
+            {
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ConfigureScaleUnit });
+            }
+
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
             await CLIMenu.ShowScreen(screen);
+        }
+
+        private static async Task ConfigureScaleUnit(int input, string selectionHistory)
+        {
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
+
+            using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
+            {
+                if (ScaleUnitContext.GetScaleUnitId() == "@@")
+                    await new HubConfigurationManager().Configure();
+                else
+                    await new ScaleUnitConfigurationManager().Configure();
+            }
         }
     }
 }

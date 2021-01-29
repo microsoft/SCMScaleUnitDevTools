@@ -1,31 +1,47 @@
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
+using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class StopServices : CommonStep
+    public class StopServices : ICommonStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Stop services";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 1F;
         }
 
-        public override void Run()
+        public void Run()
         {
             if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {
                 throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
             }
 
-            string cmd = "Stop-Service -Name DynamicsAxBatch; iisreset /stop";
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
+            string cmd = $@"
+                Stop-Service -Name {scaleUnit.BatchServiceName()};
+                .$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{scaleUnit.AppPoolName()};
+                .$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{scaleUnit.SiteName()}; 
+            ";
 
             CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+
+            try
+            {
+                ce.RunCommand(cmd);
+            }
+            catch (Exception)
+            {
+                if (!Config.UseSingleOneBox())
+                    throw;
+            }
         }
     }
 }

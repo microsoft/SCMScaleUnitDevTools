@@ -3,22 +3,23 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public sealed class AddToolClientToSysAADClientTable : CommonStep
+    public sealed class AddToolClientToSysAADClientTable : ICommonStep
     {
-        public override string Label()
+        public string Label()
         {
             return "Add CLI tool App to SysAADClientTable";
         }
 
-        public override float Priority()
+        public float Priority()
         {
             return 6F;
         }
 
-        public override void Run()
+        public void Run()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             string sqlQuery = $@"
-USE {Config.AxDbName()};
+USE {scaleUnit.AxDbName};
 
 IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{Config.AppId()}')
     INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{Config.AppId()}', 'Admin', 'Scale Unit Management Tool');

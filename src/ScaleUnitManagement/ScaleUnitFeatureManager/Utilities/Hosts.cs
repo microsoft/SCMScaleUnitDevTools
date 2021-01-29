@@ -8,12 +8,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
     public class Hosts : IDisposable
     {
-        private List<string> hostsContent;
-        private static string HostsFilePath = @"C:\Windows\System32\Drivers\etc\hosts";
+        private readonly List<string> hostsContent;
+        private static readonly string hostsFilePath = @"C:\Windows\System32\Drivers\etc\hosts";
 
         public Hosts()
         {
-            string[] lines = System.IO.File.ReadAllLines(HostsFilePath);
+            string[] lines = System.IO.File.ReadAllLines(hostsFilePath);
             hostsContent = lines.ToList<string>();
         }
 
@@ -49,7 +49,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public void Dispose()
         {
-            System.IO.File.WriteAllLines(HostsFilePath, hostsContent);
+            System.IO.File.WriteAllLines(hostsFilePath, hostsContent);
         }
     }
 }

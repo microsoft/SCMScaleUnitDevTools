@@ -7,16 +7,18 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
     {
         public static void Update()
         {
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+
             XmlDocument wifDoc = new XmlDocument();
-            wifDoc.Load(Config.WifServicesConfigPath);
+            wifDoc.Load(scaleUnit.WifServicesConfigPath());
 
             // Update urls in wif.services.config
             var cookieHandlerNode = wifDoc.SelectSingleNode("/system.identityModel.services/federationConfiguration/cookieHandler");
             XmlAttributeCollection attrColl = cookieHandlerNode.Attributes;
             XmlAttribute attr = (XmlAttribute)attrColl.GetNamedItem("domain");
-            attr.Value = Config.ScaleUnitDomain();
+            attr.Value = scaleUnit.DomainSafe();
 
-            wifDoc.Save(Config.WifServicesConfigPath);
+            wifDoc.Save(scaleUnit.WifServicesConfigPath());
         }
     }
 }

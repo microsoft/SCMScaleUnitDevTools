@@ -10,23 +10,42 @@ namespace CLI
 {
     class EnableScaleUnitFeature
     {
-        protected List<Step> AvailableSteps;
+        protected List<IStep> AvailableSteps;
 
-        public static async Task Show(int input, string selectionHistory)
+        public static async Task SelectScaleUnit(int input, string selectionHistory)
         {
-            CLIOption enableScaleUnitFeatureHubOption = new CLIOption() { Name = "Hub", Command = new EnableScaleUnitFeatureOnHub().PrintAvailableSteps };
-            CLIOption enableScaleUnitFeatureOnScaleUnitOption = new CLIOption() { Name = "Scale Unit", Command = new EnableScaleUnitFeatureOnScaleUnit().PrintAvailableSteps };
+            var options = new List<CLIOption>();
 
-            var options = new List<CLIOption>() { enableScaleUnitFeatureHubOption, enableScaleUnitFeatureOnScaleUnitOption };
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Type of environment to setup:\n", "\nWould you like to setup this environment as the hub or a scale unit?: ");
+            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
+            {
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = PrintAvailableStepsForScaleUnit });
+            }
+
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        protected virtual List<Step> GetAvailableSteps()
+        private static async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
+        {
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
+
+            using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
+            {
+                if (scaleUnitInstances[input - 1].ScaleUnitId == "@@")
+                    await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
+                else
+                    await new EnableScaleUnitFeatureOnScaleUnit().PrintAvailableSteps(input, selectionHistory);
+            }
+        }
+
+        protected virtual List<IStep> GetAvailableSteps()
         {
             StepFactory sf = new StepFactory();
-            List<Step> steps = sf.GetStepsOfType<CommonStep>();
+            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
             return steps;
         }
 
@@ -36,12 +55,13 @@ namespace CLI
             AvailableSteps = GetAvailableSteps();
             AvailableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (Step s in AvailableSteps)
+            foreach (IStep s in AvailableSteps)
             {
                 options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Tasks to run:\n", "\nSelect task to start from: ");
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Task sequence to run for {scaleUnit.PrintableName()}\n", "\nSelect task to start from: ");
             await CLIMenu.ShowScreen(screen);
         }
 

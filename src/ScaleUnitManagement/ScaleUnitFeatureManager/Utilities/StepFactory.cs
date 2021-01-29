@@ -10,16 +10,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             return from assembly in AppDomain.CurrentDomain.GetAssemblies()
                    from type in assembly.GetTypes()
-                   where type.IsClass && !type.IsAbstract && type.IsSubclassOf(superType)
+                   where type.IsClass && !type.IsAbstract && superType.IsAssignableFrom(type)
                    select type;
         }
 
-        public List<Step> GetStepsOfType<T>()
+        public List<IStep> GetStepsOfType<T>()
         {
-            List<Step> objects = new List<Step>();
+            List<IStep> objects = new List<IStep>();
             foreach (Type type in FindClassesDeriving(typeof(T)))
             {
-                objects.Add((Step)Activator.CreateInstance(type));
+                objects.Add((IStep)Activator.CreateInstance(type));
             }
             return objects;
         }
