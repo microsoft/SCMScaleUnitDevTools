@@ -61,7 +61,7 @@ namespace CLI
             }
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Tasks to run for scale unit {scaleUnit.PrintableName()} :\n", "\nSelect task to start from: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Task sequence to run for {scaleUnit.PrintableName()}\n", "\nSelect task to start from: ");
             await CLIMenu.ShowScreen(screen);
         }
 

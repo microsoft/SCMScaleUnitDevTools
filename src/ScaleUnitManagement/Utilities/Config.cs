@@ -27,7 +27,7 @@ namespace ScaleUnitManagement.Utilities
             return UserConfig;
         }
 
-        public static bool UseSingleEnvironment() { return UserConfiguration().UseSingleEnvironment; }
+        public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
@@ -132,7 +132,7 @@ namespace ScaleUnitManagement.Utilities
             if (HubScaleUnit() == null)
             {
                 hasAnyError = true;
-                Console.Error.WriteLine("Missing hub scale unit instance");
+                Console.Error.WriteLine("Missing hub scale unit instance. A scale unit instance with scale unit id @@ must exist.");
             }
 
             foreach (ScaleUnitInstance scaleUnit in ScaleUnitInstances())
@@ -143,6 +143,9 @@ namespace ScaleUnitManagement.Utilities
                 ValidateValue("AxDbName", scaleUnit.AxDbName);
                 ValidateValue("ScaleUnitName", scaleUnit.ScaleUnitName);
                 ValidateValue("ServiceVolume", scaleUnit.ServiceVolume);
+
+                if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
+                    Console.Error.WriteLine("ScaleUnitId is not unique");
 
                 if (scaleUnit.EnvironmentType == ScaleUnitManagement.Utilities.EnvironmentType.Unknown)
                 {
@@ -164,7 +167,7 @@ namespace ScaleUnitManagement.Utilities
                     ValidateValue("AzureStorageConnectionString", scaleUnit.AzureStorageConnectionString);
                 }
 
-                if (Config.UseSingleEnvironment())
+                if (Config.UseSingleOneBox())
                 {
                     ValidateValue("IpAddress", scaleUnit.IpAddress);
 
@@ -191,7 +194,7 @@ namespace ScaleUnitManagement.Utilities
 
     public class CloudAndEdgeConfiguration
     {
-        public bool UseSingleEnvironment { get; set; }
+        public bool UseSingleOneBox { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
         public List<ScaleUnitInstance> ScaleUnitConfiguration { get; set; }
         public List<ConfiguredWorkload> Workloads { get; set; }
@@ -238,7 +241,7 @@ namespace ScaleUnitManagement.Utilities
 
         public string BatchServiceName()
         {
-            if (!Config.UseSingleEnvironment() || this.IsHub())
+            if (!Config.UseSingleOneBox() || this.IsHub())
                 return "DynamicsAxBatch";
 
             return $"DynamicsAx{ScaleUnitUrlName()}Batch";
@@ -246,7 +249,7 @@ namespace ScaleUnitManagement.Utilities
 
         public string AppPoolName()
         {
-            if (!Config.UseSingleEnvironment() || this.IsHub())
+            if (!Config.UseSingleOneBox() || this.IsHub())
                 return "AOSService";
 
             return $"AOSService{ScaleUnitUrlName()}";
@@ -256,7 +259,7 @@ namespace ScaleUnitManagement.Utilities
 
         public string SiteRoot()
         {
-            if (!Config.UseSingleEnvironment() || this.IsHub())
+            if (!Config.UseSingleOneBox() || this.IsHub())
                 return $@"{ServiceVolume}\AOSService\webroot";
 
             return $@"{ServiceVolume}\AOSService\webroot{ScaleUnitUrlName()}";
@@ -282,7 +285,13 @@ namespace ScaleUnitManagement.Utilities
             return ScaleUnitId == "@@";
         }
 
-        public string PrintableName() { return $"{ScaleUnitName} ({ScaleUnitId})"; }
+        public string PrintableName()
+        {
+            if (IsHub())
+                return $"Hub: {ScaleUnitName} ({ScaleUnitId})";
+
+            return $"Scale unit: {ScaleUnitName} ({ScaleUnitId})";
+        }
     }
 
     public class ConfiguredWorkload

@@ -20,7 +20,7 @@ namespace CLI
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ConfigureScaleUnit });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Available deployments:\n", "\nWhich deployment would you like to configure?: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
             await CLIMenu.ShowScreen(screen);
         }
 

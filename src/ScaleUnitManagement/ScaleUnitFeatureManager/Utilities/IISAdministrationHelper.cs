@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            if (!scaleUnit.IsHub() && Config.UseSingleEnvironment())
+            if (!scaleUnit.IsHub() && Config.UseSingleOneBox())
                 CreateAppPoolForScaleUnit(scaleUnit, appPoolName);
 
             using (ServerManager manager = new ServerManager())

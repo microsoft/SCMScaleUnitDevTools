@@ -8,8 +8,8 @@ namespace CLI
     {
         public static async Task Main(string[] args)
         {
-            CLIOption enableScaleUnitFeatureOption = new CLIOption() { Name = "Configure the environment", Command = EnableScaleUnitFeature.SelectScaleUnit };
-            CLIOption configureEnvironmentOption = new CLIOption() { Name = "Configure AX", Command = ConfigureEnvironment.Show };
+            CLIOption enableScaleUnitFeatureOption = new CLIOption() { Name = "Initialize the hybrid topology", Command = EnableScaleUnitFeature.SelectScaleUnit };
+            CLIOption configureEnvironmentOption = new CLIOption() { Name = "Prepare environments for workload installation", Command = ConfigureEnvironment.Show };
             CLIOption installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
             CLIOption workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
 

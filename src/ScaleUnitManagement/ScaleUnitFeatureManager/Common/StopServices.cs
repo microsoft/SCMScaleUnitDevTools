@@ -39,7 +39,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             }
             catch (Exception e)
             {
-                if (!Config.UseSingleEnvironment())
+                if (!Config.UseSingleOneBox())
                     throw e;
             }
         }

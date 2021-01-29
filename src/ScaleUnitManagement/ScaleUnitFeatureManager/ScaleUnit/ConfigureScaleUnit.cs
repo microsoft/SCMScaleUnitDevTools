@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleEnvironment())
+            if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {
                 // Update hosts file
                 using (var hosts = new Hosts())
@@ -39,7 +39,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             using (var webConfig = new WebConfig())
             {
-                if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleEnvironment())
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
                     if (!String.IsNullOrEmpty(Config.AADTenantId()))
                     {
@@ -67,7 +67,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             WifServiceConfig.Update();
 
-            if (Config.UseSingleEnvironment())
+            if (Config.UseSingleOneBox())
             {
                 CreateScaleUnitBatchService(scaleUnit);
             }

@@ -39,7 +39,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 webConfig.AddKey("DbSync.TriggersEnabled", "true");
             }
 
-            if (Config.UseSingleEnvironment())
+            if (Config.UseSingleOneBox())
             {
                 // Update hosts file
                 using (var hosts = new Hosts())
