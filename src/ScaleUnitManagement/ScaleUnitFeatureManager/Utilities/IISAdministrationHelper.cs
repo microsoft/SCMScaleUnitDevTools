@@ -12,11 +12,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         internal static void CreateSite(string siteName, string siteRoot,
             string bindingInformation, string certSubject, string appPoolName)
         {
-            Requires.NotNull(siteName, nameof(siteName));
-            Requires.NotNull(siteRoot, nameof(siteRoot));
-            Requires.NotNull(bindingInformation, nameof(bindingInformation));
-            Requires.NotNull(certSubject, nameof(certSubject));
-            Requires.NotNull(appPoolName, nameof(appPoolName));
+            if (String.IsNullOrEmpty(siteName)
+                || String.IsNullOrEmpty(siteRoot)
+                || String.IsNullOrEmpty(bindingInformation)
+                || String.IsNullOrEmpty(certSubject)
+                || String.IsNullOrEmpty(appPoolName))
+                throw new ArgumentNullException();
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 

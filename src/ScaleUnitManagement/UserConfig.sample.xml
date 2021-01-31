@@ -52,7 +52,7 @@
       <IpAddress></IpAddress>
       <AzureStorageConnectionString></AzureStorageConnectionString>
       <AxDbName>AxDB</AxDbName>
-      <ScaleUnitName>spoke1</ScaleUnitName>
+      <ScaleUnitName>scaleUnit1</ScaleUnitName>
       <ScaleUnitId>@A</ScaleUnitId>
       <EnvironmentType>LCSHosted</EnvironmentType>
       <ServiceVolume>
