@@ -82,10 +82,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             string cmd = $@"
                 if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{
-                    exit
+                    .$env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()};
                 }}
 
-                .$env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()}; 
                 $secpasswd = (new-object System.Security.SecureString);
                 $creds = New-Object System.Management.Automation.PSCredential ('NT AUTHORITY\NETWORK SERVICE', $secpasswd);
                 New-Service -Name '{scaleUnit.BatchServiceName()}' -BinaryPathName '{scaleUnit.DynamicsBatchExePath()} -service {scaleUnit.WebConfigPath()}' -credential $creds -startupType Manual;
