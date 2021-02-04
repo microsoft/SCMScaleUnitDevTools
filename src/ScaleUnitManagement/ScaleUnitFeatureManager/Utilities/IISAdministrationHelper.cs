@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft;
 using Microsoft.Web.Administration;
 using ScaleUnitManagement.Utilities;
 
@@ -38,7 +37,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
                 site.Bindings.Clear();
                 site.Bindings.Add(bindingInformation,
-                    CertificateStoreHelper.GetCertificateFromLocalMachineStore(certSubject),
+                    CertificateStoreHelper.GetCertificateHashFromLocalMachineStore(certSubject),
                     CertificateStoreHelper.PersonalCertificateStoreName);
 
                 manager.CommitChanges();
