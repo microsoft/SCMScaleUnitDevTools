@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
     internal static class CertificateStoreHelper
     {
-        internal static byte[] GetCertificateFromLocalMachineStore(string certificateSubject)
+        internal static byte[] GetCertificateHashFromLocalMachineStore(string certificateSubject)
         {
             X509Certificate2 certificate = RetrieveCertificateFromStore(certificateSubject);
 
@@ -24,12 +22,34 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 throw new Exception($"SSL cert not found in cert store {StoreLocation.LocalMachine} and couldn't create certificate.");
             }
 
+            EnsureCertificateInstalledInTrustedRoot(certificate);
+
             return certificate.GetCertHash();
         }
 
-        internal static X509Certificate2 RetrieveCertificateFromStore(string certificateSubject)
+        private static void EnsureCertificateInstalledInTrustedRoot(X509Certificate2 certificate)
         {
-            var certCollection = GetLocalMachineCertificates();
+            X509Certificate2Collection localMachineCertificates = GetCertificates(StoreName.Root, StoreLocation.LocalMachine);
+
+            bool certExistsInTrustedRoot = localMachineCertificates.Cast<X509Certificate2>().Any(cert => cert.Thumbprint == certificate.Thumbprint);
+
+            if (certExistsInTrustedRoot)
+            {
+                return;
+            }
+
+            var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
+
+            store.Open(OpenFlags.ReadWrite);
+
+            store.Add(certificate);
+
+            store.Close();
+        }
+
+        private static X509Certificate2 RetrieveCertificateFromStore(string certificateSubject)
+        {
+            var certCollection = GetCertificates(StoreName.My, StoreLocation.LocalMachine);
             X509Certificate2 certificate = null;
 
             foreach (var cert in certCollection.Cast<X509Certificate2>().Where(cert => cert.Subject.Equals($"CN={certificateSubject}")))
@@ -40,16 +60,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             return certificate;
         }
 
-        private static X509Certificate2Collection GetLocalMachineCertificates()
+        private static X509Certificate2Collection GetCertificates(StoreName storeName, StoreLocation storeLocation)
         {
-            var localMachineStore = new X509Store(StoreLocation.LocalMachine);
+            var localMachineStore = new X509Store(storeName, storeLocation);
             localMachineStore.Open(OpenFlags.ReadOnly);
             var certificates = localMachineStore.Certificates;
             localMachineStore.Close();
             return certificates;
         }
 
-        internal static void EnsureCertificateWithSubjectExists(string certificateSubject)
+        private static void EnsureCertificateWithSubjectExists(string certificateSubject)
         {
             if (!CheckForAdminAccess.IsCurrentProcessAdmin())
             {
