@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using CLIFramework;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace CLI
 {
@@ -10,12 +11,14 @@ namespace CLI
     {
         public static int Main(string[] args)
         {
-            if (!HasAdministratorPrivileges())
+            try
             {
-                Console.Error.WriteLine("Access Denied!\r\n" +
-                    "This tool must be run with administrator permissions.\r\n" +
-                    "Please start the tool in an administrator command prompt.\r\n\r\n" + 
-                    "Press any key to exit. . .");
+                CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine("\r\n\r\nPress any key to exit. . .");
                 Console.ReadKey();
                 return 740; // ERROR_ELEVATION_REQUIRED
             }
