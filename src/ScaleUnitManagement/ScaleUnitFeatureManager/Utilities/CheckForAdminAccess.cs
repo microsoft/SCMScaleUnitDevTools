@@ -16,7 +16,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         public static void ValidateCurrentUserIsProcessAdmin()
         {
             if (!IsUserAnAdmin())
-                throw new NotSupportedException(NoAdminMessage);
+            {
+                Console.Error.WriteLine(NoAdminMessage);
+                Console.Error.WriteLine("\r\n\r\nPress any key to exit. . .");
+                Console.ReadKey();
+                Environment.Exit(740);
+            }
         }
     }
 }
