@@ -71,10 +71,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static void EnsureCertificateWithSubjectExists(string certificateSubject)
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             string cmd = "New-SelfSignedCertificate -NotBefore (Get-Date) -NotAfter (Get-Date).AddYears(1)"
                 + " -Subject " + CommandExecutor.Quotes + certificateSubject + CommandExecutor.Quotes

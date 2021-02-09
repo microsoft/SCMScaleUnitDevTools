@@ -75,10 +75,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         private void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             string cmd = $@"
                 if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{

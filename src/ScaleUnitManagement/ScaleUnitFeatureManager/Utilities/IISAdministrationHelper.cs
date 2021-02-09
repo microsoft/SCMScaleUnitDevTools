@@ -75,10 +75,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static void CloneScaleUnitWebRoot(ScaleUnitInstance scaleUnit)
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             string cmd =
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT; ";

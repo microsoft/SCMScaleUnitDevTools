@@ -18,10 +18,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         public void Run()
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
