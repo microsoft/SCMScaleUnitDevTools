@@ -30,6 +30,9 @@ namespace ScaleUnitManagement.Utilities
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
+        public static string AdfsAppId() { return UserConfiguration().ADFSConfiguration.AppId; }
+        public static string AdfsAppSecret() { return UserConfiguration().ADFSConfiguration.AppSecret; }
+        public static string AdfsAuthority() { return UserConfiguration().ADFSConfiguration.Authority; }
         public static string InterAOSAppId() { return UserConfiguration().AADConfiguration.InterAOSAppId; }
         public static string InterAOSAppSecret() { return UserConfiguration().AADConfiguration.InterAOSAppSecret; }
         public static string AADTenantId() { return UserConfiguration().AADConfiguration.AADTenantId; }
@@ -201,6 +204,7 @@ namespace ScaleUnitManagement.Utilities
     {
         public bool UseSingleOneBox { get; set; }
         public AADConfiguration AADConfiguration { get; set; }
+        public ADFSConfiguration ADFSConfiguration { get; set; }
         public List<ScaleUnitInstance> ScaleUnitConfiguration { get; set; }
         public List<ConfiguredWorkload> Workloads { get; set; }
     }
@@ -213,6 +217,13 @@ namespace ScaleUnitManagement.Utilities
         public string AADTenantId { get; set; }
         public string InterAOSAppId { get; set; }
         public string InterAOSAppSecret { get; set; }
+    }
+
+    public class ADFSConfiguration
+    {
+        public string AppId { get; set; }
+        public string AppSecret { get; set; }
+        public string Authority { get; set; }
     }
 
     public class ScaleUnitInstance : IComparable<ScaleUnitInstance>

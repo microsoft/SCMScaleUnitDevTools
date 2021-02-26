@@ -34,7 +34,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
+                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.EnvironmentType, scaleUnit.ResourceId(), scaleUnit.Endpoint());
             }
         }
 

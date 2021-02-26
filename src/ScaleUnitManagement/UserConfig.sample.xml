@@ -23,6 +23,12 @@
     <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
     <AADTenantId></AADTenantId>
   </AADConfiguration>
+
+  <ADFSConfiguration>
+    <AppId></AppId>
+    <AppSecret></AppSecret>
+    <Authority></Authority>
+  </ADFSConfiguration>
   
   <!-- This section lists your environments, one being the hub and any other being scale units.-->
   <ScaleUnitConfiguration>
