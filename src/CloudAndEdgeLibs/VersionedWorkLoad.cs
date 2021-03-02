@@ -42,6 +42,15 @@ namespace CloudAndEdgeLibs.Contracts
         public string CustomizationPackageId { get; set; }
 
         /// <summary>
+        /// Gets or sets metadata from the environment that generated the workload definition.
+        /// </summary>
+        /// <remarks>
+        /// In normal flows, the hub environment is the source of the workload definition.
+        /// </remarks>
+        [JsonProperty("environmentMetadata", NullValueHandling = NullValueHandling.Ignore)]
+        public FnOEnvironmentDeploymentMetadata EnvironmentMetadata { get; set; }
+
+        /// <summary>
         /// Gets or sets the hash of the workload's stringified json representation.
         /// </summary>
         /// <remarks>
@@ -81,10 +90,16 @@ namespace CloudAndEdgeLibs.Contracts
         public DateTime DiscoveredDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets list of versioned workloads that this workload depends on.
+        /// Gets or sets list of versioned workload ids that this workload depends on.
         /// </summary>
         [JsonProperty("dependsOn", NullValueHandling = NullValueHandling.Ignore)]
-        public List<VersionedWorkload> DependsOn { get; set; }
+        public List<string> DependsOn { get; set; }
+
+        /// <summary>
+        /// Gets or sets list of dynamic constraints.
+        /// </summary>
+        [JsonProperty("dynamicConstraints", NullValueHandling = NullValueHandling.Ignore)]
+        public List<DynamicConstraint> DynamicConstraints { get; set; }
 
         [JsonProperty("etag", NullValueHandling = NullValueHandling.Ignore)]
         public string Etag { get; set; }
