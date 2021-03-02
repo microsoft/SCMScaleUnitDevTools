@@ -90,10 +90,10 @@ namespace CloudAndEdgeLibs.Contracts
         public DateTime DiscoveredDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets list of versioned workloads that this workload depends on.
+        /// Gets or sets list of versioned workload ids that this workload depends on.
         /// </summary>
         [JsonProperty("dependsOn", NullValueHandling = NullValueHandling.Ignore)]
-        public List<VersionedWorkload> DependsOn { get; set; }
+        public List<string> DependsOn { get; set; }
 
         /// <summary>
         /// Gets or sets list of dynamic constraints.
