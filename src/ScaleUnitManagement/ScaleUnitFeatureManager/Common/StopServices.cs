@@ -23,12 +23,15 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string cmd = $@"
-                Stop-Service -Name {scaleUnit.BatchServiceName()};
+                if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{
+                    Stop-Service -Name {scaleUnit.BatchServiceName()};
+                }}
+
                 .$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{scaleUnit.AppPoolName()};
                 .$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{scaleUnit.SiteName()}; 
             ";
 
-            CommandExecutor ce = new CommandExecutor();
+            var ce = new CommandExecutor();
 
             try
             {
