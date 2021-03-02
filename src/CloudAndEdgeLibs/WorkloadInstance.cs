@@ -23,6 +23,15 @@ namespace CloudAndEdgeLibs.Contracts
         public string LogicalEnvironmentId { get; set; }
 
         /// <summary>
+        /// Gets or sets a value overriding any assignments specified by ExecutingEnvironment.
+        /// </summary>
+        /// <remarks>
+        /// Typically this will be used to forcefully move work back to the hub.
+        /// </remarks>
+        [JsonProperty("executingEnvironmentOverride", NullValueHandling = NullValueHandling.Ignore)]
+        public TemporalAssignment ExecutingEnvironmentOverride { get; set; }
+
+        /// <summary>
         /// Gets or sets temporal physical environment assignments.
         /// </summary>
         /// <remarks>

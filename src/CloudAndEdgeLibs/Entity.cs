@@ -28,10 +28,13 @@ namespace CloudAndEdgeLibs.Contracts
         public string RootTableName { get; set; }
 
         /// <summary>
-        /// Gets or sets the role paths to be included with this entity via joins.
+        /// Gets or sets the Queries to be used when performing data pipeline actions
         /// </summary>
-        [JsonProperty("includedRolePaths", NullValueHandling = NullValueHandling.Ignore)]
-        public List<RolePath> IncludedRolePaths { get; set; }
+        /// <remarks>
+        /// If multiple queries are provided, their results will be unioned.
+        /// </remarks>
+        [JsonProperty("queries", NullValueHandling = NullValueHandling.Ignore)]
+        public Query[] Queries { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not read access is required.
