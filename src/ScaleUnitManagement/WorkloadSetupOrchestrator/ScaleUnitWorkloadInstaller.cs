@@ -92,7 +92,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit().EnvironmentType, Config.HubScaleUnit().ResourceId(), Config.HubScaleUnit().Endpoint());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
-                await scaleUnitAosClient.WriteWorkloadInstances(workloadInstances);
 
                 foreach (var workloadInstance in workloadInstances)
                 {
