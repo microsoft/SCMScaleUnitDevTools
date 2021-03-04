@@ -22,7 +22,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             scaleUnitConfig = new ScaleUnitEnvironmentConfiguration()
             {
                 AppId = Config.InterAOSAppId(),
-                AppTenant = Config.Authority(),
+                AppTenant = Config.InterAOSAuthority(),
                 HubResourceId = Config.HubScaleUnit().ResourceId(),
                 HubUrl = Config.HubScaleUnit().Endpoint(),
                 HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
@@ -34,7 +34,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.EnvironmentType, scaleUnit.ResourceId(), scaleUnit.Endpoint());
+                scaleUnitAosClient = await AOSClient.Construct(scaleUnit);
             }
         }
 

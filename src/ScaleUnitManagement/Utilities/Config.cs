@@ -27,15 +27,10 @@ namespace ScaleUnitManagement.Utilities
         }
 
         public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
-        public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
-        public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
-        public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
-        public static string AdfsAppId() { return UserConfiguration().ADFSConfiguration.AppId; }
-        public static string AdfsAppSecret() { return UserConfiguration().ADFSConfiguration.AppSecret; }
-        public static string AdfsAuthority() { return UserConfiguration().ADFSConfiguration.Authority; }
-        public static string InterAOSAppId() { return UserConfiguration().AADConfiguration.InterAOSAppId; }
-        public static string InterAOSAppSecret() { return UserConfiguration().AADConfiguration.InterAOSAppSecret; }
-        public static string AADTenantId() { return UserConfiguration().AADConfiguration.AADTenantId; }
+        public static string AADTenantId() { return UserConfiguration().AADTenantId; }
+        public static string InterAOSAppId() { return UserConfiguration().InterAOSAADConfiguration.AppId; }
+        public static string InterAOSAppSecret() { return UserConfiguration().InterAOSAADConfiguration.AppSecret; }
+        public static string InterAOSAuthority() { return UserConfiguration().InterAOSAADConfiguration.Authority; }
         public static List<ScaleUnitInstance> ScaleUnitInstances() { return UserConfiguration().ScaleUnitConfiguration; }
         public static List<ConfiguredWorkload> WorkloadList() { return UserConfiguration().Workloads; }
 
@@ -121,13 +116,11 @@ namespace ScaleUnitManagement.Utilities
                 }
             }
 
-            Console.WriteLine("Validating AADConfiguration");
+            Console.WriteLine("Validating InterAOS AAD Configuration");
 
-            ValidateValue("AppId", AppId());
-            ValidateValue("AppSecret", AppSecret());
-            ValidateValue("Authority", Authority());
             ValidateValue("InterAOSAppId", InterAOSAppId());
             ValidateValue("InterAOSAppSecret", InterAOSAppSecret());
+            ValidateValue("InterAOSAuthority", InterAOSAuthority());
 
             Console.WriteLine("Validating ScaleUnitConfiguration");
 
@@ -145,6 +138,9 @@ namespace ScaleUnitManagement.Utilities
                 ValidateValue("AxDbName", scaleUnit.AxDbName);
                 ValidateValue("ScaleUnitName", scaleUnit.ScaleUnitName);
                 ValidateValue("ServiceVolume", scaleUnit.ServiceVolume);
+                ValidateValue("AppId", scaleUnit.AuthConfiguration.AppId);
+                ValidateValue("AppSecret", scaleUnit.AuthConfiguration.AppSecret);
+                ValidateValue("Authority", scaleUnit.AuthConfiguration.Authority);
 
                 if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
                     Console.Error.WriteLine("ScaleUnitId is not unique");
@@ -203,23 +199,13 @@ namespace ScaleUnitManagement.Utilities
     public class CloudAndEdgeConfiguration
     {
         public bool UseSingleOneBox { get; set; }
-        public AADConfiguration AADConfiguration { get; set; }
-        public ADFSConfiguration ADFSConfiguration { get; set; }
+        public string AADTenantId { get; set; }
+        public AuthConfiguration InterAOSAADConfiguration { get; set; }
         public List<ScaleUnitInstance> ScaleUnitConfiguration { get; set; }
         public List<ConfiguredWorkload> Workloads { get; set; }
     }
 
-    public class AADConfiguration
-    {
-        public string AppId { get; set; }
-        public string AppSecret { get; set; }
-        public string Authority { get; set; }
-        public string AADTenantId { get; set; }
-        public string InterAOSAppId { get; set; }
-        public string InterAOSAppSecret { get; set; }
-    }
-
-    public class ADFSConfiguration
+    public class AuthConfiguration
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
@@ -236,6 +222,12 @@ namespace ScaleUnitManagement.Utilities
         public string ScaleUnitId { get; set; }
         public EnvironmentType EnvironmentType { get; set; }
         public string ServiceVolume { get; set; }
+        public AuthConfiguration AuthConfiguration { get; set; }
+
+        public string AOSRequestPathPrefix()
+        {
+            return EnvironmentType == EnvironmentType.LBD ? "namespaces/AXSF/" : "";
+        }
 
         public string DomainSafe()
         {

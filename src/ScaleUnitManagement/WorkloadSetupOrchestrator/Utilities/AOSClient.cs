@@ -21,36 +21,21 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             this.requestPathPrefix = requestPathPrefix;
         }
 
-        public static async Task<AOSClient> Construct(EnvironmentType environmentType, string AosResourceId, string AosEndpoint)
+        public static async Task<AOSClient> Construct(ScaleUnitInstance scaleUnitInstance)
         {
-            string aadTenant;
-            string aadClientAppId;
-            string aadClientAppSecret;
-            string requestPathPrefix = "";
-            if (environmentType == EnvironmentType.LBD)
-            {
-                aadTenant = Config.AdfsAuthority();
-                aadClientAppId = Config.AdfsAppId();
-                aadClientAppSecret = Config.AdfsAppSecret();
-                requestPathPrefix = "namespaces/AXSF/";
-            }
-            else
-            {
-                aadTenant = Config.Authority();
-                aadClientAppId = Config.AppId();
-                aadClientAppSecret = Config.AppSecret();
-            }
+            string aadTenant = scaleUnitInstance.AuthConfiguration.Authority;
+            string aadClientAppId = scaleUnitInstance.AuthConfiguration.AppId;
+            string aadClientAppSecret = scaleUnitInstance.AuthConfiguration.AppSecret;
 
-
-            string aadResource = AosResourceId;
+            string aadResource = scaleUnitInstance.ResourceId();
 
             var httpClient = new HttpClient
             {
-                BaseAddress = new Uri(AosEndpoint)
+                BaseAddress = new Uri(scaleUnitInstance.Endpoint())
             };
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
-            AOSClient client = new AOSClient(httpClient, requestPathPrefix);
+            AOSClient client = new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
 
             return client;
         }
