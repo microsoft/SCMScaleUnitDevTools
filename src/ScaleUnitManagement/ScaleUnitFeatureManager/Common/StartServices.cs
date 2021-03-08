@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -16,7 +16,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 4F;
         }
 
-        public void Run()
+        public Task Run()
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
@@ -30,6 +30,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
+
+            return Task.CompletedTask;
         }
     }
 }

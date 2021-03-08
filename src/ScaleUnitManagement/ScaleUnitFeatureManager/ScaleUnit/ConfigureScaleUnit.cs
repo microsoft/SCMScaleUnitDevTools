@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -16,7 +17,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             return 2F;
         }
 
-        public void Run()
+        public async Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 

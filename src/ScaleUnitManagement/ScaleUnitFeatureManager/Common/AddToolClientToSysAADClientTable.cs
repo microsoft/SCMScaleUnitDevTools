@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -15,7 +16,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 6F;
         }
 
-        public void Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             string sqlQuery = $@"
@@ -29,6 +30,8 @@ IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{Confi
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
+
+            return Task.CompletedTask;
         }
     }
 }

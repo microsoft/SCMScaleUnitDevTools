@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -15,7 +16,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             return 3.5F;
         }
 
-        public void Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -24,6 +25,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
+
+            return Task.CompletedTask;
         }
     }
 }

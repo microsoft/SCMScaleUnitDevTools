@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.Utilities;
 
@@ -22,9 +23,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             return dbSync.Priority();
         }
 
-        public void Run()
+        public Task Run()
         {
             dbSync.Run();
+
+            return Task.CompletedTask;
         }
     }
 }
