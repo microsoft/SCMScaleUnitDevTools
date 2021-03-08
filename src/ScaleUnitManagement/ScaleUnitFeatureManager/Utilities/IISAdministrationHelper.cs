@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft;
 using Microsoft.Web.Administration;
 using ScaleUnitManagement.Utilities;
 
@@ -38,7 +37,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
                 site.Bindings.Clear();
                 site.Bindings.Add(bindingInformation,
-                    CertificateStoreHelper.GetCertificateFromLocalMachineStore(certSubject),
+                    CertificateStoreHelper.GetCertificateHashFromLocalMachineStore(certSubject),
                     CertificateStoreHelper.PersonalCertificateStoreName);
 
                 manager.CommitChanges();
@@ -76,10 +75,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static void CloneScaleUnitWebRoot(ScaleUnitInstance scaleUnit)
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             string cmd =
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT; ";

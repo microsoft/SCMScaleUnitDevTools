@@ -146,19 +146,19 @@ namespace ScaleUnitManagement.Utilities
                 if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
                     Console.Error.WriteLine("ScaleUnitId is not unique");
 
-                if (scaleUnit.EnvironmentType == ScaleUnitManagement.Utilities.EnvironmentType.Unknown)
+                if (scaleUnit.EnvironmentType == EnvironmentType.Unknown)
                 {
                     hasAnyError = true;
                     Console.Error.WriteLine("EnvironmentType is not valid. The following values are supported (see documentation for help): ");
 
-                    foreach (ScaleUnitManagement.Utilities.EnvironmentType val in Enum.GetValues(typeof(ScaleUnitManagement.Utilities.EnvironmentType)))
+                    foreach (EnvironmentType val in Enum.GetValues(typeof(EnvironmentType)))
                     {
-                        if (val != ScaleUnitManagement.Utilities.EnvironmentType.Unknown)
+                        if (val != EnvironmentType.Unknown)
                             Console.WriteLine(val);
                     }
                 }
 
-                if (scaleUnit.EnvironmentType == ScaleUnitManagement.Utilities.EnvironmentType.VHD)
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
                 {
                     if (scaleUnit.IsHub())
                         ValidateValue("IpAddress", scaleUnit.IpAddress);
@@ -169,6 +169,12 @@ namespace ScaleUnitManagement.Utilities
                 if (Config.UseSingleOneBox())
                 {
                     ValidateValue("IpAddress", scaleUnit.IpAddress);
+
+                    if (ScaleUnitInstances().Where(s => s.ScaleUnitId != scaleUnit.ScaleUnitId).Any(s => s.IpAddress == scaleUnit.IpAddress))
+                    {
+                        hasAnyError = true;
+                        Console.Error.WriteLine("The Hub and Scale Unit IpAddresses must be distinct values when using a single one-box setup.");
+                    }
 
                     if (!scaleUnit.IsHub())
                         ValidateValue("AzureStorageConnectionString", scaleUnit.AzureStorageConnectionString);
