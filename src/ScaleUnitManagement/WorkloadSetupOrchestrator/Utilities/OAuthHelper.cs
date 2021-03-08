@@ -1,4 +1,6 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
@@ -17,14 +19,27 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         /// <returns>The authentication header for the Web API call.</returns>
         public static async Task<string> GetAuthenticationHeader(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
         {
+            AuthenticationResult authenticationResult = await Authenticate(aadTenant, aadClientAppId, aadClientAppSecret, aadResource);
+
+            // Create and get JWT token
+            return authenticationResult.CreateAuthorizationHeader();
+        }
+
+        public static async Task<string> GetTidClaim(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
+        {
+            AuthenticationResult authenticationResult = await Authenticate(aadTenant, aadClientAppId, aadClientAppSecret, aadResource);
+
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(authenticationResult.AccessToken);
+
+            string tidClaimValue = token.Claims.FirstOrDefault(c => c.Type.Equals("tid", StringComparison.Ordinal))?.Value;
+
+            return tidClaimValue;
+        }
+
+        private static async Task<AuthenticationResult> Authenticate(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
+        {
             AuthenticationContext authenticationContext = new AuthenticationContext(aadTenant, false);
             AuthenticationResult authenticationResult;
-
-            if (string.IsNullOrEmpty(aadClientAppSecret))
-            {
-                Console.WriteLine("Please fill AAD application secret in ClientConfiguration if you choose authentication by the application.");
-                throw new Exception("Failed OAuth by empty application secret.");
-            }
 
             try
             {
@@ -38,9 +53,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw new Exception("Failed to authenticate with AAD by application.");
             }
 
-
-            // Create and get JWT token
-            return authenticationResult.CreateAuthorizationHeader();
+            return authenticationResult;
         }
     }
 }
