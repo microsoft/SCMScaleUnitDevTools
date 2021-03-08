@@ -25,9 +25,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                         if (!string.IsNullOrWhiteSpace(tenantDomainGUID))
                             webConfig.UpdateXElement("Aad.TenantDomainGUID", tenantDomainGUID);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        Console.Error.WriteLine($"Unable to get tenant ID for {Config.AADTenantId()}, skipping setting Aad.AADTenantDomainGUID in Web.config:\n{ex}");
+                        Console.Error.WriteLine($"Unable to get tenant ID for {Config.AADTenantId()}, skipping setting Aad.AADTenantDomainGUID in Web.config\n");
+                        throw;
                     }
                 }
 
