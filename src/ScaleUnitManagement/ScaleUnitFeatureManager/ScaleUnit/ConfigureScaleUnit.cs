@@ -56,7 +56,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
                     webConfig.UpdateXElement("DataAccess.Database", scaleUnit.AxDbName);
 
-                    WebConfigAudienceConfigurator.AddValidAudiences(webConfig);
+                    webConfig.AddValidAudiences();
                 }
             }
 

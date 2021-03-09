@@ -7,7 +7,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
     public static class WebConfigAudienceConfigurator
     {
-        public static void AddValidAudiences(WebConfig webConfig)
+        public static void AddValidAudiences(this WebConfig webConfig)
         {
             const string validAudienceConfigKey = "Aad.AADValidAudience";
 
