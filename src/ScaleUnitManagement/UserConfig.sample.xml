@@ -19,9 +19,6 @@
     
     <!-- Specify the URL of the authority endpoint of your tenant-->
     <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
-    
-    <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
-    <AADTenantId></AADTenantId>
   </AADConfiguration>
   
   <!-- This section lists your environments, one being the hub and any other being scale units.-->

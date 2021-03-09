@@ -1,6 +1,9 @@
 using System;
+using System.Threading.Tasks;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
+using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
@@ -17,26 +20,20 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
         }
 
 
-        public void Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             using (var webConfig = new WebConfig())
             {
-                if (scaleUnit.EnvironmentType == EnvironmentType.VHD)
+                SharedWebConfig.Configure(webConfig);
+
+                if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
-                    if (!String.IsNullOrEmpty(Config.AADTenantId()))
-                        webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
-
-                    if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
-                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
-
                     webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
-                }
 
-                webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
-                webConfig.AddKey("ScaleUnit.Enabled", "true");
-                webConfig.AddKey("DbSync.TriggersEnabled", "true");
+                    webConfig.AddValidAudiences();
+                }
             }
 
             if (Config.UseSingleOneBox())
@@ -55,6 +52,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                     certSubject: scaleUnit.DomainSafe(),
                     appPoolName: scaleUnit.AppPoolName());
             }
+
+            return Task.CompletedTask;
         }
     }
 }

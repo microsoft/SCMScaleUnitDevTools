@@ -29,10 +29,25 @@ namespace ScaleUnitManagement.Utilities
         public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
         public static string AppId() { return UserConfiguration().AADConfiguration.AppId; }
         public static string AppSecret() { return UserConfiguration().AADConfiguration.AppSecret; }
+        public static string AppResourceId(ScaleUnitInstance scaleUnitInstance = null)
+        {
+            var userConfig = UserConfiguration();
+
+            return string.IsNullOrWhiteSpace(userConfig.AADConfiguration.AppResourceId)
+                ? scaleUnitInstance?.Endpoint()
+                : userConfig.AADConfiguration.AppResourceId;
+        }
         public static string Authority() { return UserConfiguration().AADConfiguration.Authority; }
         public static string InterAOSAppId() { return UserConfiguration().AADConfiguration.InterAOSAppId; }
         public static string InterAOSAppSecret() { return UserConfiguration().AADConfiguration.InterAOSAppSecret; }
-        public static string AADTenantId() { return UserConfiguration().AADConfiguration.AADTenantId; }
+        public static string InterAOSAppResourceId(ScaleUnitInstance scaleUnitInstance = null)
+        {
+            var userConfig = UserConfiguration();
+
+            return string.IsNullOrWhiteSpace(userConfig.AADConfiguration.InterAOSAppResourceId)
+                ? scaleUnitInstance?.Endpoint()
+                : userConfig.AADConfiguration.InterAOSAppResourceId;
+        }
         public static List<ScaleUnitInstance> ScaleUnitInstances() { return UserConfiguration().ScaleUnitConfiguration; }
         public static List<ConfiguredWorkload> WorkloadList() { return UserConfiguration().Workloads; }
 
@@ -209,10 +224,11 @@ namespace ScaleUnitManagement.Utilities
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
+        public string AppResourceId { get; set; }
         public string Authority { get; set; }
-        public string AADTenantId { get; set; }
         public string InterAOSAppId { get; set; }
         public string InterAOSAppSecret { get; set; }
+        public string InterAOSAppResourceId { get; set; }
     }
 
     public class ScaleUnitInstance : IComparable<ScaleUnitInstance>
@@ -240,7 +256,6 @@ namespace ScaleUnitManagement.Utilities
             return domainName;
         }
 
-        public string ResourceId() { return Endpoint(); }
         public string Endpoint() { return "https://" + DomainSafe(); }
         public string ScaleUnitUrlName() { return DomainSafe().Split('.')[0]; }
 

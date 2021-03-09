@@ -1,6 +1,9 @@
 using System;
+using System.Threading.Tasks;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
+using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
@@ -16,7 +19,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             return 2F;
         }
 
-        public void Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -39,16 +42,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             using (var webConfig = new WebConfig())
             {
+                SharedWebConfig.Configure(webConfig);
+
                 if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
-                    if (!String.IsNullOrEmpty(Config.AADTenantId()))
-                    {
-                        webConfig.UpdateXElement("Aad.AADTenantId", Config.AADTenantId());
-                    }
-
-                    if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
-                        webConfig.UpdateXElement("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
-
                     webConfig.UpdateXElement("Infrastructure.FullyQualifiedDomainName", scaleUnit.DomainSafe());
                     webConfig.UpdateXElement("Infrastructure.HostName", scaleUnit.DomainSafe());
                     webConfig.UpdateXElement("Infrastructure.HostedServiceName", scaleUnit.ScaleUnitUrlName());
@@ -58,11 +55,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                     webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
 
                     webConfig.UpdateXElement("DataAccess.Database", scaleUnit.AxDbName);
-                }
 
-                webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
-                webConfig.AddKey("ScaleUnit.Enabled", "true");
-                webConfig.AddKey("DbSync.TriggersEnabled", "true");
+                    webConfig.AddValidAudiences();
+                }
             }
 
             WifServiceConfig.Update();
@@ -71,9 +66,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             {
                 CreateScaleUnitBatchService(scaleUnit);
             }
+
+            return Task.CompletedTask;
         }
 
-        private void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
+        private static void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 

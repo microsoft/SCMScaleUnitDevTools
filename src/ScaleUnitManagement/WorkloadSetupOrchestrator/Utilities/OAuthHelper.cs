@@ -17,14 +17,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         /// <returns>The authentication header for the Web API call.</returns>
         public static async Task<string> GetAuthenticationHeader(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
         {
+            AuthenticationResult authenticationResult = await Authenticate(aadTenant, aadClientAppId, aadClientAppSecret, aadResource);
+
+            // Create and get JWT token
+            return authenticationResult.CreateAuthorizationHeader();
+        }
+
+        private static async Task<AuthenticationResult> Authenticate(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
+        {
             AuthenticationContext authenticationContext = new AuthenticationContext(aadTenant, false);
             AuthenticationResult authenticationResult;
-
-            if (string.IsNullOrEmpty(aadClientAppSecret))
-            {
-                Console.WriteLine("Please fill AAD application secret in ClientConfiguration if you choose authentication by the application.");
-                throw new Exception("Failed OAuth by empty application secret.");
-            }
 
             try
             {
@@ -38,9 +40,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw new Exception("Failed to authenticate with AAD by application.");
             }
 
-
-            // Create and get JWT token
-            return authenticationResult.CreateAuthorizationHeader();
+            return authenticationResult;
         }
     }
 }
