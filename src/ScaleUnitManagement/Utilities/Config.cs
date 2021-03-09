@@ -226,7 +226,6 @@ namespace ScaleUnitManagement.Utilities
         public string AppSecret { get; set; }
         public string AppResourceId { get; set; }
         public string Authority { get; set; }
-        public string AADTenantId { get; set; }
         public string InterAOSAppId { get; set; }
         public string InterAOSAppSecret { get; set; }
         public string InterAOSAppResourceId { get; set; }
