@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- WARNING! This configuration template contains breaking changes from the previous version. Please update your
+UserConfig.xml according to this sample. You can follow the documentation from here (https://github.com/microsoft/SCMScaleUnitDevTools/wiki/Step-by-step-usage-guide)-->
 <CloudAndEdgeConfiguration>
   
   <!-- Use this flag to indicate whether you want to use one single one-box to host both the hub and the scale unit -->
   <UseSingleOneBox>false</UseSingleOneBox>
-  <!-- If empty, the existing value in web.config will be used - otherwise the web.config will get overwritten with this value. -->
-  <AADTenantId></AADTenantId>
   
   <!-- This refers to the AAD application enabling communication between hub and scale unit-->
   <InterAOSAADConfiguration>
