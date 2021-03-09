@@ -55,6 +55,15 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             element.SetAttributeValue("value", value);
         }
 
+        public string GetXElementValue(string key)
+        {
+            var element = doc.Descendants()
+                .Where(x => (string)x.Attribute("key") == key)
+                .FirstOrDefault();
+
+            return element?.Attribute("value")?.Value;
+        }
+
         public void Dispose()
         {
             doc.Save(webConfigPath);

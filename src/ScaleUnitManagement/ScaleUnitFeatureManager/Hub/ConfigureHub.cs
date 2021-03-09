@@ -20,17 +20,19 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
         }
 
 
-        public async Task Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             using (var webConfig = new WebConfig())
             {
-                await SharedWebConfig.Configure(webConfig);
+                SharedWebConfig.Configure(webConfig);
 
                 if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
                     webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
+
+                    WebConfigAudienceConfigurator.AddValidAudiences(webConfig);
                 }
             }
 
@@ -50,6 +52,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                     certSubject: scaleUnit.DomainSafe(),
                     appPoolName: scaleUnit.AppPoolName());
             }
+
+            return Task.CompletedTask;
         }
     }
 }

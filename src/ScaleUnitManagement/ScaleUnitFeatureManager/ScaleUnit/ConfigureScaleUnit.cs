@@ -19,7 +19,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             return 2F;
         }
 
-        public async Task Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -42,7 +42,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             using (var webConfig = new WebConfig())
             {
-                await SharedWebConfig.Configure(webConfig);
+                SharedWebConfig.Configure(webConfig);
 
                 if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
@@ -55,6 +55,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                     webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
 
                     webConfig.UpdateXElement("DataAccess.Database", scaleUnit.AxDbName);
+
+                    WebConfigAudienceConfigurator.AddValidAudiences(webConfig);
                 }
             }
 
@@ -64,9 +66,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             {
                 CreateScaleUnitBatchService(scaleUnit);
             }
+
+            return Task.CompletedTask;
         }
 
-        private void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
+        private static void CreateScaleUnitBatchService(ScaleUnitInstance scaleUnit)
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 

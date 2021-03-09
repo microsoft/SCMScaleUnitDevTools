@@ -1,6 +1,4 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
@@ -23,17 +21,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             // Create and get JWT token
             return authenticationResult.CreateAuthorizationHeader();
-        }
-
-        public static async Task<string> GetTidClaim(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)
-        {
-            AuthenticationResult authenticationResult = await Authenticate(aadTenant, aadClientAppId, aadClientAppSecret, aadResource);
-
-            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(authenticationResult.AccessToken);
-
-            string tidClaimValue = token.Claims.FirstOrDefault(c => c.Type.Equals("tid", StringComparison.Ordinal))?.Value;
-
-            return tidClaimValue;
         }
 
         private static async Task<AuthenticationResult> Authenticate(string aadTenant, string aadClientAppId, string aadClientAppSecret, string aadResource)

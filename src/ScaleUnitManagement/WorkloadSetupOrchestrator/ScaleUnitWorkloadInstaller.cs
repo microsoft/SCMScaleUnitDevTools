@@ -22,7 +22,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             if (scaleUnitAosClient is null)
             {
-                scaleUnitAosClient = await AOSClient.Construct(scaleUnit.ResourceId(), scaleUnit.Endpoint());
+                scaleUnitAosClient = await AOSClient.Construct(Config.AppResourceId(scaleUnit), scaleUnit.Endpoint());
             }
         }
 
@@ -89,7 +89,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit().ResourceId(), Config.HubScaleUnit().Endpoint());
+                AOSClient hubAosClient = await AOSClient.Construct(Config.AppResourceId(Config.HubScaleUnit()), Config.HubScaleUnit().Endpoint());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
 
