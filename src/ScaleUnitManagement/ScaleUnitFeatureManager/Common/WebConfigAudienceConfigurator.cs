@@ -7,7 +7,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
     public static class WebConfigAudienceConfigurator
     {
-        public static void AddValidAudiences(this WebConfig webConfig)
+        public static void AddValidAudiences(this WebConfig webConfig, ScaleUnitInstance scaleUnit)
         {
             const string validAudienceConfigKey = "Aad.AADValidAudience";
 
@@ -15,10 +15,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             var validAudiencesToAdd = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(Config.AppResourceId())
-                && !aadValidAudiences.Contains(Config.AppResourceId()))
+            if (!string.IsNullOrWhiteSpace(scaleUnit.AppResourceId())
+                && !aadValidAudiences.Contains(scaleUnit.AppResourceId()))
             {
-                validAudiencesToAdd.Add(Config.AppResourceId());
+                validAudiencesToAdd.Add(scaleUnit.AppResourceId());
             }
 
             if (!string.IsNullOrWhiteSpace(Config.InterAOSAppResourceId())

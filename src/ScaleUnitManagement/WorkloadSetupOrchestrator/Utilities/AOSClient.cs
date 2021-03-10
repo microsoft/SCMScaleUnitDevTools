@@ -27,7 +27,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             string aadClientAppId = scaleUnitInstance.AuthConfiguration.AppId;
             string aadClientAppSecret = scaleUnitInstance.AuthConfiguration.AppSecret;
 
-            string aadResource = scaleUnitInstance.ResourceId();
+            string aadResource = scaleUnitInstance.AppResourceId();
 
             var httpClient = new HttpClient
             {

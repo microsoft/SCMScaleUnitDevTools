@@ -32,7 +32,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 {
                     webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
 
-                    webConfig.AddValidAudiences();
+                    webConfig.AddValidAudiences(scaleUnit);
                 }
             }
 
