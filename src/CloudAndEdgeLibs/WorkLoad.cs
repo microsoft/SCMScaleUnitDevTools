@@ -42,6 +42,12 @@ namespace CloudAndEdgeLibs.Contracts
         public List<string> RequiredPrivileges { get; set; } = new List<string>();
 
         /// <summary>
+        /// Gets or sets the AX features required by the workload running on the target environment.
+        /// </summary>
+        [JsonProperty("requiredFeatures", NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> RequiredFeatures { get; set; } = new List<string>();
+
+        /// <summary>
         /// Gets or sets the mappings used to maintain compatibility between varied environments executing a workload.
         /// </summary>
         [JsonProperty("mappings", NullValueHandling = NullValueHandling.Ignore)]
@@ -66,5 +72,16 @@ namespace CloudAndEdgeLibs.Contracts
         /// </summary>
         [JsonProperty("synchronizationDirection", NullValueHandling = NullValueHandling.Ignore)]
         public SyncDirection SynchronizationDirection { get; set; }
+
+        /// <summary>
+        /// Gets or sets system metadata required by this workload. Reserved for system use.
+        /// </summary>
+        /// <remarks>
+        /// The key of the dictionary represents the type of dependency, while the value is a string expressing an instance of the type.
+        /// </remarks>
+        [JsonProperty("__dependentSystemMetadata", NullValueHandling = NullValueHandling.Ignore)]
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        public SortedSet<SystemMetadata> __DependentSystemMetadata { get; set; } = new SortedSet<SystemMetadata>();
+#pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }

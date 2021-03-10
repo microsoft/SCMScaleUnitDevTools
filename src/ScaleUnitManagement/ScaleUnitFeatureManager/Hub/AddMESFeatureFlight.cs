@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
-namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
+namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 {
-    public sealed class AddMESFeatureFlight : ICommonStep
+    public sealed class AddMESFeatureFlight : IHubStep
     {
         private const string MESFlightName = "SysWorkloadTypeMESFeatureToggle";
 
@@ -19,16 +20,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 3.9F;
         }
 
-        public void Run()
+        public Task Run()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string sqlQuery = $@"
 USE {scaleUnit.AxDbName};
-
--- insert row under Hub scale unit id to avoid merge conflicts later, as the table is synced Hub->Scale Unit
-EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@@';
-
 IF NOT EXISTS (SELECT TOP 1 1 FROM SysFlighting WHERE FlightName = '{MESFlightName}')
     INSERT INTO SysFlighting (FlightName, Enabled, FlightServiceId) VALUES ('{MESFlightName}', 1, 12719367);
 ";
@@ -37,6 +34,8 @@ IF NOT EXISTS (SELECT TOP 1 1 FROM SysFlighting WHERE FlightName = '{MESFlightNa
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
+
+            return Task.CompletedTask;
         }
     }
 }

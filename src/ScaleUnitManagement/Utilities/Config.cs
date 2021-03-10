@@ -27,10 +27,17 @@ namespace ScaleUnitManagement.Utilities
         }
 
         public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
-        public static string AADTenantId() { return UserConfiguration().AADTenantId; }
         public static string InterAOSAppId() { return UserConfiguration().InterAOSAADConfiguration.AppId; }
         public static string InterAOSAppSecret() { return UserConfiguration().InterAOSAADConfiguration.AppSecret; }
         public static string InterAOSAuthority() { return UserConfiguration().InterAOSAADConfiguration.Authority; }
+        public static string InterAOSAppResourceId(ScaleUnitInstance hubInstance = null)
+        {
+            var userConfig = UserConfiguration();
+
+            return string.IsNullOrWhiteSpace(userConfig.InterAOSAADConfiguration.AppResourceId)
+                ? hubInstance?.Endpoint()
+                : userConfig.InterAOSAADConfiguration.AppResourceId;
+        }
         public static List<ScaleUnitInstance> ScaleUnitInstances() { return UserConfiguration().ScaleUnitConfiguration; }
         public static List<ConfiguredWorkload> WorkloadList() { return UserConfiguration().Workloads; }
 
@@ -209,6 +216,7 @@ namespace ScaleUnitManagement.Utilities
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
+        public string AppResourceId { get; set; }
         public string Authority { get; set; }
     }
 
@@ -223,6 +231,13 @@ namespace ScaleUnitManagement.Utilities
         public EnvironmentType EnvironmentType { get; set; }
         public string ServiceVolume { get; set; }
         public AuthConfiguration AuthConfiguration { get; set; }
+        
+        public string AppResourceId()
+        {
+            return string.IsNullOrWhiteSpace(this.AuthConfiguration.AppResourceId)
+                ? this.Endpoint()
+                : this.AuthConfiguration.AppResourceId;
+        }
 
         public string AOSRequestPathPrefix()
         {
@@ -243,7 +258,6 @@ namespace ScaleUnitManagement.Utilities
             return domainName;
         }
 
-        public string ResourceId() { return Endpoint(); }
         public string Endpoint() { return "https://" + DomainSafe(); }
         public string ScaleUnitUrlName() { return DomainSafe().Split('.')[0]; }
 

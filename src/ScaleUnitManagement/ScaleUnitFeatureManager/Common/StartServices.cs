@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
@@ -16,12 +16,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 4F;
         }
 
-        public void Run()
+        public Task Run()
         {
-            if (!CheckForAdminAccess.IsCurrentProcessAdmin())
-            {
-                throw new NotSupportedException("Please run the tool from a shell that is running as administrator.");
-            }
+            CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -33,6 +30,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd);
+
+            return Task.CompletedTask;
         }
     }
 }

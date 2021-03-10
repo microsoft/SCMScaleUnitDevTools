@@ -23,7 +23,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             {
                 AppId = Config.InterAOSAppId(),
                 AppTenant = Config.InterAOSAuthority(),
-                HubResourceId = Config.HubScaleUnit().ResourceId(),
+                HubResourceId = Config.InterAOSAppResourceId(Config.HubScaleUnit()),
                 HubUrl = Config.HubScaleUnit().Endpoint(),
                 HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
                 ScaleUnitType = "1",

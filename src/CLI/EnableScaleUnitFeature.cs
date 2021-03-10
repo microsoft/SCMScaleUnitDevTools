@@ -65,14 +65,14 @@ namespace CLI
             await CLIMenu.ShowScreen(screen);
         }
 
-        private Task RunStepsFromTask(int input, string selectionHistory)
+        private async Task RunStepsFromTask(int input, string selectionHistory)
         {
             for (int i = input - 1; i < AvailableSteps.Count; i++)
             {
                 try
                 {
                     Console.WriteLine("Executing step: " + AvailableSteps[i].Label());
-                    AvailableSteps[i].Run();
+                    await AvailableSteps[i].Run();
                 }
                 catch (Exception)
                 {
@@ -82,7 +82,6 @@ namespace CLI
             }
 
             Console.WriteLine("Done");
-            return Task.CompletedTask;
         }
     }
 }
