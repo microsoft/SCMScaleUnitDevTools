@@ -4,6 +4,7 @@ namespace ScaleUnitManagement.Utilities
     {
         Unknown,
         VHD,
-        LCSHosted
+        LCSHosted,
+        LBD
     }
 }

@@ -1,25 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- WARNING! This configuration template contains breaking changes from the previous version. Please update your
+UserConfig.xml according to this sample. You can follow the documentation from here (https://github.com/microsoft/SCMScaleUnitDevTools/wiki/Step-by-step-usage-guide)-->
 <CloudAndEdgeConfiguration>
   
   <!-- Use this flag to indicate whether you want to use one single one-box to host both the hub and the scale unit -->
   <UseSingleOneBox>false</UseSingleOneBox>
   
-  <!-- The AAD configuration contains the information that is needed to authorize the connection 
-  of the configuration to the environments and between hub and scale units. -->
-  <AADConfiguration>
-    <!-- This refers to the AAD application enabling communication of the communication tool to the environments-->
-    <!--Note: This app id must be registered in the SysAADClientTable form in all environments.-->
-    <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
+  <!-- This refers to the AAD application enabling communication between hub and scale unit-->
+  <InterAOSAADConfiguration>
     <AppId></AppId>
     <AppSecret></AppSecret>
-    
-    <!-- This refers to the AAD application enabling communication between hub and scale unit-->
-    <InterAOSAppId></InterAOSAppId>
-    <InterAOSAppSecret></InterAOSAppSecret>
-    
-    <!-- Specify the URL of the authority endpoint of your tenant-->
     <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
-  </AADConfiguration>
+  </InterAOSAADConfiguration>
   
   <!-- This section lists your environments, one being the hub and any other being scale units.-->
   <ScaleUnitConfiguration>
@@ -33,12 +25,25 @@
       <ScaleUnitId>@@</ScaleUnitId>
       <!--EnivronmentType represents the infrastructure you host on.
       It should be VHD if you have OneBox or LCSVHD.
-      It should be LCSHosted if you have an LCS cloud-hosted devbox.-->
+      It should be LCSHosted if you have an LCS cloud-hosted devbox.
+      It should be LBD if you have an LBD environment.-->
       <EnvironmentType>LCSHosted</EnvironmentType>
       <!--Drive which contains AOSService-->
       <ServiceVolume>
         C:
       </ServiceVolume>
+      <!-- The Auth configuration contains the information that is needed to authorize the connection 
+      of the tool to this environment. -->
+      <AuthConfiguration>
+        <!--Note: This app id must be registered in the SysAADClientTable in the environment.
+        This happens automatically during step 1) "Initialize the hybrid topology".
+        In case you don't run step 1, you need to whitelist the app id manually.-->
+        <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
+        <AppId></AppId>
+        <AppSecret></AppSecret>
+        <!-- Specify the URL of the authority endpoint of your tenant-->
+        <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
+      </AuthConfiguration>
     </ScaleUnitInstance>
     
     <!-- Specify here your scale unit environment. You can keep the ScaleUnitId '@A' 
@@ -55,6 +60,11 @@
       <ServiceVolume>
         C:
       </ServiceVolume>
+      <AuthConfiguration>
+        <AppId></AppId>
+        <AppSecret></AppSecret>
+        <Authority>https://login.windows.net/YOUR_AAD_TENANT</Authority>
+      </AuthConfiguration>
     </ScaleUnitInstance>
   </ScaleUnitConfiguration>
 

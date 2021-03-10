@@ -13,33 +13,36 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
     class AOSClient
     {
         private readonly HttpClient httpClient;
+        private readonly string requestPathPrefix = "";
 
-        private AOSClient(HttpClient httpClient)
+        private AOSClient(HttpClient httpClient, string requestPathPrefix = "")
         {
             this.httpClient = httpClient;
+            this.requestPathPrefix = requestPathPrefix;
         }
 
-        public static async Task<AOSClient> Construct(string AosResourceId, string AosEndpoint)
+        public static async Task<AOSClient> Construct(ScaleUnitInstance scaleUnitInstance)
         {
-            string aadTenant = Config.Authority();
-            string aadClientAppId = Config.AppId();
-            string aadClientAppSecret = Config.AppSecret();
-            string aadResource = AosResourceId;
+            string aadTenant = scaleUnitInstance.AuthConfiguration.Authority;
+            string aadClientAppId = scaleUnitInstance.AuthConfiguration.AppId;
+            string aadClientAppSecret = scaleUnitInstance.AuthConfiguration.AppSecret;
+
+            string aadResource = scaleUnitInstance.AppResourceId();
 
             var httpClient = new HttpClient
             {
-                BaseAddress = new Uri(AosEndpoint)
+                BaseAddress = new Uri(scaleUnitInstance.Endpoint())
             };
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
-            AOSClient client = new AOSClient(httpClient);
+            AOSClient client = new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
 
             return client;
         }
 
         public async Task<ScaleUnitEnvironmentConfiguration> WriteScaleUnitConfiguration(ScaleUnitEnvironmentConfiguration config)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/");
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/");
 
             var serializedConfig = Newtonsoft.Json.JsonConvert.SerializeObject(config);
 
@@ -64,7 +67,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         public async Task<ScaleUnitStatus> CheckScaleUnitConfigurationStatus()
         {
             // Call requires an empty payload.
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/");
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/");
             var getPayload = "{}";
             msg.Content = new StringContent(getPayload, Encoding.UTF8, "application/json");
             var response = await httpClient.SendAsync(msg);
@@ -83,7 +86,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> WriteWorkloadInstances(List<WorkloadInstance> workloadInstances)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"api/services/SysWorkloadServices/SysWorkloadInstanceService/write/");
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/write/");
 
             // Double serialize the payload in order to avoid serialization complication issues on the AOS.
             var serializedWlInstances = Newtonsoft.Json.JsonConvert.SerializeObject(workloadInstances);
@@ -110,7 +113,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<Workload>> GetWorkloads()
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"api/services/SysWorkloadServices/SysWorkloadService/get/");
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/");
 
             // Call requires an empty payload.
             var getPayload = "{}";
@@ -134,7 +137,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/");
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/");
 
             // Call requires an empty payload.
             // Wrap in object that allows the AOS to map in to method params on the service class.
