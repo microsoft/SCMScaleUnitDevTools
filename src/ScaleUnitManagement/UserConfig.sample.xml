@@ -35,7 +35,9 @@ UserConfig.xml according to this sample. You can follow the documentation from h
       <!-- The Auth configuration contains the information that is needed to authorize the connection 
       of the tool to this environment. -->
       <AuthConfiguration>
-        <!--Note: This app id must be registered in the SysAADClientTable in the environment.-->
+        <!--Note: This app id must be registered in the SysAADClientTable in the environment.
+        This happens automatically during step 1) "Initialize the hybrid topology".
+        In case you don't run step 1, you need to whitelist the app id manually.-->
         <!--Eg.  https://YOUR_HUB_ENVIRONMENT_URL/?cmp=DAT&mi=SysAADClientTable -->
         <AppId></AppId>
         <AppSecret></AppSecret>

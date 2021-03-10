@@ -206,7 +206,6 @@ namespace ScaleUnitManagement.Utilities
     public class CloudAndEdgeConfiguration
     {
         public bool UseSingleOneBox { get; set; }
-        public string AADTenantId { get; set; }
         public AuthConfiguration InterAOSAADConfiguration { get; set; }
         public List<ScaleUnitInstance> ScaleUnitConfiguration { get; set; }
         public List<ConfiguredWorkload> Workloads { get; set; }
@@ -231,7 +230,7 @@ namespace ScaleUnitManagement.Utilities
         public EnvironmentType EnvironmentType { get; set; }
         public string ServiceVolume { get; set; }
         public AuthConfiguration AuthConfiguration { get; set; }
-        
+
         public string AppResourceId()
         {
             return string.IsNullOrWhiteSpace(this.AuthConfiguration.AppResourceId)
