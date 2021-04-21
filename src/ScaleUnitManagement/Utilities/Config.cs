@@ -193,10 +193,10 @@ namespace ScaleUnitManagement.Utilities
             {
                 ValidateValue("ScaleUnitId", workload.ScaleUnitId);
 
-                if (ScaleUnitInstances().Where(s => s.ScaleUnitId == workload.ScaleUnitId).Count() == 0)
+                if (!ScaleUnitInstances().Any(s => s.ScaleUnitId == workload.ScaleUnitId))
                 {
                     hasAnyError = true;
-                    Console.Error.WriteLine($"The Workload {workload.Name} has not been assigned to an existing Scale Unit. Currently assigned to: {workload.ScaleUnitId}");
+                    Console.Error.WriteLine($"Workload {workload.Name}'s Scale Unit assignment refers to a Scale Unit ({workload.ScaleUnitId}) that is not declared in the configuration.");
                 }
             }
 
