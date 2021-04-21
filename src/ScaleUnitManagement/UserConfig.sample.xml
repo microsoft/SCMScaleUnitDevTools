@@ -18,7 +18,7 @@ UserConfig.xml according to this sample. You can follow the documentation from h
     <!-- Specify first your hub environment. The always has the ScaleUnitId '@@' -->
     <ScaleUnitInstance>
       <Domain>YOUR_HUB_ENVIRONMENT_URL</Domain>
-      <IpAddress>YOUR_HUB_ENVIRONMENT_IP</IpAddress>
+      <IpAddress></IpAddress>
       <AzureStorageConnectionString></AzureStorageConnectionString>
       <AxDbName>AxDB</AxDbName>
       <ScaleUnitName>hub</ScaleUnitName>
