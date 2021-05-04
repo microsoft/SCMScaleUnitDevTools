@@ -23,26 +23,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            string cmd = $@"
-                if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{
-                    Stop-Service -Name {scaleUnit.BatchServiceName()};
-                }}
+            ServiceHelper.StopService(scaleUnit.BatchServiceName(), timeout: TimeSpan.FromMinutes(1));
 
-                .$env:systemroot\System32\inetsrv\appcmd.exe stop apppool /apppool.name:{scaleUnit.AppPoolName()};
-                .$env:systemroot\System32\inetsrv\appcmd.exe stop site /site.name:{scaleUnit.SiteName()}; 
-            ";
-
-            var ce = new CommandExecutor();
-
-            try
-            {
-                ce.RunCommand(cmd);
-            }
-            catch (Exception)
-            {
-                if (!Config.UseSingleOneBox())
-                    throw;
-            }
+            IISAdministrationHelper.StopAppPoolAndSite(scaleUnit.AppPoolName(), scaleUnit.SiteName());
 
             return Task.CompletedTask;
         }

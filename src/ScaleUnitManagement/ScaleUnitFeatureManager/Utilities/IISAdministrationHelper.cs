@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Web.Administration;
 using ScaleUnitManagement.Utilities;
 
@@ -44,6 +46,52 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             }
         }
 
+        internal static void StopAppPoolAndSite(string appPoolName, string siteName)
+        {
+            using (ServerManager manager = new ServerManager())
+            {
+                ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
+                Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
+
+                if (pool?.State == ObjectState.Started)
+                {
+                    Console.WriteLine($"Stopping IIS application pool {pool.Name}..");
+                    pool.Stop();
+                    Console.WriteLine($"Successfully stopped IIS application pool {pool.Name}");
+                }
+
+                if (site?.State == ObjectState.Started)
+                {
+                    Console.WriteLine($"Stopping IIS site {site.Name}..");
+                    site.Stop();
+                    Console.WriteLine($"Successfully stopped IIS site {site.Name}");
+                }
+            }
+        }
+
+        internal static void StartAppPoolAndSite(string appPoolName, string siteName)
+        {
+            using (ServerManager manager = new ServerManager())
+            {
+                ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
+                Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
+
+                if (pool?.State == ObjectState.Stopped)
+                {
+                    Console.WriteLine($"Starting IIS application pool {pool.Name}..");
+                    pool.Start();
+                    Console.WriteLine($"Successfully started IIS application pool {pool.Name}");
+                }
+
+                if (site?.State == ObjectState.Stopped)
+                {
+                    Console.WriteLine($"Starting IIS site {site.Name}..");
+                    site.Start();
+                    Console.WriteLine($"Successfully started IIS site {site.Name}");
+                }
+            }
+        }
+
         private static void CreateAppPoolForScaleUnit(ScaleUnitInstance scaleUnit, string appPoolName)
         {
             CloneScaleUnitWebRoot(scaleUnit);
@@ -77,8 +125,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
+            string robocopyLogPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                "robocopy.log");
+
             string cmd =
-                $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT; ";
+                $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT /log+:{robocopyLogPath};";
 
             CommandExecutor ce = new CommandExecutor();
             ce.RunCommand(cmd, new List<int>() { 0, 1 });

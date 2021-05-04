@@ -1,9 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
@@ -76,7 +74,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             string cmd = $@"
                 if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{
-                    .$env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()};
+                    . $env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()};
+                    Write-Host 'Waiting 10 seconds for Service Deletion to propagate...'
+                    Start-Sleep -Seconds 10
                 }}
 
                 $secpasswd = (new-object System.Security.SecureString);

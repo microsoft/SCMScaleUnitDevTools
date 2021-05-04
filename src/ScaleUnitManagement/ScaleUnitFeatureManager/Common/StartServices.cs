@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
@@ -22,14 +23,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            string cmd = $@"
-                 Start-Service -Name {scaleUnit.BatchServiceName()};
-                 .$env:systemroot\System32\inetsrv\appcmd.exe start apppool /apppool.name:{scaleUnit.AppPoolName()};
-                 .$env:systemroot\System32\inetsrv\appcmd.exe start site /site.name:{scaleUnit.SiteName()}; 
-            ";
+            ServiceHelper.StartService(scaleUnit.BatchServiceName(), timeout: TimeSpan.FromMinutes(1));
 
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            IISAdministrationHelper.StartAppPoolAndSite(scaleUnit.AppPoolName(), scaleUnit.SiteName());
 
             return Task.CompletedTask;
         }
