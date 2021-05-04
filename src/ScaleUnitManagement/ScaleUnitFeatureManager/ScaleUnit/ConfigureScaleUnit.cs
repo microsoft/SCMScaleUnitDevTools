@@ -44,15 +44,15 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
                 if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
-                    webConfig.UpdateXElement("Infrastructure.FullyQualifiedDomainName", scaleUnit.DomainSafe());
-                    webConfig.UpdateXElement("Infrastructure.HostName", scaleUnit.DomainSafe());
-                    webConfig.UpdateXElement("Infrastructure.HostedServiceName", scaleUnit.ScaleUnitUrlName());
+                    webConfig.UpdateXElementIfExists("Infrastructure.FullyQualifiedDomainName", scaleUnit.DomainSafe());
+                    webConfig.UpdateXElementIfExists("Infrastructure.HostName", scaleUnit.DomainSafe());
+                    webConfig.UpdateXElementIfExists("Infrastructure.HostedServiceName", scaleUnit.ScaleUnitUrlName());
 
                     string scaleUnitUrl = scaleUnit.Endpoint() + "/";
-                    webConfig.UpdateXElement("Infrastructure.HostUrl", scaleUnitUrl);
-                    webConfig.UpdateXElement("Infrastructure.SoapServicesUrl", scaleUnitUrl);
+                    webConfig.UpdateXElementIfExists("Infrastructure.HostUrl", scaleUnitUrl);
+                    webConfig.UpdateXElementIfExists("Infrastructure.SoapServicesUrl", scaleUnitUrl);
 
-                    webConfig.UpdateXElement("DataAccess.Database", scaleUnit.AxDbName);
+                    webConfig.UpdateXElementIfExists("DataAccess.Database", scaleUnit.AxDbName);
 
                     webConfig.AddValidAudiences(scaleUnit);
                 }

@@ -47,11 +47,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             }
         }
 
-        public void UpdateXElement(string key, string value)
+        public void UpdateXElementIfExists(string key, string value)
         {
             var element = doc.Descendants()
                     .Where(x => (string)x.Attribute("key") == key)
                     .FirstOrDefault();
+
+            if (element is null)
+            {
+                return;
+            }
+
             element.SetAttributeValue("value", value);
         }
 

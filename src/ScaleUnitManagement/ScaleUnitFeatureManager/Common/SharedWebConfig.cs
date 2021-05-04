@@ -13,7 +13,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {
                 if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
-                    webConfig.UpdateXElement("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
+                    webConfig.UpdateXElementIfExists("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
             }
 
             webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);

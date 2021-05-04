@@ -74,8 +74,10 @@ namespace CLI
                     Console.WriteLine("Executing step: " + AvailableSteps[i].Label());
                     await AvailableSteps[i].Run();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.Error.WriteLine($"Error occurred while enabling scale unit feature:\n{ex}");
+
                     if (!CLIMenu.YesNoPrompt("Step " + AvailableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
                         break;
                 }
