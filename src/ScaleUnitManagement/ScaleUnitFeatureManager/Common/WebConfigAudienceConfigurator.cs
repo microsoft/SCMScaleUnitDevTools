@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             if (validAudiencesToAdd.Any())
             {
-                webConfig.UpdateXElement(validAudienceConfigKey, string.Join(";", aadValidAudiences.Concat(validAudiencesToAdd)));
+                webConfig.UpdateXElementIfExists(validAudienceConfigKey, string.Join(";", aadValidAudiences.Concat(validAudiencesToAdd)));
             }
         }
     }

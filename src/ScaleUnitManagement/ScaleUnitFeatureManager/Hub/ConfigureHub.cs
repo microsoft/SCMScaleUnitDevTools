@@ -30,7 +30,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
                 if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
                 {
-                    webConfig.UpdateXElement("Infrastructure.StartStorageEmulator", "false");
+                    webConfig.UpdateXElementIfExists("Infrastructure.StartStorageEmulator", "false");
 
                     webConfig.AddValidAudiences(scaleUnit);
                 }
