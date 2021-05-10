@@ -10,6 +10,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             RunServiceAction(serviceName, svc => {
                 Console.WriteLine($"Starting service {serviceName}..");
 
+                if (svc.Status == ServiceControllerStatus.Running)
+                {
+                    Console.WriteLine($"{serviceName} already started");
+                    return;
+                }
+
                 svc.Start();
                 svc.WaitForStatus(ServiceControllerStatus.Running, timeout);
 
@@ -19,6 +25,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         public static void StopService(string serviceName, TimeSpan timeout) =>
             RunServiceAction(serviceName, svc => {
                 Console.WriteLine($"Stopping service {serviceName}..");
+
+                if (svc.Status != ServiceControllerStatus.Running)
+                {
+                    Console.WriteLine($"{serviceName} already stopping or stopped");
+                    return;
+                }
 
                 svc.Stop();
                 svc.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
