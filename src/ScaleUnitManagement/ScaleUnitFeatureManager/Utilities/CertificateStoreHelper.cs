@@ -78,7 +78,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 + " -KeyAlgorithm " + CommandExecutor.Quotes + "RSA" + CommandExecutor.Quotes + " -KeyLength 2048"
                 + " -HashAlgorithm " + CommandExecutor.Quotes + "SHA256" + CommandExecutor.Quotes
                 + " -CertStoreLocation " + CommandExecutor.Quotes + @"Cert:\LocalMachine\My" + CommandExecutor.Quotes
-                + " -KeyUsage KeyEncipherment -FriendlyName " + CommandExecutor.Quotes + "HTTPS development certificate" + CommandExecutor.Quotes
+                + " -KeyUsage KeyEncipherment -FriendlyName " + CommandExecutor.Quotes + certificateSubject + CommandExecutor.Quotes
                 + " -TextExtension @(" + CommandExecutor.Quotes + "2.5.29.19={critical}{text}" + CommandExecutor.Quotes
                 + "," + CommandExecutor.Quotes + "2.5.29.37={critical}{text}1.3.6.1.5.5.7.3.1" + CommandExecutor.Quotes
                 + "," + CommandExecutor.Quotes + "2.5.29.17={critical}{text}DNS=" + certificateSubject + CommandExecutor.Quotes + ")";
