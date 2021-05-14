@@ -66,7 +66,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             {
                                 new TemporalAssignment()
                                 {
-                                    EffectiveDate = DateTime.Now,
+                                    EffectiveDate = DateTime.UtcNow,
                                     Environment = new PhysicalEnvironmentReference()
                                     {
                                         Id = Config.ScaleUnitEnvironmentId,
@@ -248,7 +248,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     {
                         new TemporalAssignment()
                         {
-                            EffectiveDate = DateTime.Now,
+                            EffectiveDate = DateTime.UtcNow,
                             Environment = new PhysicalEnvironmentReference()
                             {
                                 Id = Config.ScaleUnitEnvironmentId,
