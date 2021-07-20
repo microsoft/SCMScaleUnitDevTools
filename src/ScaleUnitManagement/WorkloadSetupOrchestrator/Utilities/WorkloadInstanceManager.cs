@@ -66,7 +66,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             {
                                 new TemporalAssignment()
                                 {
-                                    EffectiveDate = DateTime.UtcNow,
+                                    EffectiveDate = GetWorkloadEffectiveDate(),
                                     Environment = new PhysicalEnvironmentReference()
                                     {
                                         Id = Config.ScaleUnitEnvironmentId,
@@ -248,7 +248,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     {
                         new TemporalAssignment()
                         {
-                            EffectiveDate = DateTime.UtcNow,
+                            EffectiveDate = GetWorkloadEffectiveDate(),
                             Environment = new PhysicalEnvironmentReference()
                             {
                                 Id = Config.ScaleUnitEnvironmentId,
@@ -274,6 +274,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             return sysWorkloadInstances;
+        }
+
+        private static DateTime GetWorkloadEffectiveDate()
+        {
+            DateTime effectiveDate = DateTime.UtcNow;
+            if (!AxDeployment.IsApplicationVersionMoreRecentThan("10.0.21"))
+            {
+                effectiveDate.AddMinutes(5);
+            }
+            return effectiveDate;
         }
 
         public static async Task<WorkloadInstanceStatus> GetWorkloadInstanceStatus(AOSClient client, string workloadInstanceId)
