@@ -153,6 +153,7 @@ namespace ScaleUnitManagement.Utilities
                 if (!scaleUnit.IsHub() && (integralScaleUnitId < 1 || 1000 <= integralScaleUnitId))
                     Console.Error.WriteLine("ScaleUnitId is not in the mnemonic range (between 0 and 1000)");
 
+
                 if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
                     Console.Error.WriteLine("ScaleUnitId is not unique");
 
