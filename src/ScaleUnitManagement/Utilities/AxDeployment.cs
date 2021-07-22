@@ -39,9 +39,11 @@ namespace ScaleUnitManagement.Utilities
             string[] deployedApplicationVersion = GetApplicationVersion().Split('.');
             string[] compareToVersion = version.Split('.');
 
-            for (int i = 0; i < deployedApplicationVersion.Length && i < compareToVersion.Length; i++)
+            for (int i = 0; i < deployedApplicationVersion.Length; i++)
             {
-                if (Int32.Parse(deployedApplicationVersion[i]) < Int32.Parse(compareToVersion[i]))
+                if (i >= compareToVersion.Length)
+                    return true;
+                else if (Int32.Parse(deployedApplicationVersion[i]) < Int32.Parse(compareToVersion[i]))
                     return false;
                 else if (Int32.Parse(deployedApplicationVersion[i]) > Int32.Parse(compareToVersion[i]))
                     return true;

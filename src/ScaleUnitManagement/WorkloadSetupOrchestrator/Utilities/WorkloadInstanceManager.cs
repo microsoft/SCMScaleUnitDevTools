@@ -279,7 +279,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private static DateTime GetWorkloadEffectiveDate()
         {
             DateTime effectiveDate = DateTime.UtcNow;
-            if (!AxDeployment.IsApplicationVersionMoreRecentThan("10.0.21"))
+            if (!AxDeployment.IsApplicationVersionMoreRecentThan("10.13"))
             {
                 effectiveDate.AddMinutes(5);
             }

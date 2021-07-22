@@ -51,5 +51,17 @@ namespace ScaleUnitManagementTests
             // Act + Assert
             AxDeployment.IsApplicationVersionMoreRecentThan("10.8.107.1233").Should().BeFalse();
         }
+
+        [TestMethod]
+        public void IsApplicationVersionMoreRecentThan_SpecificVersion()
+        {
+            // Arrange
+            AxDeploymentTestable.SetApplicationVersion("10.13.1837");
+
+            // Act + Assert
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.13.0").Should().BeTrue();
+            AxDeployment.IsApplicationVersionMoreRecentThan("10.13").Should().BeTrue();
+        }
+
     }
 }
