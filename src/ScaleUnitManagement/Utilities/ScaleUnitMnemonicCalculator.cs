@@ -22,16 +22,16 @@ namespace ScaleUnitManagement.Utilities
                 return "@@";
             }
 
-            StringBuilder mnemonicString = new StringBuilder();
+            string mnemonicString = "";
             const char baseChar = '@';
             const int numberBase = 27;
             while (integralValue > 0)
             {
                 int remainder = integralValue % numberBase;
                 integralValue /= numberBase;
-                mnemonicString.Append((char)(baseChar + remainder));
+                mnemonicString += (char)(baseChar + remainder);
             }
-            var result = new String(mnemonicString.ToString().Reverse().ToArray());
+            var result = new String(mnemonicString.Reverse().ToArray());
             if (result.Count() == 1)
             {
                 // Prefix with additive identity.
@@ -47,18 +47,16 @@ namespace ScaleUnitManagement.Utilities
             // Use '@' as base so that 'A' isn't logically zero, making 'AAA' is different from 'AA', e.g.
             const char baseChar = '@';
             int integralValue = 0;
-            int i = 0;
-            foreach (var charIt in mnemonic)
+            for (int i = 0; i < mnemonic.Length; i++)
             {
-                int value = charIt - baseChar;
+                int value = mnemonic[i] - baseChar;
                 if (value < 0 || value >= 27)
                 {
-                    throw new Exception($"Scale set mnemonic has the invalid character '{charIt}'. Valid character values are '@' and the alpha characters A through Z.");
+                    throw new Exception($"Scale set mnemonic has the invalid character '{mnemonic[i]}'. Valid character values are '@' and the alpha characters A through Z.");
                 }
 
                 var position = mnemonic.Length - 1 - i;
                 integralValue += value * (int)Math.Pow(27, position);
-                i++;
             }
 
             return integralValue;
