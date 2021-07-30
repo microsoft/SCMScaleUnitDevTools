@@ -13,7 +13,6 @@ namespace CLI
         {
             var options = new List<CLIOption>();
 
-            options.Add(new CLIOption() { Name = "Hub", Command = SyncHubDB });
 
             if (Config.UseSingleOneBox())
             {
@@ -25,7 +24,10 @@ namespace CLI
                     options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = SyncSpokeDB });
                 }
             }
-
+            else
+            {
+                options.Add(new CLIOption() { Name = "Hub", Command = SyncHubDB });
+            }
 
             var screen = new CLIScreen(options, "Home", "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
             await CLIMenu.ShowScreen(screen);
