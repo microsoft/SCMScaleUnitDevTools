@@ -149,6 +149,24 @@ namespace ScaleUnitManagement.Utilities
                 ValidateValue("AppSecret", scaleUnit.AuthConfiguration.AppSecret);
                 ValidateValue("Authority", scaleUnit.AuthConfiguration.Authority);
 
+                if (!scaleUnit.IsHub())
+                {
+                    try
+                    {
+                        int integralScaleUnitId = ScaleUnitMnemonicCalculator.ToIntegralValue(scaleUnit.ScaleUnitId);
+                        if (integralScaleUnitId < 1 || integralScaleUnitId >= 1000)
+                        {
+                            Console.Error.WriteLine("ScaleUnitId \"" + (scaleUnit.ScaleUnitId) + "\" (" + integralScaleUnitId + ") is not in the mnemonic range (between 1 and 1000)");
+                            hasAnyError = true;
+                        }
+                    } catch (Exception e)
+                    {
+                        hasAnyError = true;
+                        Console.Error.WriteLine(e.Message);
+                    }
+                }
+
+
                 if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
                     Console.Error.WriteLine("ScaleUnitId is not unique");
 
