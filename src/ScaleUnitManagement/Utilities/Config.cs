@@ -156,7 +156,7 @@ namespace ScaleUnitManagement.Utilities
                         int integralScaleUnitId = ScaleUnitMnemonicCalculator.ToIntegralValue(scaleUnit.ScaleUnitId);
                         if (integralScaleUnitId < 1 || integralScaleUnitId >= 1000)
                         {
-                            Console.Error.WriteLine("ScaleUnitId is not in the mnemonic range (between 1 and 1000)");
+                            Console.Error.WriteLine("ScaleUnitId \"" + (scaleUnit.ScaleUnitId) + "\" (" + integralScaleUnitId + ") is not in the mnemonic range (between 1 and 1000)");
                             hasAnyError = true;
                         }
                     } catch (Exception e)
