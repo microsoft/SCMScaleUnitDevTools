@@ -4,6 +4,7 @@ using CLIFramework;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
 using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;
+using System;
 
 namespace CLI
 {
@@ -35,8 +36,15 @@ namespace CLI
 
         private static async Task SyncHubDB(int input, string selectionHistory)
         {
-            HubDBSync hubDBSync = new HubDBSync();
-            await hubDBSync.Run();
+            try
+            {
+                HubDBSync hubDBSync = new HubDBSync();
+                await hubDBSync.Run();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
+            }
         }
         private static async Task SyncSpokeDB(int input, string selectionHistory)
         {
@@ -45,7 +53,14 @@ namespace CLI
             ScaleUnitDBSync scaleUnitDBSync = new ScaleUnitDBSync();
             using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
             {
-                await scaleUnitDBSync.Run();
+                try
+                {
+                    await scaleUnitDBSync.Run();
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
+                }
             }
         }
     }
