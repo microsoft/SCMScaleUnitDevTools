@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
 using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;
 using System;
 
@@ -13,40 +12,19 @@ namespace CLI
         public static async Task Show(int input, string selectionHistory)
         {
             var options = new List<CLIOption>();
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
 
-
-            if (Config.UseSingleOneBox())
+            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
             {
-                List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-                scaleUnitInstances.Sort();
-
-                foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
-                {
-                    options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = SyncSpokeDB });
-                }
-            }
-            else
-            {
-                options.Add(new CLIOption() { Name = "Hub", Command = SyncHubDB });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunSyncDB });
             }
 
             var screen = new CLIScreen(options, "Home", "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static async Task SyncHubDB(int input, string selectionHistory)
-        {
-            try
-            {
-                HubDBSync hubDBSync = new HubDBSync();
-                await hubDBSync.Run();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
-            }
-        }
-        private static async Task SyncSpokeDB(int input, string selectionHistory)
+        private static async Task RunSyncDB(int input, string selectionHistory)
         {
             List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
             scaleUnitInstances.Sort();
