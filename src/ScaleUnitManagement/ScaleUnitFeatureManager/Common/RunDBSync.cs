@@ -19,7 +19,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         public void Run()
         {
-            Console.WriteLine("2. Executing DbSync");
+            Console.WriteLine("Executing DbSync");
 
             try
             {
