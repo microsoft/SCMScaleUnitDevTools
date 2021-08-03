@@ -135,6 +135,30 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
+        public async Task<List<WorkloadInstance>> GetWorkloadInstances()
+        {
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/get/");
+
+            // Call requires an empty payload.
+            var getPayload = "{}";
+            msg.Content = new StringContent(getPayload, Encoding.UTF8, "application/json");
+            var response = await httpClient.SendAsync(msg);
+
+            // The result is a double serialized string coming back from the AOS. This is done to avoid serialization "complications" on the AOS.
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                string json = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result);
+                List<WorkloadInstance> parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
+                return parsed;
+            }
+            else
+            {
+                throw RequestFailure((int)response.StatusCode, result);
+            }
+        }
+
         public async Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId)
         {
             var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/");
