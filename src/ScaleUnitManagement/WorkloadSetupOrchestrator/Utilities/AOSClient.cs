@@ -111,6 +111,35 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
+        public async Task<List<WorkloadInstance>> DeleteWorkloadInstances(List<WorkloadInstance> workloadInstances)
+        {
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/");
+
+            // Double serialize the payload in order to avoid serialization complication issues on the AOS.
+            var serializedWlInstances = Newtonsoft.Json.JsonConvert.SerializeObject(workloadInstances);
+            var serializedAsString = Newtonsoft.Json.JsonConvert.SerializeObject(serializedWlInstances);
+
+            // Wrap in object that allows the AOS to map in to method params on the service class.
+            // runSync is set to false because we don't want to run CDX infrastructure setup when deleting workload instances.
+            var writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": false}}";
+            msg.Content = new StringContent(writePayload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.SendAsync(msg);
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                string json = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result);
+                List<WorkloadInstance> parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
+                return parsed;
+            }
+            else
+            {
+                throw RequestFailure((int)response.StatusCode, result);
+            }
+
+        }
+
         public async Task<List<Workload>> GetWorkloads()
         {
             var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/");
@@ -203,7 +232,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw RequestFailure((int)response.StatusCode, result);
             }
         }
-
 
         private static Exception RequestFailure(int statusCode, string response)
         {
