@@ -30,11 +30,40 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     }
                     workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
                 }
-                
                 await aosClient.WriteWorkloadInstances(workloadInstances);
             }, "Move workloads back to hub");
         }
 
+        public static async Task ShowMovementStatus()
+        {
+            await ReliableRun.Execute(async () =>
+            {
+                ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+                AOSClient aosClient = await AOSClient.Construct(scaleUnit);
+                List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
+                List<MovementState> stateList = new List<MovementState>();
+                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
+
+                foreach (WorkloadInstance workloadInstance in workloadInstances)
+                {
+                    string state = await getMovementState(aosClient, workloadInstance);
+                    stateList.Add(new MovementState(state));
+                }
+
+                int count = 0;
+                foreach (MovementState state in stateList)
+                {
+                    Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {state.getStatus()}");
+                    count++;
+                }
+            }, "Movement status");
+        }
+
+        private static async Task<string> getMovementState(AOSClient aosClient, WorkloadInstance workloadInstance)
+        {
+            TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
+            return await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate);
+        }
 
         private static TemporalAssignment CreateTemporalAssignment(string scaleUnitId, DateTime effectiveDate)
         {

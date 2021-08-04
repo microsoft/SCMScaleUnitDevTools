@@ -16,8 +16,9 @@ namespace CLI
             var installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
             var workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
             var moveWorkloadsOption = new CLIOption() { Name = "Move workloads back to hub", Command = MoveWorkloads.MoveAllWorkloads };
+            var workloadMovementStatusOption = new CLIOption() { Name = "Show workload movement status", Command = WorkloadMovementStatus.Show };
             var setupToolsOption = new CLIOption() { Name = "Setup tools", Command = SetupTools.Show };
-            var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installWorkloadsOption, workloadsInstallationStatusOption, moveWorkloadsOption, setupToolsOption };
+            var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installWorkloadsOption, workloadsInstallationStatusOption, moveWorkloadsOption, workloadMovementStatusOption, setupToolsOption };
 
             var screen = new CLIScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
             await CLIMenu.ShowScreen(screen);

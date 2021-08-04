@@ -182,6 +182,29 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
+        public async Task<string> GetWorkloadMovementState(string workloadInstanceId, DateTime afterDateTime)
+        {
+            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}/api/services/ScaleUnitInitializationServiceGroup/ScaleUnitLifeCycleService/getWorkloadMovementState");
+
+            // Wrap in object that allows the AOS to map in to method params on the service class.
+            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
+            msg.Content = new StringContent(writePayload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.SendAsync(msg);
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                string parsed = JsonConvert.DeserializeObject<string>(result);
+                return parsed;
+            }
+            else
+            {
+                throw RequestFailure((int)response.StatusCode, result);
+            }
+        }
+
+
         private static Exception RequestFailure(int statusCode, string response)
         {
             return new Exception($"[{statusCode}]: Error - {response}");
