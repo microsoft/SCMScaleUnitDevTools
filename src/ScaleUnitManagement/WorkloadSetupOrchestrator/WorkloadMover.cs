@@ -31,7 +31,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
                 }
                 await aosClient.WriteWorkloadInstances(workloadInstances);
-            }, "Move workloads back to hub");
+            }, $"Move workloads from scaleUnit {targetScaleUnit.ScaleUnitId} back to hub");
         }
 
         public static async Task ShowMovementStatus()

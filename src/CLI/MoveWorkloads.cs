@@ -17,10 +17,7 @@ namespace CLI
 
                 foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
                 {
-                    if (!scaleUnit.IsHub())
-                    {
-                        await MoveWorkloadsFromScaleUnitToHub(scaleUnit);
-                    }
+                    await MoveWorkloadsFromScaleUnitToHub(scaleUnit);
                 }
                 Console.WriteLine("done");
             }
@@ -35,7 +32,6 @@ namespace CLI
             string hubId = "@@";
             ScaleUnitInstance hub = Config.HubScaleUnit();
             DateTime effectiveTime = DateTime.UtcNow.AddMinutes(5);
-            await WorkloadMover.MoveWorkloads(hubId, hub, effectiveTime);
             await WorkloadMover.MoveWorkloads(hubId, scaleUnit, effectiveTime);
         }
     }

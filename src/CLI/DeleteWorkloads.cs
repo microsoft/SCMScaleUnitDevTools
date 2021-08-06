@@ -1,23 +1,41 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 using System;
+using CLIFramework;
+using ScaleUnitManagement.Utilities;
 
 namespace CLI
 {
     class DeleteWorkloads
     {
-        public static async Task DeleteWorkloadsFromHub(int input, string selectionHistory)
+
+        public static async Task Show(int input, string selectionHistory)
         {
-            try
+            var options = new List<CLIOption>();
+
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
+
+            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
             {
-                Console.WriteLine("Deleting all workloads from the hub");
-                await WorkloadDeleter.DeleteWorkloadsFromHub();
-                Console.WriteLine("done");
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = DeleteWorkloadsFromScaleUnit });
             }
-            catch (Exception ex)
+
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to delete all workloads from?: ");
+            await CLIMenu.ShowScreen(screen);
+        }
+
+        public static async Task DeleteWorkloadsFromScaleUnit(int input, string selectionHistory)
+        {
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
+
+            using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
             {
-                Console.Error.WriteLine($"An error occured while trying to delete workloads:\n{ex}");
+                await WorkloadDeleter.DeleteWorkloadsFromScaleUnit();
             }
+            Console.WriteLine("Done.");
         }
     }
 }
