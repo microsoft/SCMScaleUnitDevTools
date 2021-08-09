@@ -29,10 +29,19 @@ namespace CLI
 
         private static async Task MoveWorkloadsFromScaleUnitToHub(ScaleUnitInstance scaleUnit)
         {
-            string hubId = "@@";
-            ScaleUnitInstance hub = Config.HubScaleUnit();
-            DateTime effectiveTime = DateTime.UtcNow.AddMinutes(5);
-            await WorkloadMover.MoveWorkloads(hubId, scaleUnit, effectiveTime);
+
+
+            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+            scaleUnitInstances.Sort();
+
+            using (var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId))
+            {
+                string hubId = "@@";
+                ScaleUnitInstance hub = Config.HubScaleUnit();
+                DateTime effectiveTime = DateTime.UtcNow.AddMinutes(5);
+                WorkloadMover workloadMover = new WorkloadMover();
+                await workloadMover.MoveWorkloads(hubId, effectiveTime);
+            }
         }
     }
 }

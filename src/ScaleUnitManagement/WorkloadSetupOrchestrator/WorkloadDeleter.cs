@@ -2,20 +2,37 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.Contracts;
-using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 using ScaleUnitManagement.Utilities;
+using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
     public class WorkloadDeleter
     {
-        public static async Task DeleteWorkloadsFromScaleUnit()
+
+        private AOSClient aosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public WorkloadDeleter()
         {
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+         }
+
+        private async Task EnsureClientInitialized()
+        {
+            if (aosClient is null)
+            {
+                aosClient = await AOSClient.Construct(scaleUnit);
+            }
+        }
+
+
+        public async Task DeleteWorkloadsFromScaleUnit()
+        {
+            await EnsureClientInitialized();
 
             await ReliableRun.Execute(async () =>
             {
-                AOSClient aosClient = await AOSClient.Construct(scaleUnit);
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
                 if (workloadInstances.Count == 0)
                 {
@@ -31,9 +48,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                         if (workload != null)
                         {
                             Console.WriteLine($"Deleting {workload.Name} Id: {workload.WorkloadInstanceId}");
-
                         }
-
                     }
                     _ = await aosClient.DeleteWorkloadInstances(workloadInstances);
                 }

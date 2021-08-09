@@ -10,11 +10,28 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
     public class WorkloadMover
     {
-        public static async Task MoveWorkloads(string moveToId, ScaleUnitInstance targetScaleUnit, DateTime movementDateTime)
+        private AOSClient aosClient = null;
+        private readonly ScaleUnitInstance scaleUnit;
+
+        public WorkloadMover()
         {
+            this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+        }
+
+        private async Task EnsureClientInitialized()
+        {
+            if (aosClient is null)
+            {
+                aosClient = await AOSClient.Construct(scaleUnit);
+            }
+        }
+
+        public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
+        {
+            await EnsureClientInitialized();
+
             await ReliableRun.Execute(async () =>
             {
-                AOSClient aosClient = await AOSClient.Construct(targetScaleUnit);
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
                 DateTime now = DateTime.UtcNow;
 
@@ -23,7 +40,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     if (workloadInstance.ExecutingEnvironment.Count() > 0)
                     {
                         TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
-                        if (lastAssignment.Environment.ScaleUnitId == targetScaleUnit.ScaleUnitId)
+                        if (lastAssignment.Environment.ScaleUnitId == scaleUnit.ScaleUnitId)
                         {
                             continue;
                         }
@@ -31,11 +48,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
                 }
                 await aosClient.WriteWorkloadInstances(workloadInstances);
-            }, $"Move workloads from scaleUnit {targetScaleUnit.ScaleUnitId} back to hub");
+            }, $"Move workloads from scaleUnit {scaleUnit.ScaleUnitId} back to hub");
         }
 
-        public static async Task ShowMovementStatus()
+        public async Task ShowMovementStatus()
         {
+            await EnsureClientInitialized();
+
             await ReliableRun.Execute(async () =>
             {
                 ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
@@ -59,13 +78,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             }, "Movement status");
         }
 
-        private static async Task<string> getMovementState(AOSClient aosClient, WorkloadInstance workloadInstance)
+        private async Task<string> getMovementState(AOSClient aosClient, WorkloadInstance workloadInstance)
         {
             TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
             return await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate);
         }
 
-        private static TemporalAssignment CreateTemporalAssignment(string scaleUnitId, DateTime effectiveDate)
+        private TemporalAssignment CreateTemporalAssignment(string scaleUnitId, DateTime effectiveDate)
         {
             return new TemporalAssignment
             {

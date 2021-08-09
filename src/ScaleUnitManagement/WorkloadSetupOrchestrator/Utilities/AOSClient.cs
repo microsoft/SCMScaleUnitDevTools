@@ -10,7 +10,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
-    class AOSClient
+    public class AOSClient
     {
         private readonly HttpClient httpClient;
         private readonly string requestPathPrefix = "";

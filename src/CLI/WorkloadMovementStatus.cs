@@ -31,7 +31,8 @@ namespace CLI
 
             using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
             {
-                await WorkloadMover.ShowMovementStatus();
+                WorkloadMover workloadMover = new WorkloadMover();
+                await workloadMover.ShowMovementStatus();
             }
         }
     }

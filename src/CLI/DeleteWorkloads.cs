@@ -33,7 +33,8 @@ namespace CLI
 
             using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
             {
-                await WorkloadDeleter.DeleteWorkloadsFromScaleUnit();
+                WorkloadDeleter workloadDeleter = new WorkloadDeleter();
+                await workloadDeleter.DeleteWorkloadsFromScaleUnit();
             }
             Console.WriteLine("Done.");
         }
