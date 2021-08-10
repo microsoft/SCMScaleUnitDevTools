@@ -9,23 +9,26 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
     public class WorkloadDeleter
     {
-
-        private AOSClient aosClient = null;
+        private IAOSClient aosClient = null;
         private readonly ScaleUnitInstance scaleUnit;
 
         public WorkloadDeleter()
         {
             this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-         }
+        }
 
         private async Task EnsureClientInitialized()
         {
             if (aosClient is null)
             {
-                aosClient = await AOSClient.Construct(scaleUnit);
+                SetClient(await AOSClient.Construct(scaleUnit));
             }
         }
 
+        internal void SetClient(IAOSClient aosClient)
+        {
+            this.aosClient = aosClient;
+        }
 
         public async Task DeleteWorkloadsFromScaleUnit()
         {

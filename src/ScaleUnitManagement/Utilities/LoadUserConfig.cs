@@ -28,14 +28,28 @@ namespace ScaleUnitManagement.Utilities
                 var doc = new XmlDocument();
                 string exePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
+
                 string userConfigPath = Path.Combine(exePath, "UserConfig.xml");
 
-                if (!File.Exists(userConfigPath))
+                if (File.Exists(userConfigPath))
                 {
-                    throw new FileNotFoundException($"Missing UserConfig.xml, should be located at {userConfigPath}. Rename the sample file and fill in values for your Scale Unit project.", fileName: userConfigPath);
+                    doc.Load(userConfigPath);
+                }
+                else
+                {
+                    string unitTestExePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    string unitTestUserConfigPath = Path.Combine(unitTestExePath, "UserConfig.xml");
+
+                    if (File.Exists(unitTestUserConfigPath))
+                    {
+                        doc.Load(unitTestUserConfigPath);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException($"Missing UserConfig.xml, should be located at {userConfigPath}. Rename the sample file and fill in values for your Scale Unit project.", fileName: userConfigPath);
+                    }
                 }
 
-                doc.Load(userConfigPath);
                 TrimChildNodes(doc.ChildNodes);
 
                 var serializer = new XmlSerializer(typeof(CloudAndEdgeConfiguration), new XmlRootAttribute("CloudAndEdgeConfiguration"));

@@ -10,7 +10,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
     public class WorkloadMover
     {
-        private AOSClient aosClient = null;
+        private IAOSClient aosClient = null;
         private readonly ScaleUnitInstance scaleUnit;
 
         public WorkloadMover()
@@ -22,8 +22,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             if (aosClient is null)
             {
-                aosClient = await AOSClient.Construct(scaleUnit);
+                SetClient(await AOSClient.Construct(scaleUnit));
             }
+        }
+
+        internal void SetClient(IAOSClient aosClient)
+        {
+            this.aosClient = aosClient;
         }
 
         public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
@@ -40,7 +45,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     if (workloadInstance.ExecutingEnvironment.Count() > 0)
                     {
                         TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
-                        if (lastAssignment.Environment.ScaleUnitId == scaleUnit.ScaleUnitId)
+                        if (lastAssignment.Environment.ScaleUnitId == moveToId)
                         {
                             continue;
                         }

@@ -5,7 +5,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
     class MovementState
     {
         private readonly string state;
-        private static readonly string workloadMovementCompletedState = "ScaleUnitWorkloadMovementCompletedState";
+        private readonly string workloadMovementCompletedState = "ScaleUnitWorkloadMovementCompletedState";
 
         public MovementState(string state)
         {
