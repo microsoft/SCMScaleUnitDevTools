@@ -24,6 +24,14 @@ namespace ScaleUnitManagementTests
         public void Setup()
         {
             aosClient = new Mock<IAOSClient>();
+
+            Func<CloudAndEdgeConfiguration> loadConfigMock = () =>
+            {
+                ConfigurationHelper configurationHelper = new ConfigurationHelper();
+                return configurationHelper.ConstructTestConfiguration();
+            };
+
+            Config.UserConfigImplementation = loadConfigMock;
         }
 
         [TestMethod]
@@ -32,7 +40,8 @@ namespace ScaleUnitManagementTests
             // Arrange
             var toBeReturnedWorkloadInstances = new List<WorkloadInstance>();
 
-            WorkloadInstance workloadInstance = new WorkloadInstance { Id = Guid.NewGuid().ToString() };
+            ConfiguredWorkload configuredWorkload = Config.WorkloadList().First();
+            WorkloadInstance workloadInstance = new WorkloadInstance { Id = configuredWorkload.WorkloadInstanceId };
             workloadInstance.ExecutingEnvironment.Add(new TemporalAssignment
             {
                 EffectiveDate = DateTime.UtcNow,

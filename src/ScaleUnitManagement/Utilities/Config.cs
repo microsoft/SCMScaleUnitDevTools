@@ -15,7 +15,7 @@ namespace ScaleUnitManagement.Utilities
 
         private static CloudAndEdgeConfiguration UserConfig { get; set; }
 
-        private static CloudAndEdgeConfiguration UserConfiguration()
+        private static CloudAndEdgeConfiguration DefaultUserConfiguration()
         {
             if (UserConfig == null)
             {
@@ -24,6 +24,13 @@ namespace ScaleUnitManagement.Utilities
             }
 
             return UserConfig;
+        }
+
+        internal static Func<CloudAndEdgeConfiguration> UserConfigImplementation { get; set; } = DefaultUserConfiguration;
+
+        private static CloudAndEdgeConfiguration UserConfiguration()
+        {
+            return UserConfigImplementation();
         }
 
         public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
