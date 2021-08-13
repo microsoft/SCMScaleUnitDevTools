@@ -22,7 +22,7 @@ namespace CLI
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunSyncDB });
             }
 
-            var screen = new CLIScreen(options, "Home", "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
+            var screen = new CLIScreen(options, selectionHistory, "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
             await CLIMenu.ShowScreen(screen);
         }
 
