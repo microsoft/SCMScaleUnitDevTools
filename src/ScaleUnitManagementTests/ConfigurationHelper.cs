@@ -5,34 +5,35 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagementTests
 {
-    class ConfigurationHelper
+    internal class ConfigurationHelper
     {
 
         public CloudAndEdgeConfiguration ConstructTestConfiguration()
         {
-            ScaleUnitInstance spoke = new ScaleUnitInstance()
+            var spoke = new ScaleUnitInstance()
             {
                 ScaleUnitId = "@A"
             };
 
-            ScaleUnitInstance hub = new ScaleUnitInstance()
+            var hub = new ScaleUnitInstance()
             {
                 ScaleUnitId = "@@"
             };
 
-            List<ScaleUnitInstance> scaleUnitInstances = new List<ScaleUnitInstance>();
-            scaleUnitInstances.Add(spoke);
-            scaleUnitInstances.Add(hub);
+            var scaleUnitInstances = new List<ScaleUnitInstance>
+            {
+                spoke,
+                hub,
+            };
 
-
-            List<ConfiguredDynamicConstraintValue> constraintValues = new List<ConfiguredDynamicConstraintValue>();
+            var constraintValues = new List<ConfiguredDynamicConstraintValue>();
             constraintValues.Add(new ConfiguredDynamicConstraintValue()
             {
                 Value = "1",
                 DomainName = "LegalEntity"
             });
 
-            ConfiguredWorkload workload = new ConfiguredWorkload()
+            var workload = new ConfiguredWorkload()
             {
                 WorkloadInstanceId = Guid.NewGuid().ToString(),
                 Name = "testWorkload",
@@ -40,8 +41,7 @@ namespace ScaleUnitManagementTests
                 ConfiguredDynamicConstraintValues = constraintValues
             };
 
-            List<ConfiguredWorkload> workloads = new List<ConfiguredWorkload>();
-            workloads.Add(workload);
+            var workloads = new List<ConfiguredWorkload> { workload };
 
             return new CloudAndEdgeConfiguration()
             {

@@ -18,7 +18,7 @@ namespace ScaleUnitManagementTests
     {
         private Mock<IAOSClient> aosClient;
         private readonly string scaleUnitId = "@A";
-        
+
         [TestInitialize]
         public void Setup()
         {
@@ -30,39 +30,45 @@ namespace ScaleUnitManagementTests
                 return configurationHelper.ConstructTestConfiguration();
             };
 
-            Config.UserConfigImplementation = loadConfigMock;
+            Config.GetUserConfigImplementation = loadConfigMock;
         }
 
         [TestMethod]
         public async Task DeleteWorkloads()
         {
             // Arrange
-            var toBeReturnedWorkloadInstances = new List<WorkloadInstance>();
-
-            ConfiguredWorkload configuredWorkload = Config.WorkloadList().First();
-            WorkloadInstance workloadInstance = new WorkloadInstance { Id = configuredWorkload.WorkloadInstanceId };
+            var configuredWorkload = Config.WorkloadList().First();
+            var workloadInstance = new WorkloadInstance
+            {
+                Id = configuredWorkload.WorkloadInstanceId,
+                VersionedWorkload = new VersionedWorkload
+                {
+                    Workload = new Workload { Name = configuredWorkload.Name },
+                },
+            };
             workloadInstance.ExecutingEnvironment.Add(new TemporalAssignment
             {
                 EffectiveDate = DateTime.UtcNow,
                 Environment = new PhysicalEnvironmentReference() { ScaleUnitId = scaleUnitId },
             });
-            toBeReturnedWorkloadInstances.Add(workloadInstance);
+
+            var toBeReturnedWorkloadInstances = new List<WorkloadInstance> { workloadInstance };
 
             aosClient.Setup(x => x.GetWorkloadInstances())
-                .Returns(() => Task.FromResult(new List<WorkloadInstance>(toBeReturnedWorkloadInstances)));
+                .ReturnsAsync(new List<WorkloadInstance>(toBeReturnedWorkloadInstances));
 
             aosClient.Setup(x => x.DeleteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
                 .Callback<List<WorkloadInstance>>((deletedWorkloads) =>
                 {
                     toBeReturnedWorkloadInstances = toBeReturnedWorkloadInstances
-                                                        .Where(w1 => !deletedWorkloads.Any( w2 => w1.Id == w2.Id)).ToList();
+                                                        .Where(w1 => !deletedWorkloads.Any(w2 => w1.Id.Equals(w2.Id))).ToList();
                 })
-                .Returns(() => Task.FromResult(toBeReturnedWorkloadInstances));
+                .ReturnsAsync(toBeReturnedWorkloadInstances);
 
             // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
-                WorkloadDeleter workloadDeleter = new WorkloadDeleter();
+                var workloadDeleter = new WorkloadDeleter();
                 workloadDeleter.SetClient(aosClient.Object);
                 await workloadDeleter.DeleteWorkloadsFromScaleUnit();
             }

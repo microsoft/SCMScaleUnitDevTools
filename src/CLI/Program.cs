@@ -15,7 +15,7 @@ namespace CLI
             var configureEnvironmentOption = new CLIOption() { Name = "Prepare environments for workload installation", Command = ConfigureEnvironment.Show };
             var installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
             var workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
-            var moveWorkloadsOption = new CLIOption() { Name = "Move workloads back to hub", Command = MoveWorkloads.MoveAllWorkloads };
+            var moveWorkloadsOption = new CLIOption() { Name = "Move workloads to hub", Command = MoveWorkloads.MoveAllWorkloads };
             var workloadMovementStatusOption = new CLIOption() { Name = "Show workload movement status", Command = WorkloadMovementStatus.Show };
             var deleteWorkloadsOption = new CLIOption() { Name = "Delete workloads from environment", Command = DeleteWorkloads.Show };
             var setupToolsOption = new CLIOption() { Name = "Setup tools", Command = SetupTools.Show };

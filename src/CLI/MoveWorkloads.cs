@@ -6,7 +6,7 @@ using System;
 
 namespace CLI
 {
-    class MoveWorkloads
+    internal class MoveWorkloads
     {
         public static async Task MoveAllWorkloads(int input, string selectionHistory)
         {
@@ -19,7 +19,7 @@ namespace CLI
                 {
                     await MoveWorkloadsFromScaleUnitToHub(scaleUnit);
                 }
-                Console.WriteLine("done");
+                Console.WriteLine("Done");
             }
             catch (Exception ex)
             {
@@ -29,8 +29,6 @@ namespace CLI
 
         private static async Task MoveWorkloadsFromScaleUnitToHub(ScaleUnitInstance scaleUnit)
         {
-
-
             List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
             scaleUnitInstances.Sort();
 

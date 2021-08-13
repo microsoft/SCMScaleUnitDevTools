@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace ScaleUnitManagement.Utilities
 {
-    public class Config
+    public static class Config
     {
         public const int RetryCount = 5;
         public static string LogicalEnvironmentId = "82099c35-019e-45cf-9233-630ca5dd69ec";
@@ -15,7 +15,7 @@ namespace ScaleUnitManagement.Utilities
 
         private static CloudAndEdgeConfiguration UserConfig { get; set; }
 
-        private static CloudAndEdgeConfiguration DefaultUserConfiguration()
+        private static CloudAndEdgeConfiguration DefaultUserConfigurationImplementation()
         {
             if (UserConfig == null)
             {
@@ -26,27 +26,27 @@ namespace ScaleUnitManagement.Utilities
             return UserConfig;
         }
 
-        internal static Func<CloudAndEdgeConfiguration> UserConfigImplementation { get; set; } = DefaultUserConfiguration;
+        internal static Func<CloudAndEdgeConfiguration> GetUserConfigImplementation { get; set; } = DefaultUserConfigurationImplementation;
 
-        private static CloudAndEdgeConfiguration UserConfiguration()
+        private static CloudAndEdgeConfiguration GetUserConfiguration()
         {
-            return UserConfigImplementation();
+            return GetUserConfigImplementation();
         }
 
-        public static bool UseSingleOneBox() { return UserConfiguration().UseSingleOneBox; }
-        public static string InterAOSAppId() { return UserConfiguration().InterAOSAADConfiguration.AppId; }
-        public static string InterAOSAppSecret() { return UserConfiguration().InterAOSAADConfiguration.AppSecret; }
-        public static string InterAOSAuthority() { return UserConfiguration().InterAOSAADConfiguration.Authority; }
+        public static bool UseSingleOneBox() { return GetUserConfiguration().UseSingleOneBox; }
+        public static string InterAOSAppId() { return GetUserConfiguration().InterAOSAADConfiguration.AppId; }
+        public static string InterAOSAppSecret() { return GetUserConfiguration().InterAOSAADConfiguration.AppSecret; }
+        public static string InterAOSAuthority() { return GetUserConfiguration().InterAOSAADConfiguration.Authority; }
         public static string InterAOSAppResourceId(ScaleUnitInstance hubInstance = null)
         {
-            var userConfig = UserConfiguration();
+            var userConfig = GetUserConfiguration();
 
             return string.IsNullOrWhiteSpace(userConfig.InterAOSAADConfiguration.AppResourceId)
                 ? hubInstance?.Endpoint()
                 : userConfig.InterAOSAADConfiguration.AppResourceId;
         }
-        public static List<ScaleUnitInstance> ScaleUnitInstances() { return UserConfiguration().ScaleUnitConfiguration; }
-        public static List<ConfiguredWorkload> WorkloadList() { return UserConfiguration().Workloads; }
+        public static List<ScaleUnitInstance> ScaleUnitInstances() { return GetUserConfiguration().ScaleUnitConfiguration; }
+        public static List<ConfiguredWorkload> WorkloadList() { return GetUserConfiguration().Workloads; }
 
         public static ScaleUnitInstance FindScaleUnitWithId(string scaleUnitId) { return ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnitId).SingleOrDefault(); }
         public static ScaleUnitInstance NonHubScaleUnit() { return ScaleUnitInstances().Where(s => s.ScaleUnitId != "@@").SingleOrDefault(); }
@@ -166,7 +166,8 @@ namespace ScaleUnitManagement.Utilities
                             Console.Error.WriteLine("ScaleUnitId \"" + (scaleUnit.ScaleUnitId) + "\" (" + integralScaleUnitId + ") is not in the mnemonic range (between 1 and 1000)");
                             hasAnyError = true;
                         }
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         hasAnyError = true;
                         Console.Error.WriteLine(e.Message);

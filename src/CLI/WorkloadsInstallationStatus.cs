@@ -6,7 +6,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {
-    class WorkloadsInstallationStatus
+    internal static class WorkloadsInstallationStatus
     {
         public static async Task Show(int input, string selectionHistory)
         {

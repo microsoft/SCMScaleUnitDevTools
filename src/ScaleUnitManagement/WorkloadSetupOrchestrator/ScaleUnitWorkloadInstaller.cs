@@ -8,23 +8,9 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class ScaleUnitWorkloadInstaller
+    public class ScaleUnitWorkloadInstaller : AOSEndpoint
     {
-        private AOSClient scaleUnitAosClient = null;
-        private readonly ScaleUnitInstance scaleUnit;
-
-        public ScaleUnitWorkloadInstaller()
-        {
-            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (scaleUnitAosClient is null)
-            {
-                scaleUnitAosClient = await AOSClient.Construct(scaleUnit);
-            }
-        }
+        public ScaleUnitWorkloadInstaller() : base() { }
 
         public async Task Install()
         {
@@ -45,7 +31,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    statusList.Add(await WorkloadInstanceManager.GetWorkloadInstanceStatus(scaleUnitAosClient, workloadInstanceIdWithName.WorkloadInstanceId));
+                    statusList.Add(await WorkloadInstanceManager.GetWorkloadInstanceStatus(aosClient, workloadInstanceIdWithName.WorkloadInstanceId));
                 }
                 foreach (WorkloadInstanceStatus status in statusList)
                 {
@@ -57,7 +43,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
         {
-            if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
+            if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(aosClient, workloadInstance))
                 return;
 
             Console.WriteLine($"Waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload initial sync to complete");
@@ -78,7 +64,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     Console.WriteLine($"Waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload initial sync to complete");
                 }
 
-            } while (!await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance));
+            } while (!await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(aosClient, workloadInstance));
 
             Console.WriteLine();
         }
@@ -89,6 +75,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
+                IAOSClient scaleUnitAosClient = aosClient;
                 AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit());
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();

@@ -9,16 +9,12 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class ScaleUnitConfigurationManager
+    public class ScaleUnitConfigurationManager : AOSEndpoint
     {
-        private AOSClient scaleUnitAosClient = null;
         private readonly ScaleUnitEnvironmentConfiguration scaleUnitConfig;
-        private readonly ScaleUnitInstance scaleUnit;
 
-        public ScaleUnitConfigurationManager()
+        public ScaleUnitConfigurationManager() : base()
         {
-            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-
             scaleUnitConfig = new ScaleUnitEnvironmentConfiguration()
             {
                 AppId = Config.InterAOSAppId(),
@@ -28,14 +24,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
                 ScaleUnitType = "1",
             };
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (scaleUnitAosClient is null)
-            {
-                scaleUnitAosClient = await AOSClient.Construct(scaleUnit);
-            }
         }
 
         public async Task Configure()
@@ -52,7 +40,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                ScaleUnitEnvironmentConfiguration configuration = await scaleUnitAosClient.WriteScaleUnitConfiguration(scaleUnitConfig);
+                ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(scaleUnitConfig);
 
                 configuration.Should().NotBeNull("The AOS should have returned the configuration");
                 configuration.WithDeepEqual(scaleUnitConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
@@ -66,7 +54,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                ScaleUnitStatus status = await scaleUnitAosClient.CheckScaleUnitConfigurationStatus();
+                ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
 
                 status.Should().NotBeNull();
                 status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Scale unit should be in a healthy/running state.");

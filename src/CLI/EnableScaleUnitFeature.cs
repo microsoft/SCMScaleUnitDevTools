@@ -10,16 +10,17 @@ namespace CLI
 {
     class EnableScaleUnitFeature
     {
-        protected List<IStep> AvailableSteps;
+        protected List<IStep> availableSteps;
+        private static List<ScaleUnitInstance> sortedScaleUnits;
 
         public static async Task SelectScaleUnit(int input, string selectionHistory)
         {
             var options = new List<CLIOption>();
 
-            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-            scaleUnitInstances.Sort();
+            sortedScaleUnits = Config.ScaleUnitInstances();
+            sortedScaleUnits.Sort();
 
-            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
             {
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = PrintAvailableStepsForScaleUnit });
             }
@@ -30,12 +31,9 @@ namespace CLI
 
         private static async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
         {
-            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-            scaleUnitInstances.Sort();
-
-            using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
+            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
-                if (scaleUnitInstances[input - 1].ScaleUnitId == "@@")
+                if (sortedScaleUnits[input - 1].ScaleUnitId == "@@")
                     await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
                 else
                     await new EnableScaleUnitFeatureOnScaleUnit().PrintAvailableSteps(input, selectionHistory);
@@ -52,10 +50,10 @@ namespace CLI
         protected async Task PrintAvailableSteps(int input, string selectionHistory)
         {
             var options = new List<CLIOption>();
-            AvailableSteps = GetAvailableSteps();
-            AvailableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
+            availableSteps = GetAvailableSteps();
+            availableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (IStep s in AvailableSteps)
+            foreach (IStep s in availableSteps)
             {
                 options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
             }
@@ -67,18 +65,18 @@ namespace CLI
 
         private async Task RunStepsFromTask(int input, string selectionHistory)
         {
-            for (int i = input - 1; i < AvailableSteps.Count; i++)
+            for (int i = input - 1; i < availableSteps.Count; i++)
             {
                 try
                 {
-                    Console.WriteLine("Executing step: " + AvailableSteps[i].Label());
-                    await AvailableSteps[i].Run();
+                    Console.WriteLine("Executing step: " + availableSteps[i].Label());
+                    await availableSteps[i].Run();
                 }
                 catch (Exception ex)
                 {
                     Console.Error.WriteLine($"Error occurred while enabling scale unit feature:\n{ex}");
 
-                    if (!CLIMenu.YesNoPrompt("Step " + AvailableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
+                    if (!CLIMenu.YesNoPrompt("Step " + availableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
                         break;
                 }
             }

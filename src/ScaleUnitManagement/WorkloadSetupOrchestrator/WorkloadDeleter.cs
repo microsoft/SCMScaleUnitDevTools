@@ -2,33 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.Contracts;
-using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class WorkloadDeleter
+    public class WorkloadDeleter : AOSEndpoint
     {
-        private IAOSClient aosClient = null;
-        private readonly ScaleUnitInstance scaleUnit;
-
-        public WorkloadDeleter()
-        {
-            this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (aosClient is null)
-            {
-                SetClient(await AOSClient.Construct(scaleUnit));
-            }
-        }
-
-        internal void SetClient(IAOSClient aosClient)
-        {
-            this.aosClient = aosClient;
-        }
+        public WorkloadDeleter() : base() { }
 
         public async Task DeleteWorkloadsFromScaleUnit()
         {
@@ -40,21 +20,15 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 if (workloadInstances.Count == 0)
                 {
                     Console.WriteLine($"No workloads to delete on scale unit {scaleUnit.ScaleUnitId}");
+                    return;
                 }
-                else
-                {
-                    List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
 
-                    foreach (WorkloadInstance workloadInstance in workloadInstances)
-                    {
-                        WorkloadInstanceIdWithName workload = workloadInstanceIdWithNameList.Find(wl => wl.WorkloadInstanceId == workloadInstance.Id);
-                        if (workload != null)
-                        {
-                            Console.WriteLine($"Deleting {workload.Name} Id: {workload.WorkloadInstanceId}");
-                        }
-                    }
-                    _ = await aosClient.DeleteWorkloadInstances(workloadInstances);
+                foreach (WorkloadInstance workloadInstance in workloadInstances)
+                {
+                    string name = workloadInstance.VersionedWorkload.Workload.Name;
+                    Console.WriteLine($"Deleting {name} Id: {workloadInstance.Id}");
                 }
+                _ = await aosClient.DeleteWorkloadInstances(workloadInstances);
             }, $"Delete workloads from scale unit {scaleUnit.ScaleUnitId}");
         }
     }

@@ -3,33 +3,13 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.Contracts;
-using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class WorkloadMover
+    public class WorkloadMover : AOSEndpoint
     {
-        private IAOSClient aosClient = null;
-        private readonly ScaleUnitInstance scaleUnit;
-
-        public WorkloadMover()
-        {
-            this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (aosClient is null)
-            {
-                SetClient(await AOSClient.Construct(scaleUnit));
-            }
-        }
-
-        internal void SetClient(IAOSClient aosClient)
-        {
-            this.aosClient = aosClient;
-        }
+        public WorkloadMover() : base() { }
 
         public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
         {
@@ -38,14 +18,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             await ReliableRun.Execute(async () =>
             {
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
-                DateTime now = DateTime.UtcNow;
 
-                foreach (WorkloadInstance workloadInstance in workloadInstances)
+                foreach (var workloadInstance in workloadInstances)
                 {
-                    if (workloadInstance.ExecutingEnvironment.Count() > 0)
+                    if (workloadInstance.ExecutingEnvironment.Any())
                     {
                         TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
-                        if (lastAssignment.Environment.ScaleUnitId == moveToId)
+                        if (lastAssignment?.Environment.ScaleUnitId == moveToId)
                         {
                             continue;
                         }
@@ -53,7 +32,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
                 }
                 await aosClient.WriteWorkloadInstances(workloadInstances);
-            }, $"Move workloads from scaleUnit {scaleUnit.ScaleUnitId} back to hub");
+            }, $"Move workloads from scaleUnit {scaleUnit.ScaleUnitId} to hub");
         }
 
         public async Task ShowMovementStatus()
@@ -62,28 +41,20 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-                AOSClient aosClient = await AOSClient.Construct(scaleUnit);
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
-                List<MovementState> stateList = new List<MovementState>();
-                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
 
                 foreach (WorkloadInstance workloadInstance in workloadInstances)
                 {
-                    string state = await getMovementState(aosClient, workloadInstance);
-                    stateList.Add(new MovementState(state));
-                }
+                    string name = workloadInstance.VersionedWorkload.Workload.Name;
+                    string state = await GetMovementState(workloadInstance);
+                    var movementState = new MovementState(state);
 
-                int count = 0;
-                foreach (MovementState state in stateList)
-                {
-                    Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {state.getStatus()}");
-                    count++;
+                    Console.WriteLine($"{name} Id : {workloadInstance.Id} Workload movement status: {movementState.GetStatus()}");
                 }
             }, "Movement status");
         }
 
-        private async Task<string> getMovementState(AOSClient aosClient, WorkloadInstance workloadInstance)
+        private async Task<string> GetMovementState(WorkloadInstance workloadInstance)
         {
             TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
             return await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate);

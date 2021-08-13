@@ -31,7 +31,7 @@ namespace ScaleUnitManagementTests
                 return configurationHelper.ConstructTestConfiguration();
             };
 
-            Config.UserConfigImplementation = loadConfigMock;
+            Config.GetUserConfigImplementation = loadConfigMock;
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace ScaleUnitManagementTests
 
             // Assert
             toBeReturnedWorkloadInstances.Should().NotBeEmpty();
-            foreach(WorkloadInstance workload in toBeReturnedWorkloadInstances)
+            foreach (var workload in toBeReturnedWorkloadInstances)
             {
                 TemporalAssignment temporalAssignment = workload.ExecutingEnvironment.Last();
                 temporalAssignment.Environment.ScaleUnitId.Should().Be(hubId);

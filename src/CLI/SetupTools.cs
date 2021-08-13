@@ -4,7 +4,7 @@ using CLIFramework;
 
 namespace CLI
 {
-    class SetupTools
+    internal class SetupTools
     {
         public static async Task Show(int input, string selectionHistory)
         {

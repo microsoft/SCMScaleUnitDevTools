@@ -2,17 +2,17 @@ using System;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
-    class MovementState
+    internal class MovementState
     {
         private readonly string state;
-        private readonly string workloadMovementCompletedState = "ScaleUnitWorkloadMovementCompletedState";
+        private const string workloadMovementCompletedState = "ScaleUnitWorkloadMovementCompletedState";
 
         public MovementState(string state)
         {
             this.state = state;
         }
 
-        public string getStatus()
+        public string GetStatus()
         {
             if (String.IsNullOrEmpty(state))
             {
