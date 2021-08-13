@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
@@ -10,35 +9,65 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
     {
         public static string Quotes = "\"\"\"";
 
-        public void RunCommand(string cmd, List<int> successCodes)
+        private readonly Process process;
+
+        public CommandExecutor(string cmd)
         {
-            var process = ExecuteCommand(cmd);
+            process = BuildProcess("powershell", cmd);
+        }
+
+        public CommandExecutor(string executable, string arguments)
+        {
+            process = BuildProcess(executable, arguments);
+        }
+
+        public void RunCommand()
+        {
+            List<int> defaultExitCodes = new List<int>();
+            defaultExitCodes.Add(0);
+            RunCommand(defaultExitCodes);
+        }
+
+        public void RunCommand(List<int> successCodes)
+        {
+            RunProcess();
 
             if (!successCodes.Contains(process.ExitCode))
-                throw new Exception("Command: " + cmd);
+                throw new Exception($"Command: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
         }
 
-        public void RunCommand(string cmd)
+        private Process BuildProcess(string executable, string arguments)
         {
-            var process = ExecuteCommand(cmd);
-
-            if (process.ExitCode != 0)
-                throw new Exception("Command: " + cmd);
-        }
-
-        private static Process ExecuteCommand(string cmd)
-        {
-            var process = new Process
+            return new Process
             {
                 StartInfo = {
-                    FileName = "powershell",
-                    Arguments = cmd
+                    FileName = executable,
+                    Arguments = arguments
                 }
             };
+        }
 
+        public void AddOutputFile(string outputFile)
+        {
+            var outputStream = new StreamWriter(outputFile);
+            process.StartInfo.RedirectStandardOutput = true;
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                if (!String.IsNullOrEmpty(e.Data))
+                {
+                    outputStream.WriteLine(e.Data);
+                }
+            });
+        }
+
+        private void RunProcess()
+        {
             process.Start();
+            if (process.StartInfo.RedirectStandardOutput)
+            {
+                process.BeginOutputReadLine();
+            }
             process.WaitForExit();
-            return process;
         }
     }
 }

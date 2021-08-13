@@ -27,23 +27,23 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
                 string dbSyncTool = Path.Combine(scaleUnit.ServiceVolume, @"AOSService\PackagesLocalDirectory\bin\syncengine.exe");
                 string metaBinariesPath = Path.Combine(scaleUnit.ServiceVolume, @"AOSService\PackagesLocalDirectory");
+                string outputFile = $"{scaleUnit.AxDbName}_DbSync.log";
 
-                string cmd =
-                    dbSyncTool
-                    + " -syncmode=" + CommandExecutor.Quotes + "fullall" + CommandExecutor.Quotes
-                    + " -metadatabinaries=" + CommandExecutor.Quotes + metaBinariesPath + CommandExecutor.Quotes
-                    + " -connect=" + CommandExecutor.Quotes + $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=AXVSSDK" + CommandExecutor.Quotes
-                    + " -verbosity=" + CommandExecutor.Quotes + "Diagnostic" + CommandExecutor.Quotes
-                    + " -scaleUnitOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsScaleUnitFeatureEnabled" + CommandExecutor.Quotes + ": true, " + CommandExecutor.Quotes + "scaleUnitMnemonics" + CommandExecutor.Quotes + ":" + $"'{scaleUnit.ScaleUnitId}'" + " }" + CommandExecutor.Quotes
-                    + " -triggerOptionsAsJson=" + CommandExecutor.Quotes + "{" + CommandExecutor.Quotes + "IsEnabled" + CommandExecutor.Quotes + ": true}" + CommandExecutor.Quotes
-                    + $" > {scaleUnit.AxDbName}_DbSync.log";
+                string args =
+                    "-syncmode=\"fullall\""
+                    + $" -metadatabinaries=\"{metaBinariesPath}\""
+                    + $" -connect=\"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=AXVSSDK\""
+                    + " -verbosity=\"Diagnostic\""
+                    + " -scaleUnitOptionsAsJson=\"{\"IsScaleUnitFeatureEnabled\": true, \"scaleUnitMnemonics\":" + $"'{scaleUnit.ScaleUnitId}'" + " }\""
+                    + " -triggerOptionsAsJson=\"{\"IsEnabled\": true}\"";
 
-                Console.WriteLine(cmd);
+                Console.WriteLine($"{dbSyncTool} {args} > {outputFile}");
 
                 Console.WriteLine("\nDBSync started at: " + DateTime.UtcNow + ", this will take approximately 30 minutes.\n");
 
-                CommandExecutor ce = new CommandExecutor();
-                ce.RunCommand(cmd);
+                CommandExecutor ce = new CommandExecutor(dbSyncTool, args);
+                ce.AddOutputFile(outputFile);
+                ce.RunCommand();
 
                 Console.WriteLine("\nDBSync finished \n");
             }

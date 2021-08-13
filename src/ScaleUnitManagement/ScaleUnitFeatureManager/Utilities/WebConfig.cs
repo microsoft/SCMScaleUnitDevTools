@@ -75,10 +75,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             doc.Save(webConfigPath);
 
             //Encrypt config file
-            string encryptConfigFileCommand = configEncryptorExePath + " -encrypt " + webConfigPath;
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(encryptConfigFileCommand);
+            CommandExecutor ce = new CommandExecutor(configEncryptorExePath, "-encrypt " + webConfigPath);
+            ce.RunCommand();
         }
     }
 }

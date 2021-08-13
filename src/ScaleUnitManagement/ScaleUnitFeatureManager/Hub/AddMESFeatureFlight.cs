@@ -1,5 +1,5 @@
+using System.Data.SqlClient;
 using System.Threading.Tasks;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
@@ -25,15 +25,21 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string sqlQuery = $@"
-USE {scaleUnit.AxDbName};
-IF NOT EXISTS (SELECT TOP 1 1 FROM SysFlighting WHERE FlightName = '{MESFlightName}')
-    INSERT INTO SysFlighting (FlightName, Enabled, FlightServiceId) VALUES ('{MESFlightName}', 1, 12719367);
-";
+            USE {scaleUnit.AxDbName};
+            IF NOT EXISTS (SELECT TOP 1 1 FROM SysFlighting WHERE FlightName = '{MESFlightName}')
+                INSERT INTO SysFlighting (FlightName, Enabled, FlightServiceId) VALUES ('{MESFlightName}', 1, 12719367);
+            ";
 
-            string cmd = "Invoke-SqlCmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            string connectionString = $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=ScaleUnitDevTool";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
+                {
+                    conn.Open();
+                    cmd.CommandTimeout = 65535;
+                    cmd.ExecuteNonQuery();
+                }
+            }
 
             return Task.CompletedTask;
         }

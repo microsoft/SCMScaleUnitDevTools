@@ -1,5 +1,5 @@
+using System.Data.SqlClient;
 using System.Threading.Tasks;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
@@ -26,10 +26,16 @@ IF NOT EXISTS (SELECT TOP 1 1 FROM sys.change_tracking_tables WHERE object_id = 
 	ALTER TABLE dbo.NumberSequenceTable ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = ON)
 ";
 
-            string cmd = "Invoke-Sqlcmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            string connectionString = $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=ScaleUnitDevTool";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
+                {
+                    conn.Open();
+                    cmd.CommandTimeout = 65535;
+                    cmd.ExecuteNonQuery();
+                }
+            }
 
             return Task.CompletedTask;
         }
