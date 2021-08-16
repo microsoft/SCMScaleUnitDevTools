@@ -10,23 +10,9 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class HubWorkloadInstaller
+    public class HubWorkloadInstaller : AOSCommunicator
     {
-        private AOSClient hubAosClient = null;
-        private readonly ScaleUnitInstance scaleUnit;
-
-        public HubWorkloadInstaller()
-        {
-            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (hubAosClient is null)
-            {
-                hubAosClient = await AOSClient.Construct(scaleUnit);
-            }
-        }
+        public HubWorkloadInstaller() : base() { }
 
         public async Task Install()
         {
@@ -48,7 +34,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    statusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
+                    statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
                 }
                 foreach (WorkloadInstanceStatus status in statusList)
                 {
@@ -64,8 +50,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () =>
             {
-                List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
-                List<WorkloadInstance> createdInstances = await hubAosClient.WriteWorkloadInstances(workloadInstances);
+                List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(aosClient).CreateWorkloadInstances();
+                List<WorkloadInstance> createdInstances = await aosClient.WriteWorkloadInstances(workloadInstances);
 
                 this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
             }, "Install workloads on hub");
@@ -98,7 +84,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
                 {
-                    statusList.Add(await hubAosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
+                    statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
                 }
 
                 foreach (WorkloadInstanceStatus status in statusList)

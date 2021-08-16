@@ -10,7 +10,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
-    class AOSClient
+    internal class AOSClient : IAOSClient
     {
         private readonly HttpClient httpClient;
         private readonly string requestPathPrefix = "";
@@ -42,115 +42,136 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<ScaleUnitEnvironmentConfiguration> WriteScaleUnitConfiguration(ScaleUnitEnvironmentConfiguration config)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/");
+            var path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/";
 
-            var serializedConfig = Newtonsoft.Json.JsonConvert.SerializeObject(config);
+            var serializedConfig = JsonConvert.SerializeObject(config);
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
             var writePayload = $"{{\"configuration\": {serializedConfig},\"runSync\": true}}";
-            msg.Content = new StringContent(writePayload, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.SendAsync(msg);
-            string result = await response.Content.ReadAsStringAsync();
+            string result = await SendRequest(path, writePayload);
 
-            if (response.IsSuccessStatusCode)
-            {
-                ScaleUnitEnvironmentConfiguration parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<ScaleUnitEnvironmentConfiguration>(result);
-                return parsed;
-            }
-            else
-            {
-                throw RequestFailure((int)response.StatusCode, result);
-            }
+            ScaleUnitEnvironmentConfiguration parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<ScaleUnitEnvironmentConfiguration>(result);
+            return parsed;
         }
 
         public async Task<ScaleUnitStatus> CheckScaleUnitConfigurationStatus()
         {
             // Call requires an empty payload.
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/");
+            var path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/";
             var getPayload = "{}";
-            msg.Content = new StringContent(getPayload, Encoding.UTF8, "application/json");
-            var response = await httpClient.SendAsync(msg);
-            string result = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
-            {
-                ScaleUnitStatus parsed = JsonConvert.DeserializeObject<ScaleUnitStatus>(result);
-                return parsed;
-            }
-            else
-            {
-                throw RequestFailure((int)response.StatusCode, result);
-            }
+            string result = await SendRequest(path, getPayload);
+
+            ScaleUnitStatus parsed = JsonConvert.DeserializeObject<ScaleUnitStatus>(result);
+            return parsed;
         }
 
         public async Task<List<WorkloadInstance>> WriteWorkloadInstances(List<WorkloadInstance> workloadInstances)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/write/");
+            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/write/";
 
             // Double serialize the payload in order to avoid serialization complication issues on the AOS.
-            var serializedWlInstances = Newtonsoft.Json.JsonConvert.SerializeObject(workloadInstances);
-            var serializedAsString = Newtonsoft.Json.JsonConvert.SerializeObject(serializedWlInstances);
+            var serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
+            var serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
             var writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": true}}";
-            msg.Content = new StringContent(writePayload, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.SendAsync(msg);
-            string result = await response.Content.ReadAsStringAsync();
+            string result = await SendRequest(path, writePayload);
+            string json = JsonConvert.DeserializeObject<string>(result);
+            List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
+            return parsed;
+        }
 
-            if (response.IsSuccessStatusCode)
-            {
-                string json = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result);
-                List<WorkloadInstance> parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
-                return parsed;
-            }
-            else
-            {
-                throw RequestFailure((int)response.StatusCode, result);
-            }
+        public async Task<List<WorkloadInstance>> DeleteWorkloadInstances(List<WorkloadInstance> workloadInstances)
+        {
+            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/";
+
+            // Double serialize the payload in order to avoid serialization complication issues on the AOS.
+            var serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
+            var serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
+
+            // Wrap in object that allows the AOS to map in to method params on the service class.
+            var writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": false}}";
+
+            string result = await SendRequest(path, writePayload);
+
+            string json = JsonConvert.DeserializeObject<string>(result);
+            List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
+            return parsed;
         }
 
         public async Task<List<Workload>> GetWorkloads()
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/");
+            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/";
 
             // Call requires an empty payload.
             var getPayload = "{}";
-            msg.Content = new StringContent(getPayload, Encoding.UTF8, "application/json");
-            var response = await httpClient.SendAsync(msg);
 
             // The result is a double serialized string coming back from the AOS. This is done to avoid serialization "complications" on the AOS.
-            string result = await response.Content.ReadAsStringAsync();
+            string result = await SendRequest(path, getPayload);
 
-            if (response.IsSuccessStatusCode)
-            {
-                string json = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result);
-                List<Workload> parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Workload>>(json);
-                return parsed;
-            }
-            else
-            {
-                throw RequestFailure((int)response.StatusCode, result);
-            }
+            string json = JsonConvert.DeserializeObject<string>(result);
+            List<Workload> parsed = JsonConvert.DeserializeObject<List<Workload>>(json);
+            return parsed;
+        }
+
+        public async Task<List<WorkloadInstance>> GetWorkloadInstances()
+        {
+            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/get/";
+
+            // Call requires an empty payload.
+            var getPayload = "{}";
+
+            // The result is a double serialized string coming back from the AOS. This is done to avoid serialization "complications" on the AOS.
+            string result = await SendRequest(path, getPayload);
+
+            string json = JsonConvert.DeserializeObject<string>(result);
+            List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
+            return parsed;
         }
 
         public async Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId)
         {
-            var msg = new HttpRequestMessage(HttpMethod.Post, $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/");
+            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/";
 
             // Call requires an empty payload.
             // Wrap in object that allows the AOS to map in to method params on the service class.
             var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
-            msg.Content = new StringContent(writePayload, Encoding.UTF8, "application/json");
+
+            string result = await SendRequest(path, writePayload);
+
+            WorkloadInstanceStatus parsed = JsonConvert.DeserializeObject<WorkloadInstanceStatus>(result);
+            return parsed;
+        }
+
+        public async Task<string> GetWorkloadMovementState(string workloadInstanceId, DateTime afterDateTime)
+        {
+            var path = $"{requestPathPrefix}/api/services/ScaleUnitInitializationServiceGroup/ScaleUnitLifeCycleService/getWorkloadMovementState";
+
+            // Wrap in object that allows the AOS to map in to method params on the service class.
+            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
+
+            string result = await SendRequest(path, writePayload);
+
+            string parsed = JsonConvert.DeserializeObject<string>(result);
+            return parsed;
+        }
+
+        private async Task<String> SendRequest(string path, string payload)
+        {
+            var msg = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = new StringContent(payload, Encoding.UTF8, "application/json")
+            };
 
             var response = await httpClient.SendAsync(msg);
             string result = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                WorkloadInstanceStatus parsed = JsonConvert.DeserializeObject<WorkloadInstanceStatus>(result);
-                return parsed;
+                return result;
             }
             else
             {

@@ -7,29 +7,29 @@ using System;
 
 namespace CLI
 {
-    class SyncDB
+    internal class SyncDB
     {
+        private static List<ScaleUnitInstance> sortedScaleUnits;
         public static async Task Show(int input, string selectionHistory)
         {
             var options = new List<CLIOption>();
-            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-            scaleUnitInstances.Sort();
 
-            foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
+            sortedScaleUnits = Config.ScaleUnitInstances();
+            sortedScaleUnits.Sort();
+
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
             {
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunSyncDB });
             }
 
-            var screen = new CLIScreen(options, "Home", "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
+            var screen = new CLIScreen(options, selectionHistory, "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
             await CLIMenu.ShowScreen(screen);
         }
 
         private static async Task RunSyncDB(int input, string selectionHistory)
         {
-            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-            scaleUnitInstances.Sort();
             ScaleUnitDBSync scaleUnitDBSync = new ScaleUnitDBSync();
-            using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
+            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
                 try
                 {

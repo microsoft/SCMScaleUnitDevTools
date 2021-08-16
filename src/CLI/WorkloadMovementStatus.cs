@@ -6,7 +6,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {
-    internal static class WorkloadsInstallationStatus
+    internal static class WorkloadMovementStatus
     {
         public static async Task Show(int input, string selectionHistory)
         {
@@ -17,24 +17,22 @@ namespace CLI
 
             foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
             {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ShowWorkloadInstallationStatusForScaleUnit });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ShowWorkloadMovementStatusForScaleUnit });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Show status of workloads installation on:\n", "\nEnvironment?: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Show status of workload movement on:\n", "\nEnvironment?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static async Task ShowWorkloadInstallationStatusForScaleUnit(int input, string selectionHistory)
+        private static async Task ShowWorkloadMovementStatusForScaleUnit(int input, string selectionHistory)
         {
             List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
             scaleUnitInstances.Sort();
 
             using (var context = ScaleUnitContext.CreateContext(scaleUnitInstances[input - 1].ScaleUnitId))
             {
-                if (ScaleUnitContext.GetScaleUnitId() == "@@")
-                    await new HubWorkloadInstaller().InstallationStatus();
-                else
-                    await new ScaleUnitWorkloadInstaller().InstallationStatus();
+                WorkloadMover workloadMover = new WorkloadMover();
+                await workloadMover.ShowMovementStatus();
             }
         }
     }

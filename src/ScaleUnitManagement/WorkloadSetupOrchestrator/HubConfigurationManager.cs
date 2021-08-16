@@ -9,16 +9,12 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class HubConfigurationManager
+    public class HubConfigurationManager : AOSCommunicator
     {
-        private AOSClient hubAosClient = null;
         private readonly ScaleUnitEnvironmentConfiguration hubConfig;
-        private readonly ScaleUnitInstance scaleUnit;
 
         public HubConfigurationManager()
         {
-            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-
             hubConfig = new ScaleUnitEnvironmentConfiguration()
             {
                 AppId = Config.InterAOSAppId(),
@@ -28,14 +24,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 HubS2SEncryptedSecret = Config.InterAOSAppSecret(),
                 ScaleUnitType = "0",
             };
-        }
-
-        private async Task EnsureClientInitialized()
-        {
-            if (hubAosClient is null)
-            {
-                hubAosClient = await AOSClient.Construct(scaleUnit);
-            }
         }
 
         public async Task Configure()
@@ -53,7 +41,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             await ReliableRun.Execute(
                 async () =>
                 {
-                    ScaleUnitEnvironmentConfiguration configuration = await hubAosClient.WriteScaleUnitConfiguration(hubConfig);
+                    ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(hubConfig);
 
                     configuration.Should().NotBeNull("The AOS should have returned the configuration");
                     configuration.WithDeepEqual(hubConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
@@ -69,7 +57,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             await ReliableRun.Execute(
                 async () =>
                 {
-                    ScaleUnitStatus status = await hubAosClient.CheckScaleUnitConfigurationStatus();
+                    ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
 
                     status.Should().NotBeNull();
                     status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Hub should be in a healthy/running state.");
