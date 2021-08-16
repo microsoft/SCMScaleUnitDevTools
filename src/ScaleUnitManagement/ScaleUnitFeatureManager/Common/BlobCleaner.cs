@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             BlobServiceClient blobClient = new BlobServiceClient(connectionString);
             IEnumerable<BlobContainerItem> containers = blobClient.GetBlobContainers();
 
-            if ((bool)(containers?.Any()))
+            if (!(bool)(containers?.Any()))
             {
                 Console.WriteLine("No containers to be deleted\n");
                 return;
@@ -61,7 +61,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             }
             while (continuationToken != null);
 
-            if ((bool)allTables?.Any())
+            if (!(bool)allTables?.Any())
             {
                 Console.WriteLine("No tables to be deleted\n");
                 return;
