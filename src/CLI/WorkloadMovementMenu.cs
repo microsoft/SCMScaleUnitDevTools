@@ -4,7 +4,7 @@ using CLIFramework;
 
 namespace CLI
 {
-    internal static class MovementMenu
+    internal static class WorkloadMovementMenu
     {
         public static async Task Show(int input, string selectionHistory)
         {

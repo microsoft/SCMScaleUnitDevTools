@@ -8,7 +8,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class ScaleUnitWorkloadInstaller : AOSEndpoint
+    public class ScaleUnitWorkloadInstaller : AOSCommunicator
     {
         public ScaleUnitWorkloadInstaller() : base() { }
 

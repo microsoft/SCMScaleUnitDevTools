@@ -9,7 +9,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class ScaleUnitConfigurationManager : AOSEndpoint
+    public class ScaleUnitConfigurationManager : AOSCommunicator
     {
         private readonly ScaleUnitEnvironmentConfiguration scaleUnitConfig;
 

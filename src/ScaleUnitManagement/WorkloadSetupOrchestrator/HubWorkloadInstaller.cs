@@ -10,7 +10,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class HubWorkloadInstaller : AOSEndpoint
+    public class HubWorkloadInstaller : AOSCommunicator
     {
         public HubWorkloadInstaller() : base() { }
 

@@ -6,7 +6,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class WorkloadDeleter : AOSEndpoint
+    public class WorkloadDeleter : AOSCommunicator
     {
         public WorkloadDeleter() : base() { }
 
