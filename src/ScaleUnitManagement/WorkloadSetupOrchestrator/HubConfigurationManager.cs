@@ -9,7 +9,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class HubConfigurationManager : AOSEndpoint
+    public class HubConfigurationManager : AOSCommunicator
     {
         private readonly ScaleUnitEnvironmentConfiguration hubConfig;
 

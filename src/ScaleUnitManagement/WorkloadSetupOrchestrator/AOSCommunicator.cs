@@ -4,14 +4,14 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public abstract class AOSEndpoint
+    public abstract class AOSCommunicator
     {
         protected IAOSClient aosClient = null;
         protected readonly ScaleUnitInstance scaleUnit;
 
-        public AOSEndpoint()
+        public AOSCommunicator()
         {
-            this.scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
         }
 
         protected async Task EnsureClientInitialized()

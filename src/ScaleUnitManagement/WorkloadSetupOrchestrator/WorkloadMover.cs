@@ -7,7 +7,7 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
-    public class WorkloadMover : AOSEndpoint
+    public class WorkloadMover : AOSCommunicator
     {
         public WorkloadMover() : base() { }
 
