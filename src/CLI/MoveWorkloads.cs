@@ -29,9 +29,6 @@ namespace CLI
 
         private static async Task MoveWorkloadsFromScaleUnitToHub(ScaleUnitInstance scaleUnit)
         {
-            List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
-            scaleUnitInstances.Sort();
-
             using (var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId))
             {
                 string hubId = "@@";
