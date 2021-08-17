@@ -1,5 +1,5 @@
-using System.Data.SqlClient;
 using System.Threading.Tasks;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
@@ -22,16 +22,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
             string sqlQuery = $"USE master; IF NOT EXISTS (SELECT * FROM sys.change_tracking_databases WHERE database_id=DB_ID('{scaleUnit.AxDbName}')) ALTER DATABASE {scaleUnit.AxDbName} SET CHANGE_TRACKING = ON(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON)";
 
-            string connectionString = $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=ScaleUnitDevTool";
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
-                {
-                    conn.Open();
-                    cmd.CommandTimeout = 65535;
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            var sqlQueryExecutor = new SqlQueryExecutor();
+            sqlQueryExecutor.Execute(sqlQuery);
 
             return Task.CompletedTask;
         }

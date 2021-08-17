@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 {
@@ -21,16 +22,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             process = BuildProcess(executable, arguments);
         }
 
-        public void RunCommand()
-        {
-            List<int> defaultExitCodes = new List<int>();
-            defaultExitCodes.Add(0);
-            RunCommand(defaultExitCodes);
-        }
-
-        public void RunCommand(List<int> successCodes)
+        public void RunCommand(params int[] successCodes)
         {
             RunProcess();
+
+            if (successCodes.Length == 0)
+            {
+                successCodes = new[] { 0 };
+            }
 
             if (!successCodes.Contains(process.ExitCode))
                 throw new Exception($"Command: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
