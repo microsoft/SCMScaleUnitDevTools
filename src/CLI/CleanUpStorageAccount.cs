@@ -7,7 +7,7 @@ using System;
 
 namespace CLI
 {
-    internal class CleanUpBlobs
+    internal class CleanUpStorageAccount
     {
         private static List<ScaleUnitInstance> sortedScaleUnits;
 
@@ -19,19 +19,19 @@ namespace CLI
 
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
             {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = CleanUpScaleUnitBlob });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = CleanUpScaleUnitStorageAccount });
             }
 
-            var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to clean up:\n", "\nScale Unit to clean up: ");
+            var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to clean the storage account of:\n", "\nScale unit storage to clean up: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static async Task CleanUpScaleUnitBlob(int input, string selectionHistory)
+        private static async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
-                var blobCleaner = new BlobCleaner();
-                await blobCleaner.CleanBlob();
+                var accountCleaner = new StorageAccountCleaner();
+                await accountCleaner.CleanStorageAccount();
             }
 
             Console.WriteLine("Done");

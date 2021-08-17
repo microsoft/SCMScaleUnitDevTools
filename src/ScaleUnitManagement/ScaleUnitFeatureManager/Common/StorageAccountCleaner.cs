@@ -10,11 +10,11 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class BlobCleaner
+    public class StorageAccountCleaner
     {
         private string connectionString;
 
-        public async Task CleanBlob()
+        public async Task CleanStorageAccount()
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             connectionString = scaleUnit.AzureStorageConnectionString;
@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             BlobServiceClient blobClient = new BlobServiceClient(connectionString);
             IEnumerable<BlobContainerItem> containers = blobClient.GetBlobContainers();
 
-            if (!(bool)(containers?.Any()))
+            if (containers is null || !containers.Any())
             {
                 Console.WriteLine("No containers to be deleted\n");
                 return;
@@ -47,7 +47,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             TableContinuationToken continuationToken = null;
-            var allTables = new List<CloudTable>();
+            int count = 0;
 
             do
             {
@@ -56,21 +56,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 continuationToken = listingResult.ContinuationToken;
                 foreach (var table in tables)
                 {
-                    allTables.Add(table);
+                    count++;
+                    Console.WriteLine("Deleting Azure table: " + table.Name);
+                    await table.DeleteIfExistsAsync();
                 }
             }
             while (continuationToken != null);
 
-            if (!(bool)allTables?.Any())
+            if (count == 0)
             {
                 Console.WriteLine("No tables to be deleted\n");
                 return;
-            }
-
-            foreach (var table in allTables)
-            {
-                Console.WriteLine("Deleting Azure table: " + table.Name);
-                await table.DeleteIfExistsAsync();
             }
         }
     }
