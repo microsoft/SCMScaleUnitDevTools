@@ -115,5 +115,12 @@ namespace CLIFramework
 
             return String.IsNullOrEmpty(input) || input == "y" || input == "yes";
         }
+
+        public static void PressToContinue()
+        {
+            Console.WriteLine("\nPress enter to continue");
+            string input = Console.ReadLine();
+        }
+
     }
 }
