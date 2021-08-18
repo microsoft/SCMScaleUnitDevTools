@@ -10,11 +10,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 {
     class WorkloadInstanceManager
     {
-        private readonly AOSClient client;
+        private readonly IAOSClient client;
         private static readonly string ReadyState = "Running";
         private static readonly string InstallingState = "Installing";
 
-        public WorkloadInstanceManager(AOSClient client)
+        public WorkloadInstanceManager(IAOSClient client)
         {
             this.client = client;
         }
@@ -287,18 +287,18 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return effectiveDate;
         }
 
-        public static async Task<WorkloadInstanceStatus> GetWorkloadInstanceStatus(AOSClient client, string workloadInstanceId)
+        public static async Task<WorkloadInstanceStatus> GetWorkloadInstanceStatus(IAOSClient client, string workloadInstanceId)
         {
             return await client.CheckWorkloadStatus(workloadInstanceId);
         }
 
-        public static async Task<bool> IsWorkloadInstanceInReadyState(AOSClient client, WorkloadInstance workloadInstance)
+        public static async Task<bool> IsWorkloadInstanceInReadyState(IAOSClient client, WorkloadInstance workloadInstance)
         {
             WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == ReadyState;
         }
 
-        public static async Task<bool> IsWorkloadInstanceInInstallingState(AOSClient client, WorkloadInstance workloadInstance)
+        public static async Task<bool> IsWorkloadInstanceInInstallingState(IAOSClient client, WorkloadInstance workloadInstance)
         {
             WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == InstallingState;

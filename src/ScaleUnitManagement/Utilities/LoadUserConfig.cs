@@ -34,8 +34,8 @@ namespace ScaleUnitManagement.Utilities
                 {
                     throw new FileNotFoundException($"Missing UserConfig.xml, should be located at {userConfigPath}. Rename the sample file and fill in values for your Scale Unit project.", fileName: userConfigPath);
                 }
-
                 doc.Load(userConfigPath);
+
                 TrimChildNodes(doc.ChildNodes);
 
                 var serializer = new XmlSerializer(typeof(CloudAndEdgeConfiguration), new XmlRootAttribute("CloudAndEdgeConfiguration"));

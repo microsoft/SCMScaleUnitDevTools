@@ -7,19 +7,34 @@ namespace CLI
 {
     public class Program
     {
+        private static bool repeat = true;
+
         public static async Task Main(string[] args)
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
             var enableScaleUnitFeatureOption = new CLIOption() { Name = "Initialize the hybrid topology", Command = EnableScaleUnitFeature.SelectScaleUnit };
             var configureEnvironmentOption = new CLIOption() { Name = "Prepare environments for workload installation", Command = ConfigureEnvironment.Show };
-            var installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
-            var workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
+            var installationMenuOption = new CLIOption() { Name = "Show workload installation options", Command = WorkloadInstallationMenu.Show };
+            var movementMenuOption = new CLIOption() { Name = "Show workload movement options", Command = WorkloadMovementMenu.Show };
+            var deleteWorkloadsOption = new CLIOption() { Name = "Delete workloads from environment", Command = DeleteWorkloads.Show };
             var setupToolsOption = new CLIOption() { Name = "Setup tools", Command = SetupTools.Show };
-            var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installWorkloadsOption, workloadsInstallationStatusOption, setupToolsOption };
+            var exitOption = new CLIOption() { Name = "Exit", Command = ExitTool };
+            var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installationMenuOption, movementMenuOption, deleteWorkloadsOption, setupToolsOption, exitOption };
 
-            var screen = new CLIScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
-            await CLIMenu.ShowScreen(screen);
+            while (repeat)
+            {
+                var screen = new CLIScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
+                await CLIMenu.ShowScreen(screen);
+                CLIMenu.PressToContinue();
+            }
+
+        }
+
+        private static Task ExitTool(int input, string selectionHistory)
+        {
+            repeat = false;
+            return Task.CompletedTask;
         }
     }
 }

@@ -4,7 +4,7 @@ using CLIFramework;
 
 namespace CLI
 {
-    class SetupTools
+    internal class SetupTools
     {
         public static async Task Show(int input, string selectionHistory)
         {
@@ -12,7 +12,7 @@ namespace CLI
 
             options.Add(new CLIOption() { Name = "Sync DB", Command = SyncDB.Show });
 
-            var screen = new CLIScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
+            var screen = new CLIScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
             await CLIMenu.ShowScreen(screen);
         }
     }

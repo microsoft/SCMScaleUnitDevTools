@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ScaleUnitManagement.WorkloadSetupOrchestrator;
+using System;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {
-    class ConfigureEnvironment
+    internal class DeleteWorkloads
     {
         private static List<ScaleUnitInstance> sortedScaleUnits;
 
@@ -19,22 +20,21 @@ namespace CLI
 
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
             {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = ConfigureScaleUnit });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = DeleteWorkloadsFromScaleUnit });
             }
 
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
+            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to delete all workloads from?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static async Task ConfigureScaleUnit(int input, string selectionHistory)
+        public static async Task DeleteWorkloadsFromScaleUnit(int input, string selectionHistory)
         {
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
-                if (ScaleUnitContext.GetScaleUnitId() == "@@")
-                    await new HubConfigurationManager().Configure();
-                else
-                    await new ScaleUnitConfigurationManager().Configure();
+                WorkloadDeleter workloadDeleter = new WorkloadDeleter();
+                await workloadDeleter.DeleteWorkloadsFromScaleUnit();
             }
+            Console.WriteLine("Done.");
         }
     }
 }

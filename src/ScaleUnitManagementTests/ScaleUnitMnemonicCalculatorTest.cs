@@ -8,7 +8,6 @@ namespace ScaleUnitManagementTests
     [TestClass]
     public class ScaleUnitMnemonicCalculatorTest
     {
-        
         [TestMethod]
         public void ToIntegralValue_WithValidMnemonic_ReturnsIntegral()
         {
