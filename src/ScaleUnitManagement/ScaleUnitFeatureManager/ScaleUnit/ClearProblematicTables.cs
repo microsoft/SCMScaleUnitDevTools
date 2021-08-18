@@ -21,23 +21,21 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string sqlQuery = $@"
-USE {scaleUnit.AxDbName};
-EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
+            USE {scaleUnit.AxDbName};
+            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
-DELETE FROM SysFeatureStateV0;
-DELETE FROM FeatureManagementState;
-DELETE FROM FeatureManagementMetadata;
-DELETE FROM SysFlighting;
+            DELETE FROM SysFeatureStateV0;
+            DELETE FROM FeatureManagementState;
+            DELETE FROM FeatureManagementMetadata;
+            DELETE FROM SysFlighting;
 
-TRUNCATE TABLE NumberSequenceScope;
+            TRUNCATE TABLE NumberSequenceScope;
 
-EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
-";
+            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
+            ";
 
-            string cmd = "Invoke-Sqlcmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            var sqlQueryExecutor = new SqlQueryExecutor();
+            sqlQueryExecutor.Execute(sqlQuery);
 
             return Task.CompletedTask;
         }

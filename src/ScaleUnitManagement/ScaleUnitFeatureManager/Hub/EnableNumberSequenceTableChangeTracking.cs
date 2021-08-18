@@ -21,15 +21,13 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string sqlQuery = $@"
-USE {scaleUnit.AxDbName};
-IF NOT EXISTS (SELECT TOP 1 1 FROM sys.change_tracking_tables WHERE object_id = OBJECT_ID('NumberSequenceTable'))
-	ALTER TABLE dbo.NumberSequenceTable ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = ON)
-";
+            USE {scaleUnit.AxDbName};
+            IF NOT EXISTS (SELECT TOP 1 1 FROM sys.change_tracking_tables WHERE object_id = OBJECT_ID('NumberSequenceTable'))
+	            ALTER TABLE dbo.NumberSequenceTable ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = ON)
+            ";
 
-            string cmd = "Invoke-Sqlcmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            var sqlQueryExecutor = new SqlQueryExecutor();
+            sqlQueryExecutor.Execute(sqlQuery);
 
             return Task.CompletedTask;
         }

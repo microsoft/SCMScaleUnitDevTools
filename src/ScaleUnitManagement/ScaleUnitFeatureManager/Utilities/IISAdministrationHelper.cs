@@ -132,8 +132,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             string cmd =
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT /log+:{robocopyLogPath};";
 
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd, new List<int>() { 0, 1 });
+            CommandExecutor ce = new CommandExecutor(cmd);
+            ce.RunCommand(0, 1);
         }
     }
 }

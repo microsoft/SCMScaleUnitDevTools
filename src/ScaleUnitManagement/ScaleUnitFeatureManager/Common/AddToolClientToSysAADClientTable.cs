@@ -23,21 +23,19 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             string sqlQuery = $@"
-USE {scaleUnit.AxDbName};
+            USE {scaleUnit.AxDbName};
 
-IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{scaleUnit.AuthConfiguration.AppId}')
-BEGIN
-    IF EXISTS (SELECT TOP 1 1 FROM USERINFO WHERE ID = '{ScaleUnitManagementUserName}')
-        INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{scaleUnit.AuthConfiguration.AppId}', '{ScaleUnitManagementUserName}', 'Scale Unit Management Tool');
-    ELSE
-        INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{scaleUnit.AuthConfiguration.AppId}', 'Admin', 'Scale Unit Management Tool');
-END
-";
+            IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{scaleUnit.AuthConfiguration.AppId}')
+            BEGIN
+                IF EXISTS (SELECT TOP 1 1 FROM USERINFO WHERE ID = '{ScaleUnitManagementUserName}')
+                    INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{scaleUnit.AuthConfiguration.AppId}', '{ScaleUnitManagementUserName}', 'Scale Unit Management Tool');
+                ELSE
+                    INSERT INTO SysAADClientTable (AADClientId, UserId, Name) VALUES ('{scaleUnit.AuthConfiguration.AppId}', 'Admin', 'Scale Unit Management Tool');
+            END
+            ";
 
-            string cmd = "Invoke-SqlCmd -Query " + CommandExecutor.Quotes + sqlQuery + CommandExecutor.Quotes + " -QueryTimeout 65535";
-
-            CommandExecutor ce = new CommandExecutor();
-            ce.RunCommand(cmd);
+            var sqlQueryExecutor = new SqlQueryExecutor();
+            sqlQueryExecutor.Execute(sqlQuery);
 
             return Task.CompletedTask;
         }
