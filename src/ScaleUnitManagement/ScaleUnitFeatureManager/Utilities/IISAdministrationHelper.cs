@@ -133,7 +133,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT /log+:{robocopyLogPath};";
 
             CommandExecutor ce = new CommandExecutor(cmd);
-            ce.RunCommand(new int[] { 0, 1 });
+            ce.RunCommand(0, 1);
         }
     }
 }
