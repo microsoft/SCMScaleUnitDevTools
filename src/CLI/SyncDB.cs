@@ -4,6 +4,7 @@ using CLIFramework;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;
 using System;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 
 namespace CLI
 {
@@ -26,20 +27,21 @@ namespace CLI
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static async Task RunSyncDB(int input, string selectionHistory)
+        private static Task RunSyncDB(int input, string selectionHistory)
         {
-            ScaleUnitDBSync scaleUnitDBSync = new ScaleUnitDBSync();
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
                 try
                 {
-                    await scaleUnitDBSync.Run();
+                    new RunDBSync().Run();
                 }
                 catch (Exception ex)
                 {
                     Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
                 }
             }
+
+            return Task.CompletedTask;
         }
     }
 }
