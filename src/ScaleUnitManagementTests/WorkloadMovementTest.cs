@@ -19,35 +19,30 @@ namespace ScaleUnitManagementTests
         private Mock<IAOSClient> aosClient;
         private readonly string scaleUnitId = "@A";
         private readonly string hubId = "@@";
+        private WorkloadInstance exampleWorkload;
 
         [TestInitialize]
         public void Setup()
         {
             aosClient = new Mock<IAOSClient>();
 
+            ConfigurationHelper configurationHelper = new ConfigurationHelper();
+
             Func<CloudAndEdgeConfiguration> loadConfigMock = () =>
             {
-                ConfigurationHelper configurationHelper = new ConfigurationHelper();
-                return configurationHelper.ConstructTestConfiguration();
+                return configurationHelper.GetTestConfiguration();
             };
 
             Config.GetUserConfigImplementation = loadConfigMock;
+
+            exampleWorkload = configurationHelper.GetExampleWorkload();
         }
 
         [TestMethod]
         public async Task MoveWorkloads()
         {
             // Arrange
-            var toBeReturnedWorkloadInstances = new List<WorkloadInstance>();
-
-            ConfiguredWorkload configuredWorkload = Config.WorkloadList().First();
-            WorkloadInstance workloadInstance = new WorkloadInstance { Id = configuredWorkload.WorkloadInstanceId };
-            workloadInstance.ExecutingEnvironment.Add(new TemporalAssignment
-            {
-                EffectiveDate = DateTime.UtcNow,
-                Environment = new PhysicalEnvironmentReference() { ScaleUnitId = scaleUnitId },
-            });
-            toBeReturnedWorkloadInstances.Add(workloadInstance);
+            var toBeReturnedWorkloadInstances = new List<WorkloadInstance>() { exampleWorkload };
 
             aosClient.Setup(x => x.GetWorkloadInstances())
                 .Returns(() => Task.FromResult(new List<WorkloadInstance>(toBeReturnedWorkloadInstances)));

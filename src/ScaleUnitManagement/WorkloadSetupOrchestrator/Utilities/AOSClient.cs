@@ -136,7 +136,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/";
 
-            // Call requires an empty payload.
             // Wrap in object that allows the AOS to map in to method params on the service class.
             var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
 
@@ -157,6 +156,24 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             string parsed = JsonConvert.DeserializeObject<string>(result);
             return parsed;
+        }
+
+        public async Task DrainWorkload(string workloadInstanceId)
+        {
+            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/drain/";
+
+            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
+
+            await SendRequest(path, writePayload);
+        }
+
+        public async Task StartWorkload(string workloadInstanceId)
+        {
+            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/start/";
+
+            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
+
+            await SendRequest(path, writePayload);
         }
 
         private async Task<String> SendRequest(string path, string payload)

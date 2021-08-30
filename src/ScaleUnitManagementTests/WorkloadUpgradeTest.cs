@@ -14,7 +14,7 @@ namespace ScaleUnitManagementTests
 {
 
     [TestClass]
-    public sealed class WorkloadDeletionTest
+    public sealed class WorkloadUpgradeTest
     {
         private Mock<IAOSClient> aosClient;
         private readonly string scaleUnitId = "@A";
@@ -38,32 +38,37 @@ namespace ScaleUnitManagementTests
         }
 
         [TestMethod]
-        public async Task DeleteWorkloads()
+        public async Task UpgradeWorkloads()
         {
             // Arrange
-            var toBeReturnedWorkloadInstances = new List<WorkloadInstance> { exampleWorkload };
+            var workloadInstances = new List<WorkloadInstance> { exampleWorkload };
+            var workloads = new List<Workload> { exampleWorkload.VersionedWorkload.Workload };
+            var oldWorkloadInstanceId = exampleWorkload.VersionedWorkload.Id;
 
             aosClient.Setup(x => x.GetWorkloadInstances())
-                .ReturnsAsync(new List<WorkloadInstance>(toBeReturnedWorkloadInstances));
+                .ReturnsAsync(new List<WorkloadInstance>(workloadInstances));
 
-            aosClient.Setup(x => x.DeleteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
-                .Callback<List<WorkloadInstance>>((deletedWorkloads) =>
+            aosClient.Setup(x => x.GetWorkloads())
+                .ReturnsAsync(new List<Workload>(workloads));
+
+            aosClient.Setup(x => x.WriteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
+                .Callback<List<WorkloadInstance>>((newWorkloadInstances) =>
                 {
-                    toBeReturnedWorkloadInstances = toBeReturnedWorkloadInstances
-                                                        .Where(w1 => !deletedWorkloads.Any(w2 => w1.Id.Equals(w2.Id))).ToList();
+                    workloadInstances = newWorkloadInstances;
                 })
-                .ReturnsAsync(toBeReturnedWorkloadInstances);
+                .Returns(() => Task.FromResult(workloadInstances));
 
             // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
-                var workloadDeleter = new WorkloadDeleter();
-                workloadDeleter.SetClient(aosClient.Object);
-                await workloadDeleter.DeleteWorkloadsFromScaleUnit();
+                var workloadDefinitionManager = new WorkloadDefinitionManager();
+                workloadDefinitionManager.SetClient(aosClient.Object);
+                await workloadDefinitionManager.UpgradeWorkloadsDefinition();
             }
 
             // Assert
-            toBeReturnedWorkloadInstances.Should().BeEmpty();
+            var newWorkloadInstanceId = workloadInstances.First().VersionedWorkload.Id;
+            newWorkloadInstanceId.Should().NotBe(oldWorkloadInstanceId);
         }
     }
 }

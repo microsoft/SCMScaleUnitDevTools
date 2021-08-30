@@ -13,7 +13,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     {
         private readonly ScaleUnitEnvironmentConfiguration hubConfig;
 
-        public HubConfigurationManager()
+        public HubConfigurationManager() : base()
         {
             hubConfig = new ScaleUnitEnvironmentConfiguration()
             {
