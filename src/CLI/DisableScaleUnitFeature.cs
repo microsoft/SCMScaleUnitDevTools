@@ -4,6 +4,7 @@ using CLIFramework;
 using ScaleUnitManagement.Utilities;
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace CLI
 {
@@ -32,7 +33,13 @@ namespace CLI
             {
                 try
                 {
+                    new StopServices().Run();
+                    using (var webConfig = new WebConfig())
+                    {
+                        SharedWebConfig.Configure(webConfig, false);
+                    }
                     new RunDBSync().Run(false);
+                    new StartServices().Run();
                 }
                 catch (Exception ex)
                 {

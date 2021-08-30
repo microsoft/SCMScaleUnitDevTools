@@ -6,7 +6,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
     public static class SharedWebConfig
     {
-        public static void Configure(WebConfig webConfig)
+        public static void Configure(WebConfig webConfig, bool isScaleUnitFeatureEnabled = true)
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
@@ -16,8 +16,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                     webConfig.UpdateXElementIfExists("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
             }
 
-            webConfig.AddKey("ScaleUnit.InstanceID", scaleUnit.ScaleUnitId);
-            webConfig.AddKey("ScaleUnit.Enabled", "true");
+            webConfig.AddKey("ScaleUnit.InstanceID", isScaleUnitFeatureEnabled ? scaleUnit.ScaleUnitId : "");
+            webConfig.AddKey("ScaleUnit.Enabled", isScaleUnitFeatureEnabled.ToString().ToLower());
             webConfig.AddKey("DbSync.TriggersEnabled", "true");
         }
     }
