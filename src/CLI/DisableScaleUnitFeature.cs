@@ -4,10 +4,11 @@ using CLIFramework;
 using ScaleUnitManagement.Utilities;
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace CLI
 {
-    internal class SyncDB
+    internal class DisableScaleUnitFeature
     {
         private static List<ScaleUnitInstance> sortedScaleUnits;
         public static async Task Show(int input, string selectionHistory)
@@ -19,24 +20,30 @@ namespace CLI
 
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
             {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunSyncDB });
+                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunDisableScaleUnitFeature });
             }
 
-            var screen = new CLIScreen(options, selectionHistory, "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
+            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to disable scale unit feature on?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
-        private static Task RunSyncDB(int input, string selectionHistory)
+        private static Task RunDisableScaleUnitFeature(int input, string selectionHistory)
         {
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
                 try
                 {
-                    new RunDBSync().Run();
+                    new StopServices().Run();
+                    using (var webConfig = new WebConfig())
+                    {
+                        SharedWebConfig.Configure(webConfig, isScaleUnitFeatureEnabled: false);
+                    }
+                    new RunDBSync().Run(isScaleUnitFeatureEnabled: false);
+                    new StartServices().Run();
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
+                    Console.Error.WriteLine($"An error occured while trying to disable scale unit feature:\n{ex}");
                 }
             }
 
