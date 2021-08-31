@@ -36,9 +36,9 @@ namespace CLI
                     new StopServices().Run();
                     using (var webConfig = new WebConfig())
                     {
-                        SharedWebConfig.Configure(webConfig, false);
+                        SharedWebConfig.Configure(webConfig, isScaleUnitFeatureEnabled: false);
                     }
-                    new RunDBSync().Run(false);
+                    new RunDBSync().Run(isScaleUnitFeatureEnabled: false);
                     new StartServices().Run();
                 }
                 catch (Exception ex)

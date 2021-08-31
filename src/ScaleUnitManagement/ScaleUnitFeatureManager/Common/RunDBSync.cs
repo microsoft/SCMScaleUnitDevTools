@@ -30,6 +30,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 string outputFile = $"{scaleUnit.AxDbName}_DbSync.log";
                 string scaleUnitMnemonic = isScaleUnitFeatureEnabled ? scaleUnit.ScaleUnitId : "";
 
+                // If ScaleUnit feature is disabled, we should have the triggers isEnabled option as true to allow DBsync to remove the triggers.
+                // Otherwise, it will fail to remove the triggers.
                 string args =
                     "-syncmode=\"fullall\""
                     + $" -metadatabinaries=\"{metaBinariesPath}\""
