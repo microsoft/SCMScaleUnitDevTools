@@ -13,10 +13,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                var aosClient = await GetScaleUnitAosClient();
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
 
                 foreach (var workloadInstance in workloadInstances)
@@ -37,10 +36,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task ShowMovementStatus()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                var aosClient = await GetScaleUnitAosClient();
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
 
                 foreach (WorkloadInstance workloadInstance in workloadInstances)
@@ -56,6 +54,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task<string> GetMovementState(WorkloadInstance workloadInstance)
         {
+            var aosClient = await GetScaleUnitAosClient();
             TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
             return await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate);
         }

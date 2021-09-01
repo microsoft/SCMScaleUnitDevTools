@@ -13,7 +13,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private readonly IAOSClient client;
         private static readonly string ReadyState = "Running";
         private static readonly string InstallingState = "Installing";
-        private static readonly string StoppingState = "Stopping";
+        private static readonly string StoppedState = "Stopped";
 
         public WorkloadInstanceManager(IAOSClient client)
         {
@@ -305,11 +305,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return status.Health == InstallingState;
         }
 
-        public static async Task<bool> IsWorkloadBeingDrained(IAOSClient client, WorkloadInstance workloadInstance)
+        public static async Task<bool> IsWorkloadInStoppedState(IAOSClient client, WorkloadInstance workloadInstance)
         {
             WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
-            return (status.Health == ReadyState) || (status.Health == StoppingState);
+            return status.Health == StoppedState;
         }
-
     }
 }

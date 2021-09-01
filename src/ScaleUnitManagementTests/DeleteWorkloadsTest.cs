@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,33 +7,18 @@ using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 using ScaleUnitManagement.Utilities;
 using Moq;
-using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagementTests
 {
 
     [TestClass]
-    public sealed class WorkloadDeletionTest
+    public sealed class DeleteWorkloadsTest : DevToolsUnitTest
     {
-        private Mock<IAOSClient> aosClient;
-        private readonly string scaleUnitId = "@A";
-        private WorkloadInstance exampleWorkload;
 
         [TestInitialize]
         public void Setup()
         {
-            aosClient = new Mock<IAOSClient>();
-
-            ConfigurationHelper configurationHelper = new ConfigurationHelper();
-
-            Func<CloudAndEdgeConfiguration> loadConfigMock = () =>
-            {
-                return configurationHelper.GetTestConfiguration();
-            };
-
-            Config.GetUserConfigImplementation = loadConfigMock;
-
-            exampleWorkload = configurationHelper.GetExampleWorkload();
+            Initialize();
         }
 
         [TestMethod]
@@ -58,7 +42,7 @@ namespace ScaleUnitManagementTests
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
                 var workloadDeleter = new WorkloadDeleter();
-                workloadDeleter.SetClient(aosClient.Object);
+                workloadDeleter.SetScaleUnitAosClient(aosClient.Object);
                 await workloadDeleter.DeleteWorkloadsFromScaleUnit();
             }
 

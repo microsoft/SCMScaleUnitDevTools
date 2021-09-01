@@ -36,10 +36,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task ConfigureScaleUnit()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                IAOSClient aosClient = await GetScaleUnitAosClient();
                 ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(scaleUnitConfig);
 
                 configuration.Should().NotBeNull("The AOS should have returned the configuration");
@@ -50,10 +49,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForScaleUnitReadiness()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                IAOSClient aosClient = await GetScaleUnitAosClient();
                 ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
 
                 status.Should().NotBeNull();

@@ -6,7 +6,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
     public abstract class AOSCommunicator
     {
-        protected IAOSClient aosClient = null;
+        protected IAOSClient scaleUnitAosClient = null;
+        protected IAOSClient hubAosClient = null;
         protected readonly ScaleUnitInstance scaleUnit;
 
         public AOSCommunicator()
@@ -14,17 +15,34 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
         }
 
-        protected async Task EnsureClientInitialized()
+        protected async Task<IAOSClient> GetScaleUnitAosClient()
         {
-            if (aosClient is null)
+            if (scaleUnitAosClient is null)
             {
-                SetClient(await AOSClient.Construct(scaleUnit));
+                ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+                SetScaleUnitAosClient(await AOSClient.Construct(scaleUnit));
             }
+            return scaleUnitAosClient;
         }
 
-        internal void SetClient(IAOSClient aosClient)
+        protected async Task<IAOSClient> GetHubAosClient()
         {
-            this.aosClient = aosClient;
+            if (hubAosClient is null)
+            {
+                ScaleUnitInstance hub = Config.HubScaleUnit();
+                SetHubAosClient(await AOSClient.Construct(hub));
+            }
+            return hubAosClient;
+        }
+
+        internal void SetScaleUnitAosClient(IAOSClient aosClient)
+        {
+            this.scaleUnitAosClient = aosClient;
+        }
+
+        internal void SetHubAosClient(IAOSClient aosClient)
+        {
+            this.hubAosClient = aosClient;
         }
     }
 }

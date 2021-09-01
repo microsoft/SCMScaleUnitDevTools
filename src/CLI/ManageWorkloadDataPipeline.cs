@@ -11,10 +11,10 @@ namespace CLI
     {
         public static async Task Show(int input, string selectionHistory)
         {
-            var installWorkloadsOption = new CLIOption() { Name = "Drain all workload data pipelines", Command = DrainAllPipelines };
-            var workloadsInstallationStatusOption = new CLIOption() { Name = "Start all workload data pipelines", Command = StartAllPipelines };
+            var drainWorkloadsOption = new CLIOption() { Name = "Drain all workload data pipelines", Command = DrainAllPipelines };
+            var startWorkloadsOption = new CLIOption() { Name = "Start all workload data pipelines", Command = StartAllPipelines };
 
-            var options = new List<CLIOption>() { installWorkloadsOption, workloadsInstallationStatusOption };
+            var options = new List<CLIOption>() { drainWorkloadsOption, startWorkloadsOption };
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");
             await CLIMenu.ShowScreen(screen);

@@ -12,10 +12,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task DeleteWorkloadsFromScaleUnit()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                IAOSClient aosClient = await GetScaleUnitAosClient();
                 List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
                 if (workloadInstances.Count == 0)
                 {

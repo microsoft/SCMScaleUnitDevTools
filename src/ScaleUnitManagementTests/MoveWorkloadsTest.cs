@@ -8,34 +8,18 @@ using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 using ScaleUnitManagement.Utilities;
 using Moq;
-using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
 namespace ScaleUnitManagementTests
 {
 
     [TestClass]
-    public sealed class WorkloadMovementTest
+    public sealed class MoveWorkloadsTest : DevToolsUnitTest
     {
-        private Mock<IAOSClient> aosClient;
-        private readonly string scaleUnitId = "@A";
-        private readonly string hubId = "@@";
-        private WorkloadInstance exampleWorkload;
 
         [TestInitialize]
         public void Setup()
         {
-            aosClient = new Mock<IAOSClient>();
-
-            ConfigurationHelper configurationHelper = new ConfigurationHelper();
-
-            Func<CloudAndEdgeConfiguration> loadConfigMock = () =>
-            {
-                return configurationHelper.GetTestConfiguration();
-            };
-
-            Config.GetUserConfigImplementation = loadConfigMock;
-
-            exampleWorkload = configurationHelper.GetExampleWorkload();
+            Initialize();
         }
 
         [TestMethod]
@@ -58,7 +42,7 @@ namespace ScaleUnitManagementTests
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
                 WorkloadMover workloadMover = new WorkloadMover();
-                workloadMover.SetClient(aosClient.Object);
+                workloadMover.SetScaleUnitAosClient(aosClient.Object);
                 await workloadMover.MoveWorkloads(hubId, DateTime.UtcNow);
             }
 

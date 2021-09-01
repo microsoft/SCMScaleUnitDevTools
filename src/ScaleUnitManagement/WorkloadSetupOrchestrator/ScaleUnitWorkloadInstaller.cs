@@ -21,10 +21,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task InstallationStatus()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
+                IAOSClient aosClient = await GetScaleUnitAosClient();
                 List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
                 List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
                 int count = 0;
@@ -43,6 +42,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
         {
+            IAOSClient aosClient = await GetScaleUnitAosClient();
+
             if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(aosClient, workloadInstance))
                 return;
 
@@ -71,12 +72,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task InstallWorkloadsOnScaleUnit()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(async () =>
             {
-                IAOSClient scaleUnitAosClient = aosClient;
-                AOSClient hubAosClient = await AOSClient.Construct(Config.HubScaleUnit());
+                IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
+                IAOSClient hubAosClient = await GetHubAosClient();
 
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances();
 

@@ -36,11 +36,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task ConfigureHub()
         {
-            await EnsureClientInitialized();
 
             await ReliableRun.Execute(
                 async () =>
                 {
+                    IAOSClient aosClient = await GetScaleUnitAosClient();
                     ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(hubConfig);
 
                     configuration.Should().NotBeNull("The AOS should have returned the configuration");
@@ -52,11 +52,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForHubReadiness()
         {
-            await EnsureClientInitialized();
-
             await ReliableRun.Execute(
                 async () =>
                 {
+                    IAOSClient aosClient = await GetScaleUnitAosClient();
                     ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
 
                     status.Should().NotBeNull();

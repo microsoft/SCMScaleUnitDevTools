@@ -10,7 +10,7 @@ namespace CLI
     {
         public static async Task UpgradeAllWorkloadDefinitions(int input, string selectionHistory)
         {
-            if (!CLIMenu.YesNoPrompt("You are about to upgrade the workload definitions on all scale units. Please make sure that all data pipelines have been drained. Do you wish to continue? [y]: "))
+            if (!CLIMenu.YesNoPrompt("You are about to upgrade the workload definitions on all scale units. Do you wish to continue? [y]: "))
                 return;
 
             var scaleUnits = Config.ScaleUnitInstances();
