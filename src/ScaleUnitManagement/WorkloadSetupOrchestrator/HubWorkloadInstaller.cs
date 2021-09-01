@@ -51,7 +51,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             await ReliableRun.Execute(async () =>
             {
                 List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(aosClient).CreateWorkloadInstances();
-                List<WorkloadInstance> createdInstances = await aosClient.WriteWorkloadInstances(workloadInstances);
+                List<WorkloadInstance> createdInstances = new List<WorkloadInstance>();
+                foreach (var workloadInstance in workloadInstances)
+                {
+                    createdInstances.AddRange(await aosClient.WriteWorkloadInstances(workloadInstances));
+                }
 
                 this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
             }, "Install workloads on hub");
