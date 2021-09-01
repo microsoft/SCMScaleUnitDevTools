@@ -46,6 +46,7 @@ namespace ScaleUnitManagement.Utilities
                 : userConfig.InterAOSAADConfiguration.AppResourceId;
         }
         public static List<ScaleUnitInstance> ScaleUnitInstances() { return GetUserConfiguration().ScaleUnitConfiguration; }
+        public static List<ScaleUnitInstance> NonHubScaleUnitInstances() { return ScaleUnitInstances().Where(s => s.ScaleUnitId != "@@").ToList(); }
         public static List<ConfiguredWorkload> WorkloadList() { return GetUserConfiguration().Workloads; }
 
         public static ScaleUnitInstance FindScaleUnitWithId(string scaleUnitId) { return ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnitId).SingleOrDefault(); }
