@@ -23,7 +23,7 @@ namespace CLI.SetupToolsOptions
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunUpdateScaleunitId });
             }
 
-            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update its scale unit id?: ");
+            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update the scale unit id of?: ");
             await CLIMenu.ShowScreen(screen);
         }
 
