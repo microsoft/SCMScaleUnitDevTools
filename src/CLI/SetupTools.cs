@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.SetupToolsOptions;
 using CLIFramework;
 
 namespace CLI

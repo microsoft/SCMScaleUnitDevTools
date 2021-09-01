@@ -5,7 +5,7 @@ using ScaleUnitManagement.Utilities;
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 
-namespace CLI
+namespace CLI.SetupToolsOptions
 {
     internal class SyncDB
     {
