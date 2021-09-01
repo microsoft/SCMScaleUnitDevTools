@@ -6,7 +6,7 @@ using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
-namespace CLI
+namespace CLI.SetupToolsOptions
 {
     internal class DisableScaleUnitFeature
     {

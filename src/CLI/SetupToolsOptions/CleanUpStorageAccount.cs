@@ -5,7 +5,7 @@ using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System;
 
-namespace CLI
+namespace CLI.SetupToolsOptions
 {
     internal class CleanUpStorageAccount
     {
