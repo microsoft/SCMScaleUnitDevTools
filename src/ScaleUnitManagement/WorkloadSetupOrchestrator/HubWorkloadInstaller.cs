@@ -54,7 +54,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 List<WorkloadInstance> createdInstances = new List<WorkloadInstance>();
                 foreach (var workloadInstance in workloadInstances)
                 {
-                    createdInstances.AddRange(await aosClient.WriteWorkloadInstances(workloadInstances));
+                    createdInstances = await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance });
                 }
 
                 this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
