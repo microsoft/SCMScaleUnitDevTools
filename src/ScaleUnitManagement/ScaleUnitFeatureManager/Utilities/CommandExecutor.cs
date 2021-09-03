@@ -57,6 +57,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                     outputStream.WriteLine(e.Data);
                 }
             });
+            process.Exited += new EventHandler((sender, e) =>
+            {
+                outputStream.Close();
+            });
         }
 
         private void RunProcess()

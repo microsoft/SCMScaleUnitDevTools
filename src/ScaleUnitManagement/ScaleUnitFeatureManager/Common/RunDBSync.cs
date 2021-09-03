@@ -17,7 +17,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             return 3F;
         }
 
-        public void Run()
+        public void Run(bool isScaleUnitFeatureEnabled = true)
         {
             Console.WriteLine("Executing DbSync");
 
@@ -28,13 +28,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 string dbSyncTool = Path.Combine(scaleUnit.ServiceVolume, @"AOSService\PackagesLocalDirectory\bin\syncengine.exe");
                 string metaBinariesPath = Path.Combine(scaleUnit.ServiceVolume, @"AOSService\PackagesLocalDirectory");
                 string outputFile = $"{scaleUnit.AxDbName}_DbSync.log";
+                string scaleUnitMnemonic = isScaleUnitFeatureEnabled ? scaleUnit.ScaleUnitId : "";
 
+                // If ScaleUnit feature is disabled, we should have the triggers isEnabled option as true to allow DBsync to remove the triggers.
+                // Otherwise, it will fail to remove the triggers.
                 string args =
                     "-syncmode=\"fullall\""
                     + $" -metadatabinaries=\"{metaBinariesPath}\""
                     + $" -connect=\"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=AXVSSDK\""
                     + " -verbosity=\"Diagnostic\""
-                    + " -scaleUnitOptionsAsJson=\"{\"IsScaleUnitFeatureEnabled\": true, \"scaleUnitMnemonics\":" + $"'{scaleUnit.ScaleUnitId}'" + " }\""
+                    + " -scaleUnitOptionsAsJson=\"{\"IsScaleUnitFeatureEnabled\": " + $"{isScaleUnitFeatureEnabled.ToString().ToLower()}, \"scaleUnitMnemonics\":" + $"'{scaleUnitMnemonic}'" + " }\""
                     + " -triggerOptionsAsJson=\"{\"IsEnabled\": true}\"";
 
                 Console.WriteLine($"{dbSyncTool} {args} > {outputFile}");
