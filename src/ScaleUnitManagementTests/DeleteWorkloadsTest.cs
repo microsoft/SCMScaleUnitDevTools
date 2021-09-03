@@ -14,29 +14,16 @@ namespace ScaleUnitManagementTests
     [TestClass]
     public sealed class DeleteWorkloadsTest : DevToolsUnitTest
     {
-
-        [TestInitialize]
-        public void Setup()
-        {
-            Initialize();
-        }
-
         [TestMethod]
         public async Task DeleteWorkloads()
         {
             // Arrange
-            var toBeReturnedWorkloadInstances = new List<WorkloadInstance> { exampleWorkload };
-
-            aosClient.Setup(x => x.GetWorkloadInstances())
-                .ReturnsAsync(new List<WorkloadInstance>(toBeReturnedWorkloadInstances));
-
             aosClient.Setup(x => x.DeleteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
                 .Callback<List<WorkloadInstance>>((deletedWorkloads) =>
                 {
-                    toBeReturnedWorkloadInstances = toBeReturnedWorkloadInstances
-                                                        .Where(w1 => !deletedWorkloads.Any(w2 => w1.Id.Equals(w2.Id))).ToList();
+                    workloadInstances = workloadInstances.Where(w1 => !deletedWorkloads.Any(w2 => w1.Id.Equals(w2.Id))).ToList();
                 })
-                .ReturnsAsync(toBeReturnedWorkloadInstances);
+                .ReturnsAsync(workloadInstances);
 
             // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
@@ -47,7 +34,7 @@ namespace ScaleUnitManagementTests
             }
 
             // Assert
-            toBeReturnedWorkloadInstances.Should().BeEmpty();
+            workloadInstances.Should().BeEmpty();
         }
     }
 }

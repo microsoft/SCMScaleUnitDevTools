@@ -19,13 +19,7 @@ namespace ScaleUnitManagementTests
         [TestInitialize]
         public void Setup()
         {
-            Initialize();
-
             workloadStatus = new WorkloadInstanceStatus();
-            var workloadInstances = new List<WorkloadInstance> { exampleWorkload };
-
-            aosClient.Setup(x => x.GetWorkloadInstances())
-                .ReturnsAsync(new List<WorkloadInstance>(workloadInstances));
 
             aosClient.Setup(x => x.StartWorkload(It.IsAny<string>()))
             .Callback<string>((workloadId) =>
@@ -71,25 +65,16 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Running";
-            var exception = "";
 
-            // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
                 var pipelineManager = new PipelineManager();
                 pipelineManager.SetScaleUnitAosClient(aosClient.Object);
-                try
-                {
-                    await pipelineManager.StartWorkloadDataPipelines();
-                }
-                catch (Exception ex)
-                {
-                    exception = ex.Message;
-                }
-            }
+                Func<Task> act = async () => await pipelineManager.StartWorkloadDataPipelines();
 
-            // Assert
-            exception.Should().Be("Workload not stopped");
+                // Act + Assert
+                await act.Should().ThrowAsync<Exception>(because: "Workload is not stopped");
+            }
         }
 
         [TestMethod]
@@ -97,7 +82,6 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Stopped";
-            var exception = "";
             var corruptedWorkloadInstance = new ConfigurationHelper().GetExampleWorkload();
             corruptedWorkloadInstance.Id = "scrambled id";
             aosClient.Setup(x => x.GetWorkloadInstances())
@@ -108,18 +92,11 @@ namespace ScaleUnitManagementTests
             {
                 var pipelineManager = new PipelineManager();
                 pipelineManager.SetScaleUnitAosClient(aosClient.Object);
-                try
-                {
-                    await pipelineManager.StartWorkloadDataPipelines();
-                }
-                catch (Exception ex)
-                {
-                    exception = ex.Message;
-                }
-            }
+                Func<Task> act = async () => await pipelineManager.StartWorkloadDataPipelines();
 
-            // Assert
-            exception.Should().Be("Workload does not exist");
+                // Act + Assert
+                await act.Should().ThrowAsync<Exception>(because: "Workload does not exist");
+            }
         }
     }
 }

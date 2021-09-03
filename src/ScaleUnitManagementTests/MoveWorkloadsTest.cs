@@ -11,32 +11,19 @@ using Moq;
 
 namespace ScaleUnitManagementTests
 {
-
     [TestClass]
     public sealed class MoveWorkloadsTest : DevToolsUnitTest
     {
-
-        [TestInitialize]
-        public void Setup()
-        {
-            Initialize();
-        }
-
         [TestMethod]
         public async Task MoveWorkloads()
         {
             // Arrange
-            var toBeReturnedWorkloadInstances = new List<WorkloadInstance>() { exampleWorkload };
-
-            aosClient.Setup(x => x.GetWorkloadInstances())
-                .Returns(() => Task.FromResult(new List<WorkloadInstance>(toBeReturnedWorkloadInstances)));
-
             aosClient.Setup(x => x.WriteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
                 .Callback<List<WorkloadInstance>>((workloads) =>
                 {
-                    toBeReturnedWorkloadInstances = workloads;
+                    workloadInstances = workloads;
                 })
-                .Returns(() => Task.FromResult(toBeReturnedWorkloadInstances));
+                .Returns(() => Task.FromResult(workloadInstances));
 
             // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
@@ -47,8 +34,8 @@ namespace ScaleUnitManagementTests
             }
 
             // Assert
-            toBeReturnedWorkloadInstances.Should().NotBeEmpty();
-            foreach (var workload in toBeReturnedWorkloadInstances)
+            workloadInstances.Should().NotBeEmpty();
+            foreach (var workload in workloadInstances)
             {
                 TemporalAssignment temporalAssignment = workload.ExecutingEnvironment.Last();
                 temporalAssignment.Environment.ScaleUnitId.Should().Be(hubId);

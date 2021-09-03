@@ -18,24 +18,17 @@ namespace ScaleUnitManagementTests
     {
         private Mock<IAOSClient> hubAosClient;
         private WorkloadInstanceStatus workloadStatus;
-        private List<WorkloadInstance> workloadInstances;
         private List<Workload> workloads;
 
         [TestInitialize]
         public void Setup()
         {
-            Initialize();
-
             hubAosClient = new Mock<IAOSClient>();
-            workloadInstances = new List<WorkloadInstance> { exampleWorkload };
             workloadStatus = new WorkloadInstanceStatus();
             workloads = new List<Workload> { exampleWorkload.VersionedWorkload.Workload };
 
             hubAosClient.Setup(x => x.GetWorkloads())
                 .ReturnsAsync(workloads);
-
-            aosClient.Setup(x => x.GetWorkloadInstances())
-                .ReturnsAsync(new List<WorkloadInstance>(workloadInstances));
 
             aosClient.Setup(x => x.WriteWorkloadInstances(It.IsAny<List<WorkloadInstance>>()))
                 .Callback<List<WorkloadInstance>>((newWorkloadInstances) =>
@@ -74,27 +67,17 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Running";
-            bool exceptionThrown = false;
 
-            // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
             {
                 var workloadDefinitionManager = new WorkloadDefinitionManager();
                 workloadDefinitionManager.SetScaleUnitAosClient(aosClient.Object);
                 workloadDefinitionManager.SetHubAosClient(hubAosClient.Object);
+                Func<Task> act = async () => await workloadDefinitionManager.UpgradeWorkloadsDefinition();
 
-                try
-                {
-                    await workloadDefinitionManager.UpgradeWorkloadsDefinition();
-                }
-                catch (Exception ex)
-                {
-                    exceptionThrown = true;
-                }
+                // Act + Assert
+                await act.Should().ThrowAsync<Exception>(because: "Workload is not drained");
             }
-
-            // Assert
-            exceptionThrown.Should().BeTrue();
         }
 
         [TestMethod]
@@ -102,7 +85,6 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Stopped";
-            bool exceptionThrown = false;
             workloads.Clear();
 
             // Act
@@ -111,19 +93,11 @@ namespace ScaleUnitManagementTests
                 var workloadDefinitionManager = new WorkloadDefinitionManager();
                 workloadDefinitionManager.SetScaleUnitAosClient(aosClient.Object);
                 workloadDefinitionManager.SetHubAosClient(hubAosClient.Object);
+                Func<Task> act = async () => await workloadDefinitionManager.UpgradeWorkloadsDefinition();
 
-                try
-                {
-                    await workloadDefinitionManager.UpgradeWorkloadsDefinition();
-                }
-                catch (Exception ex)
-                {
-                    exceptionThrown = true;
-                }
+                // Act + Assert
+                await act.Should().ThrowAsync<Exception>(because: "Workload does not exist");
             }
-
-            // Assert
-            exceptionThrown.Should().BeTrue();
         }
     }
 }
