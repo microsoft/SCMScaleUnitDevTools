@@ -13,29 +13,29 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task UpgradeWorkloadsDefinition()
         {
-            await ReliableRun.Execute(async () =>
+            var scaleUnitAosClient = await GetScaleUnitAosClient();
+            var hubAosClient = await GetHubAosClient();
+
+            List<Workload> workloads = null;
+            await ReliableRun.Execute(async () => workloads = await hubAosClient.GetWorkloads(), "Getting workloads");
+
+            List<WorkloadInstance> workloadInstances = null;
+            await ReliableRun.Execute(async () => workloadInstances = await scaleUnitAosClient.GetWorkloadInstances(), "Getting workload instances");
+
+            await EnsureWorkloadsAreDrained(workloadInstances);
+
+            foreach (var workloadInstance in workloadInstances)
             {
-                IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
-                IAOSClient hubAosClient = await GetHubAosClient();
+                var workloadName = workloadInstance.VersionedWorkload.Workload.Name;
+                var workload = workloads.First(x => x.Name.Equals(workloadName));
 
-                var workloads = await hubAosClient.GetWorkloads();
-                var workloadInstances = await scaleUnitAosClient.GetWorkloadInstances();
+                workloadInstance.VersionedWorkload.Workload = workload;
+                workloadInstance.VersionedWorkload.Id = Guid.NewGuid().ToString();
 
-                await EnsureWorkloadsAreDrained(workloadInstances);
+                await ReliableRun.Execute(async () => await scaleUnitAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), "Writing workload instance");
+            }
 
-                foreach (var workloadInstance in workloadInstances)
-                {
-                    var workloadName = workloadInstance.VersionedWorkload.Workload.Name;
-                    var workload = workloads.First(x => x.Name.Equals(workloadName));
-
-                    workloadInstance.VersionedWorkload.Workload = workload;
-                    workloadInstance.VersionedWorkload.Id = Guid.NewGuid().ToString();
-                }
-
-                var updatedInstances = await scaleUnitAosClient.WriteWorkloadInstances(workloadInstances);
-
-            }, "Upgrading workloads");
-        }
+       }
 
         private async Task EnsureWorkloadsAreDrained(List<WorkloadInstance> workloadInstances)
         {

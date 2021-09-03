@@ -36,33 +36,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task ConfigureHub()
         {
+            var aosClient = await GetScaleUnitAosClient();
+            ScaleUnitEnvironmentConfiguration configuration = null;
+            await ReliableRun.Execute(async () => configuration = await aosClient.WriteScaleUnitConfiguration(hubConfig), "Writing scale unit configuration");
 
-            await ReliableRun.Execute(
-                async () =>
-                {
-                    IAOSClient aosClient = await GetScaleUnitAosClient();
-                    ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(hubConfig);
-
-                    configuration.Should().NotBeNull("The AOS should have returned the configuration");
-                    configuration.WithDeepEqual(hubConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
-                    configuration.HubS2SEncryptedSecret.Should().NotBe(hubConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
-                },
-                "Hub configuration");
+            configuration.Should().NotBeNull("The AOS should have returned the configuration");
+            configuration.WithDeepEqual(hubConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
+            configuration.HubS2SEncryptedSecret.Should().NotBe(hubConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
         }
 
         private async Task WaitForHubReadiness()
         {
-            await ReliableRun.Execute(
-                async () =>
-                {
-                    IAOSClient aosClient = await GetScaleUnitAosClient();
-                    ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
-
-                    status.Should().NotBeNull();
-                    status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Hub should be in a healthy/running state.");
-
-                },
-                "Wait for hub readiness");
+            var aosClient = await GetScaleUnitAosClient();
+            ScaleUnitStatus status = null;
+            await ReliableRun.Execute(async () => status = await aosClient.CheckScaleUnitConfigurationStatus(), "Checking scale unit configuration status");
+            status.Should().NotBeNull();
+            status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Hub should be in a healthy/running state.");
         }
     }
 }

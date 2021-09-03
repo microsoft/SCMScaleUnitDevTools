@@ -19,10 +19,10 @@ namespace CLI
                 Option("Prepare environments for workload installation", ConfigureEnvironment.Show),
                 Option("Show workload installation options", WorkloadInstallationMenu.Show),
                 Option("Show workload movement options", WorkloadMovementMenu.Show),
-                Option("Delete workloads from environment", DeleteWorkloads.Show),
-                Option("Setup tools", SetupTools.Show),
                 Option("Upgrade workloads definition", UpgradeWorkloadsDefinition.UpgradeAllWorkloadDefinitions),
                 Option("Show workload data pipeline management options", ManageWorkloadDataPipeline.Show),
+                Option("Delete workloads from environment", DeleteWorkloads.Show),
+                Option("Setup tools", SetupTools.Show),
                 Option("Exit", ExitTool),
             };
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
@@ -11,53 +12,51 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task DrainWorkloadDataPipelines()
         {
-            await ReliableRun.Execute(async () =>
-            {
-                IAOSClient aosClient = await GetScaleUnitAosClient();
-                var workloadInstances = await aosClient.GetWorkloadInstances();
-                foreach (var workloadInstance in workloadInstances)
-                {
-                    /* Bug #614217 in the AX causes the client to fail if the SYS workload is stopped and started repeatedly on the spoke. 
-                     * Since the SYS workload on the spoke never sends any packages, draining and starting it can be skipped.
-                     * This should be solved in AX version 10.0.23.
-                     */
-                    if (SYSWorkloadOnSpoke(workloadInstance))
-                    {
-                        Console.WriteLine($"Skipping the SYS workload on ${scaleUnit.PrintableName()}");
-                        continue;
-                    }
-                    await aosClient.DrainWorkload(workloadInstance.Id);
-                }
+            var aosClient = await GetScaleUnitAosClient();
+            List<WorkloadInstance> workloadInstances = null;
+            await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
-                foreach (var workloadInstance in workloadInstances)
+            foreach (var workloadInstance in workloadInstances)
+            {
+                /* Bug #614217 in the AX causes the client to fail if the SYS workload is stopped and started repeatedly on the spoke. 
+                    * Since the SYS workload on the spoke never sends any packages, draining and starting it can be skipped.
+                    * This should be solved in AX version 10.0.23.
+                    */
+                if (SYSWorkloadOnSpoke(workloadInstance))
                 {
-                    if (SYSWorkloadOnSpoke(workloadInstance))
-                    {
-                        continue;
-                    }
-                    Console.WriteLine($"Waiting for {workloadInstance.VersionedWorkload.Workload.Name} to be fully drained on ${scaleUnit.PrintableName()}");
-                    await WaitForWorkloadDraining(workloadInstance);
+                    Console.WriteLine($"Skipping the SYS workload on {scaleUnit.PrintableName()}");
+                    continue;
                 }
-            }, "Draining workload data pipelines");
+                await ReliableRun.Execute(async () => await aosClient.DrainWorkload(workloadInstance.Id), "Draining workload instance");
+            }
+
+            foreach (var workloadInstance in workloadInstances)
+            {
+                if (SYSWorkloadOnSpoke(workloadInstance))
+                {
+                    continue;
+                }
+                Console.WriteLine($"Waiting for {workloadInstance.VersionedWorkload.Workload.Name} to be fully drained on {scaleUnit.PrintableName()}");
+                await WaitForWorkloadDraining(workloadInstance);
+            }
         }
 
         public async Task StartWorkloadDataPipelines()
         {
-            await ReliableRun.Execute(async () =>
+            var aosClient = await GetScaleUnitAosClient();
+            List<WorkloadInstance> workloadInstances = null;
+            await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
+
+            foreach (var workloadInstance in workloadInstances)
             {
-                IAOSClient aosClient = await GetScaleUnitAosClient();
-                var workloadInstances = await aosClient.GetWorkloadInstances();
-                foreach (var workloadInstance in workloadInstances)
+                if (SYSWorkloadOnSpoke(workloadInstance))
                 {
-                    if (SYSWorkloadOnSpoke(workloadInstance))
-                    {
-                        Console.WriteLine($"Skipping the SYS workload on ${scaleUnit.PrintableName()}");
-                        continue;
-                    }
-                    Console.WriteLine($"Starting the {workloadInstance.VersionedWorkload.Workload.Name} workload on ${scaleUnit.PrintableName()}");
-                    await aosClient.StartWorkload(workloadInstance.Id);
+                    Console.WriteLine($"Skipping the SYS workload on {scaleUnit.PrintableName()}");
+                    continue;
                 }
-            }, "Starting workload data pipelines");
+                Console.WriteLine($"Starting the {workloadInstance.VersionedWorkload.Workload.Name} workload on {scaleUnit.PrintableName()}");
+                await ReliableRun.Execute(async () => await aosClient.StartWorkload(workloadInstance.Id), "Starting workload instance");
+            }
         }
 
         public async Task WaitForWorkloadDraining(WorkloadInstance workloadInstance)
@@ -80,7 +79,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 if (count == 300 / queryInterval) // After five minutes
                 {
                     Console.WriteLine($"\nThis is taking a long time.");
-                    Console.WriteLine($"Still waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload to be drained on ${scaleUnit.PrintableName()}");
+                    Console.WriteLine($"Still waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload to be drained on {scaleUnit.PrintableName()}");
                 }
 
             } while (!await WorkloadInstanceManager.IsWorkloadInStoppedState(aosClient, workloadInstance));

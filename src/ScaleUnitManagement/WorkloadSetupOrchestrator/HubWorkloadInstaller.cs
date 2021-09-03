@@ -24,34 +24,33 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task InstallationStatus()
         {
-            await ReliableRun.Execute(async () =>
+            var aosClient = await GetScaleUnitAosClient();
+            var statusList = new List<WorkloadInstanceStatus>();
+            var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
+            int count = 0;
+            foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {
-                IAOSClient aosClient = await GetScaleUnitAosClient();
-                List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
-                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-                int count = 0;
-                foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
-                {
-                    statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
-                }
-                foreach (WorkloadInstanceStatus status in statusList)
-                {
-                    Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
-                    count++;
-                }
-            }, "Installation status");
+                await ReliableRun.Execute(async () => statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId)), "Checking workload status");
+            }
+            foreach (var status in statusList)
+            {
+                Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
+                count++;
+            }
         }
 
         private async Task InstallWorkloadsOnHub()
         {
-            await ReliableRun.Execute(async () =>
-            {
-                IAOSClient aosClient = await GetScaleUnitAosClient();
-                List<WorkloadInstance> workloadInstances = await new WorkloadInstanceManager(aosClient).CreateWorkloadInstances();
-                List<WorkloadInstance> createdInstances = await aosClient.WriteWorkloadInstances(workloadInstances);
+            var aosClient = await GetScaleUnitAosClient();
+            var workloadInstances = await new WorkloadInstanceManager(aosClient).CreateWorkloadInstances();
 
-                this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
-            }, "Install workloads on hub");
+            List<WorkloadInstance> createdInstances = null;
+            foreach (var workloadInstance in workloadInstances)
+            {
+                await ReliableRun.Execute(async () => createdInstances = await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), "Installing workload instance");
+            }
+
+            this.ValidateCreatedWorkloadInstances(workloadInstances, createdInstances);
         }
 
         private void ValidateCreatedWorkloadInstances(List<WorkloadInstance> expectedWorkloadInstances, List<WorkloadInstance> createdInstances)
@@ -71,26 +70,22 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForWorkloadInstanceReadinessOnHub()
         {
-            await ReliableRun.Execute(async () =>
+            var aosClient = await GetScaleUnitAosClient();
+            var statusList = new List<WorkloadInstanceStatus>();
+            var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
+            int count = 0;
+
+            foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {
-                IAOSClient aosClient = await GetScaleUnitAosClient();
-                List<WorkloadInstanceStatus> statusList = new List<WorkloadInstanceStatus>();
-                List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-                int count = 0;
+                await ReliableRun.Execute(async () => statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId)), "Checking workload status");
+            }
 
-                foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
-                {
-                    statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId));
-                }
-
-                foreach (WorkloadInstanceStatus status in statusList)
-                {
-                    status.Should().NotBeNull($"{workloadInstanceIdWithNameList[count].Name} workload instance Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} should be found");
-                    status.Health.Should().Be(WorkloadInstanceHealthConstants.Running);
-                    count++;
-                }
-
-            }, "Wait for workload instance readiness");
+            foreach (var status in statusList)
+            {
+                status.Should().NotBeNull($"{workloadInstanceIdWithNameList[count].Name} workload instance Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} should be found");
+                status.Health.Should().Be(WorkloadInstanceHealthConstants.Running);
+                count++;
+            }
         }
     }
 }
