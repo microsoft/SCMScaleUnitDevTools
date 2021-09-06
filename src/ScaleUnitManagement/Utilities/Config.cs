@@ -157,6 +157,12 @@ namespace ScaleUnitManagement.Utilities
                 ValidateValue("AppSecret", scaleUnit.AuthConfiguration.AppSecret);
                 ValidateValue("Authority", scaleUnit.AuthConfiguration.Authority);
 
+                if (scaleUnit.AuthConfiguration.AppId.Equals(InterAOSAppId()))
+                {
+                    hasAnyError = true;
+                    Console.Error.WriteLine("The scale unit with id \"" + (scaleUnit.ScaleUnitId) + "\" is running with the same AAD app as the interAOS AAD app. The interAOS communication AAD app should always be different what is used for the scale units.");
+                }
+
                 if (!scaleUnit.IsHub())
                 {
                     try
