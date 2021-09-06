@@ -36,29 +36,23 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task ConfigureScaleUnit()
         {
-            await EnsureClientInitialized();
+            var aosClient = await GetScaleUnitAosClient();
+            ScaleUnitEnvironmentConfiguration configuration = null;
+            await ReliableRun.Execute(async () => configuration = await aosClient.WriteScaleUnitConfiguration(scaleUnitConfig), "Writing scale unit configuration");
 
-            await ReliableRun.Execute(async () =>
-            {
-                ScaleUnitEnvironmentConfiguration configuration = await aosClient.WriteScaleUnitConfiguration(scaleUnitConfig);
-
-                configuration.Should().NotBeNull("The AOS should have returned the configuration");
-                configuration.WithDeepEqual(scaleUnitConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
-                configuration.HubS2SEncryptedSecret.Should().NotBe(scaleUnitConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
-            }, "Scale unit configuration");
+            configuration.Should().NotBeNull("The AOS should have returned the configuration");
+            configuration.WithDeepEqual(scaleUnitConfig).IgnoreSourceProperty((property) => property.HubS2SEncryptedSecret).Assert();
+            configuration.HubS2SEncryptedSecret.Should().NotBe(scaleUnitConfig.HubS2SEncryptedSecret, "Secret should have been encrypted by the AOS.");
         }
 
         private async Task WaitForScaleUnitReadiness()
         {
-            await EnsureClientInitialized();
+            var aosClient = await GetScaleUnitAosClient();
+            ScaleUnitStatus status = null;
+            await ReliableRun.Execute(async () => status = await aosClient.CheckScaleUnitConfigurationStatus(), "Checking scale unit configuration status");
 
-            await ReliableRun.Execute(async () =>
-            {
-                ScaleUnitStatus status = await aosClient.CheckScaleUnitConfigurationStatus();
-
-                status.Should().NotBeNull();
-                status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Scale unit should be in a healthy/running state.");
-            }, "Wait for scale unit readiness");
+            status.Should().NotBeNull();
+            status.Health.Should().Be(ScaleUnitHealthConstants.Running, "Scale unit should be in a healthy/running state.");
         }
     }
 }

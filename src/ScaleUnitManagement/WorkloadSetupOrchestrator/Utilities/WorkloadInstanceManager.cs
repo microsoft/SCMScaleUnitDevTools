@@ -13,6 +13,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private readonly IAOSClient client;
         private static readonly string ReadyState = "Running";
         private static readonly string InstallingState = "Installing";
+        private static readonly string StoppedState = "Stopped";
 
         public WorkloadInstanceManager(IAOSClient client)
         {
@@ -278,12 +279,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private static DateTime GetWorkloadEffectiveDate()
         {
-            DateTime effectiveDate = DateTime.UtcNow;
-            string app10_0_22BaseVersion = "10.13";
-            if (!AxDeployment.IsApplicationVersionMoreRecentThan(app10_0_22BaseVersion))
-            {
-                effectiveDate.AddMinutes(5);
-            }
+            var effectiveDate = DateTime.UtcNow;
+            // Always adding 5 minutes to the effective date to mitigate Bug 616219 on the AX.
+            effectiveDate.AddMinutes(5);
             return effectiveDate;
         }
 
@@ -303,5 +301,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == InstallingState;
         }
+
+        public static async Task<bool> IsWorkloadInStoppedState(IAOSClient client, WorkloadInstance workloadInstance)
+        {
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            return status.Health == StoppedState;
+        }
+
+        public static bool IsWorkloadSYSOnSpoke(WorkloadInstance workloadInstance)
+        {
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var name = workloadInstance.VersionedWorkload.Workload.Name;
+            return name.Equals("SYS") && !scaleUnit.IsHub();
+        }
+
     }
 }
