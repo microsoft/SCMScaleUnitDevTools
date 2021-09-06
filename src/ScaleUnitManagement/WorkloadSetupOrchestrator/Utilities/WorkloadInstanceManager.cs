@@ -310,5 +310,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == StoppedState;
         }
+
+        public static bool IsWorkloadSYSOnSpoke(WorkloadInstance workloadInstance)
+        {
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var name = workloadInstance.VersionedWorkload.Workload.Name;
+            return name.Equals("SYS") && !scaleUnit.IsHub();
+        }
+
     }
 }

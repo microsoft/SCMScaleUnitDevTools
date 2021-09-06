@@ -34,15 +34,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 await ReliableRun.Execute(async () => await scaleUnitAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), "Writing workload instance");
             }
-
-       }
+        }
 
         private async Task EnsureWorkloadsAreDrained(List<WorkloadInstance> workloadInstances)
         {
-            IAOSClient aosClient = await GetScaleUnitAosClient();
+            var aosClient = await GetScaleUnitAosClient();
 
             foreach (var workloadInstance in workloadInstances)
             {
+                if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
+                {
+                    continue;
+                }
+
                 if (!await WorkloadInstanceManager.IsWorkloadInStoppedState(aosClient, workloadInstance))
                 {
                     throw new Exception($"Workload ${workloadInstance.VersionedWorkload.Workload.Name} on scale unit ${scaleUnit.ScaleUnitId} has not been drained");

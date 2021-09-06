@@ -22,7 +22,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     * Since the SYS workload on the spoke never sends any packages, draining and starting it can be skipped.
                     * This should be solved in AX version 10.0.23.
                     */
-                if (SYSWorkloadOnSpoke(workloadInstance))
+                if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {
                     Console.WriteLine($"Skipping the SYS workload on {scaleUnit.PrintableName()}");
                     continue;
@@ -32,7 +32,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             foreach (var workloadInstance in workloadInstances)
             {
-                if (SYSWorkloadOnSpoke(workloadInstance))
+                if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {
                     continue;
                 }
@@ -49,7 +49,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             foreach (var workloadInstance in workloadInstances)
             {
-                if (SYSWorkloadOnSpoke(workloadInstance))
+                if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {
                     Console.WriteLine($"Skipping the SYS workload on {scaleUnit.PrintableName()}");
                     continue;
@@ -85,12 +85,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             } while (!await WorkloadInstanceManager.IsWorkloadInStoppedState(aosClient, workloadInstance));
 
             Console.WriteLine();
-        }
-
-        private bool SYSWorkloadOnSpoke(WorkloadInstance workloadInstance)
-        {
-            var name = workloadInstance.VersionedWorkload.Workload.Name;
-            return name.Equals("SYS") && !scaleUnit.IsHub();
         }
     }
 }

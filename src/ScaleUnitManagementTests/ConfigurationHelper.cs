@@ -73,7 +73,7 @@ namespace ScaleUnitManagementTests
                 Id = workloadInstanceId,
                 VersionedWorkload = new VersionedWorkload
                 {
-                    Workload = new Workload { Name = workloadInstanceName},
+                    Workload = new Workload { Name = workloadInstanceName },
                     Id = versionedWorkloadId,
                 },
             };
