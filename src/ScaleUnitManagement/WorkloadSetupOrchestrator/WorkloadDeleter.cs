@@ -12,24 +12,21 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task DeleteWorkloadsFromScaleUnit()
         {
-            await EnsureClientInitialized();
-
-            await ReliableRun.Execute(async () =>
+            var aosClient = await GetScaleUnitAosClient();
+            List<WorkloadInstance> workloadInstances = null;
+            await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
+            if (workloadInstances.Count == 0)
             {
-                List<WorkloadInstance> workloadInstances = await aosClient.GetWorkloadInstances();
-                if (workloadInstances.Count == 0)
-                {
-                    Console.WriteLine($"No workloads to delete on scale unit {scaleUnit.ScaleUnitId}");
-                    return;
-                }
+                Console.WriteLine($"No workloads to delete on scale unit {scaleUnit.ScaleUnitId}");
+                return;
+            }
 
-                foreach (WorkloadInstance workloadInstance in workloadInstances)
-                {
-                    string name = workloadInstance.VersionedWorkload.Workload.Name;
-                    Console.WriteLine($"Deleting {name} Id: {workloadInstance.Id}");
-                }
-                _ = await aosClient.DeleteWorkloadInstances(workloadInstances);
-            }, $"Delete workloads from scale unit {scaleUnit.ScaleUnitId}");
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
+            {
+                string name = workloadInstance.VersionedWorkload.Workload.Name;
+                Console.WriteLine($"Deleting {name} Id: {workloadInstance.Id}");
+            }
+            await ReliableRun.Execute(async () => await aosClient.DeleteWorkloadInstances(workloadInstances), "Deleting workload instances");
         }
     }
 }

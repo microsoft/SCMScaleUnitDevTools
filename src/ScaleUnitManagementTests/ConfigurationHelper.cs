@@ -1,23 +1,34 @@
 
 using System;
 using System.Collections.Generic;
+using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagementTests
 {
     internal class ConfigurationHelper
     {
+        private readonly string scaleUnitId = "@A";
+        private readonly string hubId = "@@";
+        private readonly string workloadInstanceId;
+        private readonly string versionedWorkloadId;
+        private readonly string workloadInstanceName;
+        private readonly CloudAndEdgeConfiguration configuration;
 
-        public CloudAndEdgeConfiguration ConstructTestConfiguration()
+        public ConfigurationHelper()
         {
+            workloadInstanceId = Guid.NewGuid().ToString();
+            versionedWorkloadId = Guid.NewGuid().ToString();
+            workloadInstanceName = "testWorkload";
+
             var spoke = new ScaleUnitInstance()
             {
-                ScaleUnitId = "@A"
+                ScaleUnitId = scaleUnitId
             };
 
             var hub = new ScaleUnitInstance()
             {
-                ScaleUnitId = "@@"
+                ScaleUnitId = hubId
             };
 
             var scaleUnitInstances = new List<ScaleUnitInstance>
@@ -35,19 +46,43 @@ namespace ScaleUnitManagementTests
 
             var workload = new ConfiguredWorkload()
             {
-                WorkloadInstanceId = Guid.NewGuid().ToString(),
-                Name = "testWorkload",
-                ScaleUnitId = "@A",
+                WorkloadInstanceId = workloadInstanceId,
+                Name = workloadInstanceName,
+                ScaleUnitId = scaleUnitId,
                 ConfiguredDynamicConstraintValues = constraintValues
             };
 
             var workloads = new List<ConfiguredWorkload> { workload };
 
-            return new CloudAndEdgeConfiguration()
+            configuration = new CloudAndEdgeConfiguration()
             {
                 ScaleUnitConfiguration = scaleUnitInstances,
                 Workloads = workloads
             };
+        }
+
+        internal CloudAndEdgeConfiguration GetTestConfiguration()
+        {
+            return configuration;
+        }
+
+        internal WorkloadInstance GetExampleWorkload()
+        {
+            var workloadInstance = new WorkloadInstance
+            {
+                Id = workloadInstanceId,
+                VersionedWorkload = new VersionedWorkload
+                {
+                    Workload = new Workload { Name = workloadInstanceName },
+                    Id = versionedWorkloadId,
+                },
+            };
+            workloadInstance.ExecutingEnvironment.Add(new TemporalAssignment
+            {
+                EffectiveDate = DateTime.UtcNow,
+                Environment = new PhysicalEnvironmentReference() { ScaleUnitId = scaleUnitId },
+            });
+            return workloadInstance;
         }
     }
 }

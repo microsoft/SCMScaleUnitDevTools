@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
@@ -13,14 +14,17 @@ namespace CLI
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
-            var enableScaleUnitFeatureOption = new CLIOption() { Name = "Initialize the hybrid topology", Command = EnableScaleUnitFeature.SelectScaleUnit };
-            var configureEnvironmentOption = new CLIOption() { Name = "Prepare environments for workload installation", Command = ConfigureEnvironment.Show };
-            var installationMenuOption = new CLIOption() { Name = "Show workload installation options", Command = WorkloadInstallationMenu.Show };
-            var movementMenuOption = new CLIOption() { Name = "Show workload movement options", Command = WorkloadMovementMenu.Show };
-            var deleteWorkloadsOption = new CLIOption() { Name = "Delete workloads from environment", Command = DeleteWorkloads.Show };
-            var setupToolsOption = new CLIOption() { Name = "Setup tools", Command = SetupTools.Show };
-            var exitOption = new CLIOption() { Name = "Exit", Command = ExitTool };
-            var options = new List<CLIOption>() { enableScaleUnitFeatureOption, configureEnvironmentOption, installationMenuOption, movementMenuOption, deleteWorkloadsOption, setupToolsOption, exitOption };
+            var options = new List<CLIOption>() {
+                Option("Initialize the hybrid topology", EnableScaleUnitFeature.SelectScaleUnit),
+                Option("Prepare environments for workload installation", ConfigureEnvironment.Show),
+                Option("Show workload installation options", WorkloadInstallationMenu.Show),
+                Option("Show workload movement options", WorkloadMovementMenu.Show),
+                Option("Upgrade workloads definition", UpgradeWorkloadsDefinition.UpgradeAllWorkloadDefinitions),
+                Option("Show workload data pipeline management options", ManageWorkloadDataPipeline.Show),
+                Option("Delete workloads from environment", DeleteWorkloads.Show),
+                Option("Setup tools", SetupTools.Show),
+                Option("Exit", ExitTool),
+            };
 
             while (repeat)
             {
@@ -28,13 +32,17 @@ namespace CLI
                 await CLIMenu.ShowScreen(screen);
                 CLIMenu.PressToContinue();
             }
-
         }
 
         private static Task ExitTool(int input, string selectionHistory)
         {
             repeat = false;
             return Task.CompletedTask;
+        }
+
+        static CLIOption Option(string name, Func<int, string, Task> command)
+        {
+            return new CLIOption { Name = name, Command = command };
         }
     }
 }

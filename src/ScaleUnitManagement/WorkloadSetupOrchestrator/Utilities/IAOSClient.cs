@@ -23,5 +23,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId);
 
         Task<string> GetWorkloadMovementState(string workloadInstanceId, DateTime afterDateTime);
+
+        Task DrainWorkload(string workloadInstanceId);
+
+        Task StartWorkload(string workloadInstanceId);
     }
 }
