@@ -15,6 +15,7 @@ namespace CLI
             options.Add(new CLIOption() { Name = "Disable scale unit feature and remove triggers", Command = DisableScaleUnitFeature.Show });
             options.Add(new CLIOption() { Name = "Update scale unit id", Command = UpdateScaleUnitId.Show });
             options.Add(new CLIOption() { Name = "Clean up Azure storage account for a scale unit", Command = CleanUpStorageAccount.Show });
+            options.Add(new CLIOption() { Name = "Import workloads from Azure storage blob with SAS url", Command = ImportWorkloadBlob.Show });
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
             await CLIMenu.ShowScreen(screen);

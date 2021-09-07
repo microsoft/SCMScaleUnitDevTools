@@ -110,9 +110,7 @@ namespace CLIFramework
 
         public static bool YesNoPrompt(string message)
         {
-            Console.Write(message);
-            string input = Console.ReadLine().ToLower();
-
+            string input = EnterValuePrompt(message).ToLower();
             return String.IsNullOrEmpty(input) || input == "y" || input == "yes";
         }
 
@@ -122,5 +120,10 @@ namespace CLIFramework
             string input = Console.ReadLine();
         }
 
+        public static string EnterValuePrompt(string message)
+        {
+            Console.WriteLine(message);
+            return Console.ReadLine();
+        }
     }
 }

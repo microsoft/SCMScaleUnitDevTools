@@ -30,7 +30,7 @@ namespace CLI.SetupToolsOptions
         {
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
-                var accountCleaner = new StorageAccountCleaner();
+                var accountCleaner = new StorageAccountManager();
                 await accountCleaner.CleanStorageAccount();
             }
 
