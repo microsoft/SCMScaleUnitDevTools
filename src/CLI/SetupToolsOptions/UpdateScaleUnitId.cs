@@ -8,44 +8,40 @@ using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace CLI.SetupToolsOptions
 {
-    internal class UpdateScaleUnitId
+    internal class UpdateScaleUnitId : DevToolMenu
     {
-        private static List<ScaleUnitInstance> sortedScaleUnits;
-        public static async Task Show(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
             var options = new List<CLIOption>();
 
-            sortedScaleUnits = Config.NonHubScaleUnitInstances();
-            sortedScaleUnits.Sort();
+            var sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
+            sortedNonHubScaleUnits.Sort();
 
-            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
+            foreach (var scaleUnit in sortedNonHubScaleUnits)
             {
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunUpdateScaleunitId });
             }
 
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update the scale unit id of?: ");
-            await CLIMenu.ShowScreen(screen);
+            await CLIController.ShowScreen(screen);
         }
 
-        private static Task RunUpdateScaleunitId(int input, string selectionHistory)
+        private Task RunUpdateScaleunitId(int input, string selectionHistory)
         {
-            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
+            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
+            try
             {
-                try
+                new StopServices().Run();
+                using (var webConfig = new WebConfig())
                 {
-                    new StopServices().Run();
-                    using (var webConfig = new WebConfig())
-                    {
-                        SharedWebConfig.Configure(webConfig);
-                    }
-                    new StartServices().Run();
+                    SharedWebConfig.Configure(webConfig);
                 }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"An error occured while trying to update scale unit id:\n{ex}");
-                }
+                new StartServices().Run();
             }
-
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"An error occured while trying to update scale unit id:\n{ex}");
+            }
             return Task.CompletedTask;
         }
     }

@@ -4,13 +4,13 @@ using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace CLI
 {
-    class EnableScaleUnitFeatureOnScaleUnit : EnableScaleUnitFeature
+    internal class EnableScaleUnitFeatureOnScaleUnit : EnableScaleUnitFeature
     {
         protected override List<IStep> GetAvailableSteps()
         {
-            List<IStep> steps = base.GetAvailableSteps();
+            var steps = base.GetAvailableSteps();
 
-            StepFactory sf = new StepFactory();
+            var sf = new StepFactory();
             steps.AddRange(sf.GetStepsOfType<IScaleUnitStep>());
 
             return steps;

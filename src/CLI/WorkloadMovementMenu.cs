@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
+using CLI.WorkloadMovementOptions;
 
 namespace CLI
 {
-    internal static class WorkloadMovementMenu
+    internal class WorkloadMovementMenu : DevToolMenu
     {
-        public static async Task Show(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            var moveWorkloadsOption = new CLIOption() { Name = "Move all workloads to the hub", Command = MoveWorkloads.MoveAllWorkloads };
-            var workloadMovementStatusOption = new CLIOption() { Name = "Show workload movement status", Command = WorkloadMovementStatus.Show };
-
-            var options = new List<CLIOption>() { moveWorkloadsOption, workloadMovementStatusOption };
+            var options = new List<CLIOption>()
+            {
+                Option("Move all workloads to the hub", new MoveWorkloads().MoveAllWorkloads),
+                Option("Show workload movement status", new WorkloadMovementStatus().Show),
+            };
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");
-            await CLIMenu.ShowScreen(screen);
+            await CLIController.ShowScreen(screen);
         }
     }
 }
