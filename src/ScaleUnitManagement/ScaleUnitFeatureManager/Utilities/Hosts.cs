@@ -13,14 +13,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public Hosts()
         {
-            string[] lines = System.IO.File.ReadAllLines(hostsFilePath);
+            var lines = System.IO.File.ReadAllLines(hostsFilePath);
             hostsContent = lines.ToList<string>();
         }
 
         public void AddMapping(string ip, string domain)
         {
-            int lineCount = hostsContent.Count;
-            for (int i = 0; i < lineCount;)
+            var lineCount = hostsContent.Count;
+            for (var i = 0; i < lineCount;)
             {
                 if (LineResolvesDomain(hostsContent[i], domain))
                 {
@@ -38,7 +38,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public bool LineResolvesDomain(string line, string domain)
         {
-            string[] parts = Regex.Split(line, "(\t+)");
+            var parts = Regex.Split(line, "(\t+)");
             return parts.Length == 3 && parts[2] == domain;
         }
 

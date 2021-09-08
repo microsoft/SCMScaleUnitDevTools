@@ -61,15 +61,15 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task WaitForWorkloadDraining(WorkloadInstance workloadInstance)
         {
-            IAOSClient aosClient = await GetScaleUnitAosClient();
+            var aosClient = await GetScaleUnitAosClient();
             if (await WorkloadInstanceManager.IsWorkloadInStoppedState(aosClient, workloadInstance))
                 return;
 
-            int count = 0;
-            int queryInterval = 10;
+            var count = 0;
+            var queryInterval = 10;
             do
             {
-                for (int i = 0; i < queryInterval; i++)
+                for (var i = 0; i < queryInterval; i++)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     Console.Write(".");

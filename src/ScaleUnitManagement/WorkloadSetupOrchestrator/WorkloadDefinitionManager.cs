@@ -49,7 +49,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                 if (!await WorkloadInstanceManager.IsWorkloadInStoppedState(aosClient, workloadInstance))
                 {
-                    throw new Exception($"Workload ${workloadInstance.VersionedWorkload.Workload.Name} on scale unit ${scaleUnit.ScaleUnitId} has not been drained");
+                    throw new Exception($"Workload {workloadInstance.VersionedWorkload.Workload.Name} on scale unit {scaleUnit.ScaleUnitId} has not been drained");
                 }
             }
         }

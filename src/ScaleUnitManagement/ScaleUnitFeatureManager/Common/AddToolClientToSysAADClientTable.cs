@@ -20,9 +20,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
         {
             const string ScaleUnitManagementUserName = "ScaleUnitManagement";
 
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            string sqlQuery = $@"
+            var sqlQuery = $@"
             USE {scaleUnit.AxDbName};
 
             IF NOT EXISTS (SELECT TOP 1 1 FROM SysAADClientTable WHERE AADClientId = '{scaleUnit.AuthConfiguration.AppId}')

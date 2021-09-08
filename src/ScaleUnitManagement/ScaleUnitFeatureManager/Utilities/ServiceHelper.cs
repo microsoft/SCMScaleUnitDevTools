@@ -7,7 +7,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
     public static class ServiceHelper
     {
         public static void StartService(string serviceName, TimeSpan timeout) =>
-            RunServiceAction(serviceName, svc => {
+            RunServiceAction(serviceName, svc =>
+            {
                 Console.WriteLine($"Starting service {serviceName}..");
 
                 if (svc.Status == ServiceControllerStatus.Running)
@@ -23,7 +24,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             });
 
         public static void StopService(string serviceName, TimeSpan timeout) =>
-            RunServiceAction(serviceName, svc => {
+            RunServiceAction(serviceName, svc =>
+            {
                 Console.WriteLine($"Stopping service {serviceName}..");
 
                 if (svc.Status != ServiceControllerStatus.Running)
@@ -45,7 +47,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 return;
             }
 
-            using (ServiceController service = new ServiceController(serviceName))
+            using (var service = new ServiceController(serviceName))
             {
                 action(service);
             }

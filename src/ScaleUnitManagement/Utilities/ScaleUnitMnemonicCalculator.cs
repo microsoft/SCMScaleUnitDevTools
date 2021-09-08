@@ -4,7 +4,6 @@
 
 using System;
 using System.Linq;
-using System.Text;
 
 namespace ScaleUnitManagement.Utilities
 {
@@ -22,20 +21,20 @@ namespace ScaleUnitManagement.Utilities
                 return "@@";
             }
 
-            string mnemonicString = "";
-            const char baseChar = '@';
-            const int numberBase = 27;
+            var mnemonicString = "";
+            const char BaseChar = '@';
+            const int NumberBase = 27;
             while (integralValue > 0)
             {
-                int remainder = integralValue % numberBase;
-                integralValue /= numberBase;
-                mnemonicString += (char)(baseChar + remainder);
+                var remainder = integralValue % NumberBase;
+                integralValue /= NumberBase;
+                mnemonicString += (char)(BaseChar + remainder);
             }
-            var result = new String(mnemonicString.Reverse().ToArray());
+            var result = new string(mnemonicString.Reverse().ToArray());
             if (result.Count() == 1)
             {
                 // Prefix with additive identity.
-                result = baseChar + result;
+                result = BaseChar + result;
             }
             return result;
         }
@@ -45,11 +44,11 @@ namespace ScaleUnitManagement.Utilities
             mnemonic = mnemonic.ToUpperInvariant();
 
             // Use '@' as base so that 'A' isn't logically zero, making 'AAA' is different from 'AA', e.g.
-            const char baseChar = '@';
-            int integralValue = 0;
-            for (int i = 0; i < mnemonic.Length; i++)
+            const char BaseChar = '@';
+            var integralValue = 0;
+            for (var i = 0; i < mnemonic.Length; i++)
             {
-                int value = mnemonic[i] - baseChar;
+                var value = mnemonic[i] - BaseChar;
                 if (value < 0 || value >= 27)
                 {
                     throw new Exception($"Scale set mnemonic has the invalid character '{mnemonic[i]}'. Valid character values are '@' and the alpha characters A through Z.");

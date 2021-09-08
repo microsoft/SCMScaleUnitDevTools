@@ -11,9 +11,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
     class WorkloadInstanceManager
     {
         private readonly IAOSClient client;
-        private static readonly string ReadyState = "Running";
-        private static readonly string InstallingState = "Installing";
-        private static readonly string StoppedState = "Stopped";
+        private const string ReadyState = "Running";
+        private const string InstallingState = "Installing";
+        private const string StoppedState = "Stopped";
 
         public WorkloadInstanceManager(IAOSClient client)
         {
@@ -27,16 +27,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw new Exception("No workload is defined in the UserConfig file.");
             }
 
-            List<Workload> workloads = await client.GetWorkloads();
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
-            List<WorkloadInstance> sysWorkloadInstances = new List<WorkloadInstance>();
+            var workloads = await client.GetWorkloads();
+            var workloadInstances = new List<WorkloadInstance>();
+            var sysWorkloadInstances = new List<WorkloadInstance>();
 
             if (!ValidateIfConfigWorkloadsExistOnClient(workloads))
             {
                 throw new Exception("UserConfig file has some workload types which are not found on client.");
             }
 
-            foreach (Workload workload in workloads)
+            foreach (var workload in workloads)
             {
                 if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
                 {
@@ -46,7 +46,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                 List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues;
 
-                foreach (ConfiguredWorkload configuredworkload in Config.WorkloadList())
+                foreach (var configuredworkload in Config.WorkloadList())
                 {
                     if (configuredworkload.Name.Equals(workload.Name))
                     {
@@ -57,9 +57,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             throw new Exception("Expected domainNames of dynamic constraints for " + workload.Name + " don't match with what is in UserConfig file.");
                         }
 
-                        ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
+                        var scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
 
-                        WorkloadInstance workloadInstance = new WorkloadInstance()
+                        var workloadInstance = new WorkloadInstance()
                         {
                             Id = configuredworkload.WorkloadInstanceId,
                             LogicalEnvironmentId = Config.LogicalEnvironmentId,
@@ -94,21 +94,21 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
             }
 
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(sysWorkloadInstances.Concat(workloadInstances).ToList());
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(sysWorkloadInstances.Concat(workloadInstances).ToList());
             return topologicalSortUtil.Sort();
         }
 
         private bool ValidateIfConfigWorkloadsExistOnClient(List<Workload> workloads)
         {
-            List<string> nonValidWorkloadNames = new List<string>();
+            var nonValidWorkloadNames = new List<string>();
 
-            foreach (ConfiguredWorkload configuredworkload in Config.WorkloadList())
+            foreach (var configuredworkload in Config.WorkloadList())
             {
                 if (configuredworkload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
 
                 var isFound = false;
 
-                foreach (Workload workload in workloads)
+                foreach (var workload in workloads)
                 {
                     if (configuredworkload.Name.Equals(workload.Name, StringComparison.OrdinalIgnoreCase))
                     {
@@ -135,12 +135,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private bool ValidateDynamicConstraints(string workloadName, List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues)
         {
-            List<string> mesDynamicConstraintDomainNames = new List<string>()
+            var mesDynamicConstraintDomainNames = new List<string>()
             {
                 "LegalEntity", "Site"
             };
 
-            List<string> wesDynamicConstraintDomainNames = new List<string>()
+            var wesDynamicConstraintDomainNames = new List<string>()
             {
                 "LegalEntity", "Site", "Warehouse"
             };
@@ -148,9 +148,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             switch (workloadName.ToUpper())
             {
                 case "MES":
-                    List<string> nonValidDomainNamesMESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName)
+                    var nonValidDomainNamesMESInConfig = configuredDynamicConstraintValues.Select(x => x.DomainName)
                         .Except(mesDynamicConstraintDomainNames).ToList();
-                    List<string> missingDomainNamesMESInConfig = (List<string>)mesDynamicConstraintDomainNames
+                    var missingDomainNamesMESInConfig = mesDynamicConstraintDomainNames
                         .Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
                     if (missingDomainNamesMESInConfig != null && missingDomainNamesMESInConfig.Any())
@@ -174,8 +174,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     break;
 
                 case "WES":
-                    List<string> nonValidDomainNamesWESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames).ToList();
-                    List<string> missingDomainNamesWESInConfig = (List<string>)wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
+                    var nonValidDomainNamesWESInConfig = configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames).ToList();
+                    var missingDomainNamesWESInConfig = wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
                     if (missingDomainNamesWESInConfig != null && missingDomainNamesWESInConfig.Any())
                     {
@@ -208,10 +208,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private List<DynamicConstraintValue> GetConfiguredDynamicConstraintValues(List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues)
         {
-            List<DynamicConstraintValue> dynamicConstraintValues = new List<DynamicConstraintValue>();
-            foreach (ConfiguredDynamicConstraintValue configuredDynamicConstraintValue in configuredDynamicConstraintValues)
+            var dynamicConstraintValues = new List<DynamicConstraintValue>();
+            foreach (var configuredDynamicConstraintValue in configuredDynamicConstraintValues)
             {
-                DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+                var dynamicConstraintValue = new DynamicConstraintValue()
                 {
                     DomainName = configuredDynamicConstraintValue.DomainName,
                     Value = configuredDynamicConstraintValue.Value,
@@ -225,15 +225,15 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private List<WorkloadInstance> GetSYSWorkloadInstancesPerLegalEntity(Workload workload)
         {
-            List<string> uniqueLegalEntityValues = Config.UniqueLegalEntityValues();
-            List<WorkloadInstance> sysWorkloadInstances = new List<WorkloadInstance>();
-            List<string> sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
-            int count = 0;
+            var uniqueLegalEntityValues = Config.UniqueLegalEntityValues();
+            var sysWorkloadInstances = new List<WorkloadInstance>();
+            var sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
+            var count = 0;
 
-            foreach (string legalEntityValue in uniqueLegalEntityValues)
+            foreach (var legalEntityValue in uniqueLegalEntityValues)
             {
-                List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>();
-                DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+                var sysDynamicConstraintValues = new List<DynamicConstraintValue>();
+                var dynamicConstraintValue = new DynamicConstraintValue()
                 {
                     DomainName = "LegalEntity",
                     Value = legalEntityValue,
@@ -241,7 +241,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                 sysDynamicConstraintValues.Add(dynamicConstraintValue);
 
-                WorkloadInstance workloadInstance = new WorkloadInstance()
+                var workloadInstance = new WorkloadInstance()
                 {
                     Id = sysWorkloadInstanceIds[count++],
                     LogicalEnvironmentId = Config.LogicalEnvironmentId,
@@ -292,19 +292,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public static async Task<bool> IsWorkloadInstanceInReadyState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == ReadyState;
         }
 
         public static async Task<bool> IsWorkloadInstanceInInstallingState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == InstallingState;
         }
 
         public static async Task<bool> IsWorkloadInStoppedState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == StoppedState;
         }
 
