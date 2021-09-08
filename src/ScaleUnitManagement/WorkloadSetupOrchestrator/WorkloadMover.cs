@@ -21,7 +21,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             {
                 if (workloadInstance.ExecutingEnvironment.Any())
                 {
-                    TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
+                    var lastAssignment = workloadInstance.ExecutingEnvironment.Last();
                     if (moveToId.Equals(lastAssignment?.Environment.ScaleUnitId))
                     {
                         continue;
@@ -41,8 +41,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             foreach (var workloadInstance in workloadInstances)
             {
-                string name = workloadInstance.VersionedWorkload.Workload.Name;
-                string state = await GetMovementState(workloadInstance);
+                var name = workloadInstance.VersionedWorkload.Workload.Name;
+                var state = await GetMovementState(workloadInstance);
                 var movementState = new MovementState(state);
 
                 Console.WriteLine($"{name} Id : {workloadInstance.Id} Workload movement status: {movementState.GetStatus()}");
@@ -53,7 +53,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             var aosClient = await GetScaleUnitAosClient();
             string state = null;
-            TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
+            var lastAssignment = workloadInstance.ExecutingEnvironment.Last();
             await ReliableRun.Execute(async () => state = await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate), "Getting movement state");
             return state;
         }

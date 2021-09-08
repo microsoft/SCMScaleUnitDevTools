@@ -13,21 +13,21 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         internal static void CreateSite(string siteName, string siteRoot,
             string bindingInformation, string certSubject, string appPoolName)
         {
-            if (String.IsNullOrEmpty(siteName)
-                || String.IsNullOrEmpty(siteRoot)
-                || String.IsNullOrEmpty(bindingInformation)
-                || String.IsNullOrEmpty(certSubject)
-                || String.IsNullOrEmpty(appPoolName))
+            if (string.IsNullOrEmpty(siteName)
+                || string.IsNullOrEmpty(siteRoot)
+                || string.IsNullOrEmpty(bindingInformation)
+                || string.IsNullOrEmpty(certSubject)
+                || string.IsNullOrEmpty(appPoolName))
                 throw new ArgumentNullException();
 
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             if (!scaleUnit.IsHub() && Config.UseSingleOneBox())
                 CreateAppPoolForScaleUnit(scaleUnit, appPoolName);
 
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
-                Site site = manager.Sites.FirstOrDefault((s) => s.Name.Equals(siteName));
+                var site = manager.Sites.FirstOrDefault((s) => s.Name.Equals(siteName));
 
                 if (site != null)
                 {
@@ -48,10 +48,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         internal static void StopAppPoolAndSite(string appPoolName, string siteName)
         {
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
-                ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
-                Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
+                var pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
+                var site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
 
                 if (pool?.State == ObjectState.Started)
                 {
@@ -71,10 +71,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         internal static void StartAppPoolAndSite(string appPoolName, string siteName)
         {
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
-                ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
-                Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
+                var pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
+                var site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
 
                 if (pool?.State == ObjectState.Stopped)
                 {
@@ -96,7 +96,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             CloneScaleUnitWebRoot(scaleUnit);
 
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
                 var hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(Config.HubScaleUnit().AppPoolName()));
 
@@ -125,14 +125,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
-            string robocopyLogPath = Path.Combine(
+            var robocopyLogPath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 "robocopy.log");
 
-            string cmd =
+            var cmd =
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT /log+:{robocopyLogPath};";
 
-            CommandExecutor ce = new CommandExecutor(cmd);
+            var ce = new CommandExecutor(cmd);
             ce.RunCommand(0, 1);
         }
     }

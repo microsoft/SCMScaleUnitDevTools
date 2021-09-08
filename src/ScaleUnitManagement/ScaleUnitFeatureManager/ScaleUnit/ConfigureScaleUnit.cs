@@ -19,7 +19,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public Task Run()
         {
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {
@@ -48,7 +48,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                     webConfig.UpdateXElementIfExists("Infrastructure.HostName", scaleUnit.DomainSafe());
                     webConfig.UpdateXElementIfExists("Infrastructure.HostedServiceName", scaleUnit.ScaleUnitUrlName());
 
-                    string scaleUnitUrl = scaleUnit.Endpoint() + "/";
+                    var scaleUnitUrl = scaleUnit.Endpoint() + "/";
                     webConfig.UpdateXElementIfExists("Infrastructure.HostUrl", scaleUnitUrl);
                     webConfig.UpdateXElementIfExists("Infrastructure.SoapServicesUrl", scaleUnitUrl);
 
@@ -72,7 +72,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
-            string cmd = $@"
+            var cmd = $@"
                 if (Get-Service '{scaleUnit.BatchServiceName()}' -ErrorAction SilentlyContinue) {{
                     . $env:systemroot\system32\sc.exe delete {scaleUnit.BatchServiceName()};
                     Write-Host 'Waiting 10 seconds for Service Deletion to propagate...'
@@ -84,7 +84,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 New-Service -Name '{scaleUnit.BatchServiceName()}' -BinaryPathName '{scaleUnit.DynamicsBatchExePath()} -service {scaleUnit.WebConfigPath()}' -credential $creds -startupType Manual;
             ";
 
-            CommandExecutor ce = new CommandExecutor(cmd);
+            var ce = new CommandExecutor(cmd);
             ce.RunCommand();
         }
     }

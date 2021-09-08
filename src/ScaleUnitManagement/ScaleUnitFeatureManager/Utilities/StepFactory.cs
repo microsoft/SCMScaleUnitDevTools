@@ -16,12 +16,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public List<IStep> GetStepsOfType<T>()
         {
-            List<IStep> objects = new List<IStep>();
-            foreach (Type type in FindClassesDeriving(typeof(T)))
+            var steps = new List<IStep>();
+            foreach (var type in FindClassesDeriving(typeof(T)))
             {
-                objects.Add((IStep)Activator.CreateInstance(type));
+                steps.Add((IStep)Activator.CreateInstance(type));
             }
-            return objects;
+            return steps;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             var aosClient = await GetScaleUnitAosClient();
             var statusList = new List<WorkloadInstanceStatus>();
             var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-            int count = 0;
+            var count = 0;
             foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {
                 await ReliableRun.Execute(async () => statusList.Add(await aosClient.CheckWorkloadStatus(workloadInstanceIdWithName.WorkloadInstanceId)), "Checking workload status");
@@ -57,7 +57,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             createdInstances.Should().NotBeNull();
 
-            foreach (string workloadInstanceId in Config.AllWorkloadInstanceIds())
+            foreach (var workloadInstanceId in Config.AllWorkloadInstanceIds())
             {
                 var workloadInstance = expectedWorkloadInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
                 var foundWorkloadInstance = createdInstances.Find((instance) => instance.Id.Equals(workloadInstanceId));
@@ -73,7 +73,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             var aosClient = await GetScaleUnitAosClient();
             var statusList = new List<WorkloadInstanceStatus>();
             var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-            int count = 0;
+            var count = 0;
 
             foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {

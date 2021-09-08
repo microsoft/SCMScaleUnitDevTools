@@ -24,7 +24,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             var aosClient = await GetScaleUnitAosClient();
             var statusList = new List<WorkloadInstanceStatus>();
             var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-            int count = 0;
+            var count = 0;
 
             foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {
@@ -39,17 +39,17 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
         {
-            IAOSClient aosClient = await GetScaleUnitAosClient();
+            var aosClient = await GetScaleUnitAosClient();
 
             if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(aosClient, workloadInstance))
                 return;
 
             Console.WriteLine($"Waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload initial sync to complete");
 
-            int count = 0;
+            var count = 0;
             do
             {
-                for (int i = 0; i < 10; i++) // wait 10 seconds before querying the status again.
+                for (var i = 0; i < 10; i++) // wait 10 seconds before querying the status again.
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     Console.Write(".");
@@ -84,7 +84,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
                 {
                     Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
-                    List<WorkloadInstance> workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
+                    var workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
                     await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                 }
 

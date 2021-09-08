@@ -8,11 +8,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
     {
         public static void Configure(WebConfig webConfig, bool isScaleUnitFeatureEnabled = true)
         {
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {
-                if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
+                if (!string.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
                     webConfig.UpdateXElementIfExists("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
             }
 
