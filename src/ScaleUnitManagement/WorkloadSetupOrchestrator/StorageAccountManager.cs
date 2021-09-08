@@ -39,10 +39,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 throw new Exception($"{sasUrlString} is not a valid Uri");
             }
 
-            BlobClientOptions options = null;
-            var sourceBlobClient = new BlobClient(sasUri, options);
-            var blobContainerName = sourceBlobClient.BlobContainerName;
-            var blobName = sourceBlobClient.Name;
+            var blobContainerName = "sysworkloadinstancesharedserviceunitstorage";
+            var blobName = "current.json";
 
             var targetBlobClient = new BlobClient(connectionString, blobContainerName, blobName);
 

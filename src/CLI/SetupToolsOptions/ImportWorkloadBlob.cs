@@ -31,10 +31,10 @@ namespace CLI.SetupToolsOptions
             var sasToken = CLIMenu.EnterValuePrompt("Please paste in the blob SAS URL for the blob storage that the workloads should be copied from:");
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
-                var accountCleaner = new StorageAccountManager();
+                var storageAccountManager = new StorageAccountManager();
                 try
                 {
-                    await accountCleaner.ImportWorkloadsBlob(sasToken);
+                    await storageAccountManager.ImportWorkloadsBlob(sasToken);
                     Console.WriteLine("Done");
                 }
                 catch (Exception ex)
