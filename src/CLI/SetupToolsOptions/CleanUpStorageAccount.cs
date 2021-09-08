@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
@@ -7,32 +6,21 @@ using System;
 
 namespace CLI.SetupToolsOptions
 {
-    internal class CleanUpStorageAccount
+    internal class CleanUpStorageAccount : DevToolMenu
     {
-        private static List<ScaleUnitInstance> sortedScaleUnits;
-
-        public static async Task Show(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            var options = new List<CLIOption>();
-            sortedScaleUnits = Config.ScaleUnitInstances();
-            sortedScaleUnits.Sort();
-
-            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
-            {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = CleanUpScaleUnitStorageAccount });
-            }
+            var options = SelectScaleUnitOptions(CleanUpScaleUnitStorageAccount);
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to clean the storage account of:\n", "\nScale unit storage to clean up: ");
-            await CLIMenu.ShowScreen(screen);
+            await CLIController.ShowScreen(screen);
         }
 
-        private static async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
+        private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
-            {
-                var storageAccountManager = new StorageAccountManager();
-                await storageAccountManager.CleanStorageAccount();
-            }
+            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
+            var accountCleaner = new StorageAccountManager();
+            await accountCleaner.CleanStorageAccount();
 
             Console.WriteLine("Done");
         }

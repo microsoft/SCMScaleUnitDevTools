@@ -5,20 +5,21 @@ using CLIFramework;
 
 namespace CLI
 {
-    internal class SetupTools
+    internal class SetupTools : DevToolMenu
     {
-        public static async Task Show(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            var options = new List<CLIOption>();
-
-            options.Add(new CLIOption() { Name = "Sync DB", Command = SyncDB.Show });
-            options.Add(new CLIOption() { Name = "Disable scale unit feature and remove triggers", Command = DisableScaleUnitFeature.Show });
-            options.Add(new CLIOption() { Name = "Update scale unit id", Command = UpdateScaleUnitId.Show });
-            options.Add(new CLIOption() { Name = "Clean up Azure storage account for a scale unit", Command = CleanUpStorageAccount.Show });
-            options.Add(new CLIOption() { Name = "Import workloads from Azure storage blob with SAS url", Command = ImportWorkloadBlob.Show });
+            var options = new List<CLIOption>()
+            {
+                Option("Sync DB", new SyncDB().Show),
+                Option("Disable scale unit feature and remove triggers", new DisableScaleUnitFeature().Show),
+                Option("Update scale unit id", new UpdateScaleUnitId().Show),
+                Option("Clean up Azure storage account for a scale unit", new CleanUpStorageAccount().Show),
+                Option("Import workloads from Azure storage blob with SAS url", new ImportWorkloadBlob().Show),
+            };
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
-            await CLIMenu.ShowScreen(screen);
+            await CLIController.ShowScreen(screen);
         }
     }
 }

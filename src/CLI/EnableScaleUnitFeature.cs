@@ -8,42 +8,30 @@ using ScaleUnitManagement.Utilities;
 
 namespace CLI
 {
-    class EnableScaleUnitFeature
+    internal class EnableScaleUnitFeature : DevToolMenu
     {
         protected List<IStep> availableSteps;
-        private static List<ScaleUnitInstance> sortedScaleUnits;
 
-        public static async Task SelectScaleUnit(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            var options = new List<CLIOption>();
-
-            sortedScaleUnits = Config.ScaleUnitInstances();
-            sortedScaleUnits.Sort();
-
-            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnits)
-            {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = PrintAvailableStepsForScaleUnit });
-            }
-
-            CLIScreen screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
-            await CLIMenu.ShowScreen(screen);
+            var options = SelectScaleUnitOptions(PrintAvailableStepsForScaleUnit);
+            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
+            await CLIController.ShowScreen(screen);
         }
 
-        private static async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
+        private async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
         {
-            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
-            {
-                if (sortedScaleUnits[input - 1].ScaleUnitId == "@@")
-                    await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
-                else
-                    await new EnableScaleUnitFeatureOnScaleUnit().PrintAvailableSteps(input, selectionHistory);
-            }
+            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
+            if (ScaleUnitContext.GetScaleUnitId().Equals("@@"))
+                await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
+            else
+                await new EnableScaleUnitFeatureOnScaleUnit().PrintAvailableSteps(input, selectionHistory);
         }
 
         protected virtual List<IStep> GetAvailableSteps()
         {
-            StepFactory sf = new StepFactory();
-            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
+            var sf = new StepFactory();
+            var steps = sf.GetStepsOfType<ICommonStep>();
             return steps;
         }
 
@@ -53,19 +41,19 @@ namespace CLI
             availableSteps = GetAvailableSteps();
             availableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (IStep s in availableSteps)
+            foreach (var step in availableSteps)
             {
-                options.Add(new CLIOption() { Name = s.Label(), Command = RunStepsFromTask });
+                options.Add(new CLIOption() { Name = step.Label(), Command = RunStepsFromTask });
             }
 
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            CLIScreen screen = new CLIScreen(options, selectionHistory, $"Task sequence to run for {scaleUnit.PrintableName()}\n", "\nSelect task to start from: ");
-            await CLIMenu.ShowScreen(screen);
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            var screen = new CLIScreen(options, selectionHistory, $"Task sequence to run for {scaleUnit.PrintableName()}\n", "\nSelect task to start from: ");
+            await CLIController.ShowScreen(screen);
         }
 
         private async Task RunStepsFromTask(int input, string selectionHistory)
         {
-            for (int i = input - 1; i < availableSteps.Count; i++)
+            for (var i = input - 1; i < availableSteps.Count; i++)
             {
                 try
                 {
@@ -76,7 +64,7 @@ namespace CLI
                 {
                     Console.Error.WriteLine($"Error occurred while enabling scale unit feature:\n{ex}");
 
-                    if (!CLIMenu.YesNoPrompt("Step " + availableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
+                    if (!CLIController.YesNoPrompt("Step " + availableSteps[i].Label() + " failed to complete successfuly. Do you want to continue? [y]: "))
                         break;
                 }
             }
