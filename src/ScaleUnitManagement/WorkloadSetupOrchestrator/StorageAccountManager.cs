@@ -1,27 +1,58 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using ScaleUnitManagement.Utilities;
+using System;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
-    public class StorageAccountCleaner
+    public class StorageAccountManager
     {
-        private string connectionString;
+        private readonly string connectionString;
+
+        public StorageAccountManager()
+        {
+            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            connectionString = scaleUnit.AzureStorageConnectionString;
+        }
 
         public async Task CleanStorageAccount()
         {
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            connectionString = scaleUnit.AzureStorageConnectionString;
-
             await DeleteBlobContainers();
+            await DeleteSharedTables();
+        }
 
-            await DeleteSharedTablesAsync();
+        public async Task ImportWorkloadsBlob(string sasUrlString)
+        {
+            Uri sasUri;
+            try
+            {
+                sasUri = new Uri(sasUrlString);
+            }
+            catch (Exception)
+            {
+                throw new Exception($"{sasUrlString} is not a valid Uri");
+            }
+
+            var blobContainerName = "sysworkloadinstancesharedserviceunitstorage";
+            var blobName = "current.json";
+
+            var targetBlobClient = new BlobClient(connectionString, blobContainerName, blobName);
+
+            var operation = await targetBlobClient.StartCopyFromUriAsync(sasUri);
+
+            await operation.WaitForCompletionAsync();
+
+            Response response = await operation.UpdateStatusAsync();
+            if (response.Status != 200)
+            {
+                throw new Exception($"\nAn error occured while copying the workloads to the blob: \n{response.Status}: {response.Content}");
+            }
         }
 
         private async Task DeleteBlobContainers()
@@ -42,7 +73,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             }
         }
 
-        private async Task DeleteSharedTablesAsync()
+        private async Task DeleteSharedTables()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
