@@ -28,7 +28,7 @@ namespace CLI.SetupToolsOptions
 
         private static async Task ImportWorkloadBlobFromSasToken(int input, string selectionHistory)
         {
-            var sasToken = CLIMenu.EnterValuePrompt("Please paste in the blob SAS URL for the blob storage that the workloads should be copied from:");
+            var sasToken = CLIMenu.EnterValuePrompt("Please paste in the blob SAS URL for the blob that the workloads should be copied from:");
             using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
             {
                 var storageAccountManager = new StorageAccountManager();
