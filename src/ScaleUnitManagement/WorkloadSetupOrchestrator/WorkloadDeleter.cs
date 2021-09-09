@@ -25,8 +25,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             {
                 string name = workloadInstance.VersionedWorkload.Workload.Name;
                 Console.WriteLine($"Deleting {name} Id: {workloadInstance.Id}");
+                await ReliableRun.Execute(async () => await aosClient.DeleteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), "Deleting workload instance");
             }
-            await ReliableRun.Execute(async () => await aosClient.DeleteWorkloadInstances(workloadInstances), "Deleting workload instances");
         }
     }
 }
