@@ -19,8 +19,8 @@ namespace CLI.SetupToolsOptions
         private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
             using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
-            var accountCleaner = new StorageAccountManager();
-            await accountCleaner.CleanStorageAccount();
+            var storageAccountManager = new StorageAccountManager();
+            await storageAccountManager.CleanStorageAccount();
 
             Console.WriteLine("Done");
         }
