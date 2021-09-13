@@ -279,9 +279,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private static DateTime GetWorkloadEffectiveDate()
         {
-            var effectiveDate = DateTime.UtcNow;
             // Always adding 5 minutes to the effective date to mitigate Bug 616219 on the AX.
-            effectiveDate.AddMinutes(5);
+            var effectiveDate = DateTime.UtcNow.AddMinutes(5);
             return effectiveDate;
         }
 
