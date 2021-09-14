@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
@@ -9,7 +10,7 @@ namespace CLI.WorkloadMovementOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(ShowWorkloadMovementStatusForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(ShowWorkloadMovementStatusForScaleUnit);
 
             var screen = new CLIScreen(options, selectionHistory, "Show status of workload movement on:\n", "\nEnvironment?: ");
             await CLIController.ShowScreen(screen);

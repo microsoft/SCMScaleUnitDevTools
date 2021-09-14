@@ -13,8 +13,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task UpgradeWorkloadsDefinition()
         {
-            var scaleUnitAosClient = await GetScaleUnitAosClient();
-            var hubAosClient = await GetHubAosClient();
+            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
+            IAOSClient hubAosClient = await GetHubAosClient();
 
             List<Workload> workloads = null;
             await ReliableRun.Execute(async () => workloads = await hubAosClient.GetWorkloads(), "Getting workloads");
@@ -24,10 +24,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await EnsureWorkloadsAreDrained(workloadInstances);
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
-                var workloadName = workloadInstance.VersionedWorkload.Workload.Name;
-                var workload = workloads.First(x => x.Name.Equals(workloadName));
+                string workloadName = workloadInstance.VersionedWorkload.Workload.Name;
+                Workload workload = workloads.First(x => x.Name.Equals(workloadName));
 
                 workloadInstance.VersionedWorkload.Workload = workload;
                 workloadInstance.VersionedWorkload.Id = Guid.NewGuid().ToString();
@@ -38,9 +38,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task EnsureWorkloadsAreDrained(List<WorkloadInstance> workloadInstances)
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {

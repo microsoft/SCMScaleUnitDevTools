@@ -4,6 +4,7 @@ using ScaleUnitManagement.Utilities;
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
+using System.Collections.Generic;
 
 namespace CLI.SetupToolsOptions
 {
@@ -11,7 +12,7 @@ namespace CLI.SetupToolsOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(RunDisableScaleUnitFeature);
+            List<CLIOption> options = SelectScaleUnitOptions(RunDisableScaleUnitFeature);
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to disable scale unit feature on?: ");
             await CLIController.ShowScreen(screen);
         }

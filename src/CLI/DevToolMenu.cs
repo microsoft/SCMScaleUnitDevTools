@@ -35,7 +35,7 @@ namespace CLI
         protected List<CLIOption> SelectScaleUnitOptions(Func<int, string, Task> command)
         {
             var options = new List<CLIOption>();
-            foreach (var scaleUnit in GetSortedScaleUnits())
+            foreach (ScaleUnitInstance scaleUnit in GetSortedScaleUnits())
             {
                 options.Add(Option(scaleUnit.PrintableName(), command));
             }

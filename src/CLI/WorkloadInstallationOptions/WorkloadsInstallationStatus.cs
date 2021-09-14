@@ -9,7 +9,7 @@ namespace CLI.WorkloadInstallationOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(ShowWorkloadInstallationStatusForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(ShowWorkloadInstallationStatusForScaleUnit);
 
             var screen = new CLIScreen(options, selectionHistory, "Show status of workloads installation on:\n", "\nEnvironment?: ");
             await CLIController.ShowScreen(screen);

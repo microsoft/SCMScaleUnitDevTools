@@ -14,10 +14,10 @@ namespace CLI.SetupToolsOptions
         {
             var options = new List<CLIOption>();
 
-            var sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
+            List<ScaleUnitInstance> sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
             sortedNonHubScaleUnits.Sort();
 
-            foreach (var scaleUnit in sortedNonHubScaleUnits)
+            foreach (ScaleUnitInstance scaleUnit in sortedNonHubScaleUnits)
             {
                 options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunUpdateScaleunitId });
             }

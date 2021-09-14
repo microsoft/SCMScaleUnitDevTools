@@ -10,7 +10,7 @@ namespace CLI.SetupToolsOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(CleanUpScaleUnitStorageAccount);
+            List<CLIOption> options = SelectScaleUnitOptions(CleanUpScaleUnitStorageAccount);
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to clean the storage account of:\n", "\nScale unit storage to clean up: ");
             await CLIController.ShowScreen(screen);

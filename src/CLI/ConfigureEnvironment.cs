@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
@@ -9,7 +10,7 @@ namespace CLI
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(ConfigureScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(ConfigureScaleUnit);
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
             await CLIController.ShowScreen(screen);
         }

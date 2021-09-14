@@ -12,9 +12,9 @@ namespace CLI.WorkloadMovementOptions
             try
             {
                 Console.WriteLine("Moving all workloads to the hub");
-                var scaleUnitInstances = Config.ScaleUnitInstances();
+                System.Collections.Generic.List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
 
-                foreach (var scaleUnit in scaleUnitInstances)
+                foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
                 {
                     await MoveWorkloadsFromScaleUnitToHub(scaleUnit);
                 }
@@ -29,9 +29,9 @@ namespace CLI.WorkloadMovementOptions
         private async Task MoveWorkloadsFromScaleUnitToHub(ScaleUnitInstance scaleUnit)
         {
             using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-            var hubId = "@@";
-            var hub = Config.HubScaleUnit();
-            var effectiveTime = DateTime.UtcNow.AddMinutes(5);
+            string hubId = "@@";
+            ScaleUnitInstance hub = Config.HubScaleUnit();
+            DateTime effectiveTime = DateTime.UtcNow.AddMinutes(5);
             var workloadMover = new WorkloadMover();
             await workloadMover.MoveWorkloads(hubId, effectiveTime);
         }

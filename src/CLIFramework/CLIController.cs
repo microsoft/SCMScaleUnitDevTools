@@ -74,9 +74,9 @@ namespace CLIFramework
 
         private static void DisplayOptions(CLIScreen screen)
         {
-            var currOptionNumber = 1;
+            int currOptionNumber = 1;
 
-            foreach (var option in screen.options)
+            foreach (CLIOption option in screen.options)
             {
                 Console.WriteLine("\t" + currOptionNumber.ToString() + ". " + option.Name);
                 currOptionNumber++;
@@ -97,9 +97,9 @@ namespace CLIFramework
         /// </summary>
         private static async Task PerformScreenAction(CLIScreen screen)
         {
-            var totalOptions = screen.options.Count;
-            var input = Console.ReadLine();
-            if (int.TryParse(input, out var enteredNumber))
+            int totalOptions = screen.options.Count;
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out int enteredNumber))
             {
                 if (enteredNumber >= 1 && enteredNumber <= totalOptions)
                 {
@@ -137,7 +137,7 @@ namespace CLIFramework
 
         public static bool YesNoPrompt(string message)
         {
-            var input = EnterValuePrompt(message).ToLower();
+            string input = EnterValuePrompt(message).ToLower();
             return string.IsNullOrEmpty(input) || input == "y" || input == "yes";
         }
 
