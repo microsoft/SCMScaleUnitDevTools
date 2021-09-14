@@ -3,6 +3,7 @@ using CLIFramework;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System;
+using System.Collections.Generic;
 
 namespace CLI.SetupToolsOptions
 {
