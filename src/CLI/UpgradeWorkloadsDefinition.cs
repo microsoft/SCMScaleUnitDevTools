@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
@@ -13,8 +14,8 @@ namespace CLI
             if (!CLIController.YesNoPrompt("You are about to upgrade the workload definitions on all scale units. Do you wish to continue? [y]: "))
                 return;
 
-            var scaleUnits = Config.ScaleUnitInstances();
-            foreach (var scaleUnit in scaleUnits)
+            List<ScaleUnitInstance> scaleUnits = Config.ScaleUnitInstances();
+            foreach (ScaleUnitInstance scaleUnit in scaleUnits)
             {
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 var workloadDefinitionManager = new WorkloadDefinitionManager();

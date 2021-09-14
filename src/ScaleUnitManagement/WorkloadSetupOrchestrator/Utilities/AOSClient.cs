@@ -84,7 +84,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> DeleteWorkloadInstances(List<WorkloadInstance> workloadInstances)
         {
-            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/";
+            string path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/";
 
             // Double serialize the payload in order to avoid serialization complication issues on the AOS.
             string serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
@@ -148,7 +148,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             string path = $"{requestPathPrefix}/api/services/ScaleUnitInitializationServiceGroup/ScaleUnitLifeCycleService/getWorkloadMovementState";
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
+            string writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
 
             string result = await SendRequest(path, writePayload);
 
