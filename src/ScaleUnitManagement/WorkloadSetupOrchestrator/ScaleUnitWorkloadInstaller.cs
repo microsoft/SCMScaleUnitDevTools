@@ -21,16 +21,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task InstallationStatus()
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             var statusList = new List<WorkloadInstanceStatus>();
-            var workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
-            var count = 0;
+            List<WorkloadInstanceIdWithName> workloadInstanceIdWithNameList = Config.WorkloadInstanceIdWithNameList();
+            int count = 0;
 
-            foreach (var workloadInstanceIdWithName in workloadInstanceIdWithNameList)
+            foreach (WorkloadInstanceIdWithName workloadInstanceIdWithName in workloadInstanceIdWithNameList)
             {
                 await ReliableRun.Execute(async () => statusList.Add(await WorkloadInstanceManager.GetWorkloadInstanceStatus(aosClient, workloadInstanceIdWithName.WorkloadInstanceId)), "Getting workload installation status");
             }
-            foreach (var status in statusList)
+            foreach (WorkloadInstanceStatus status in statusList)
             {
                 Console.WriteLine($"{workloadInstanceIdWithNameList[count].Name} Id : {workloadInstanceIdWithNameList[count].WorkloadInstanceId} Workload installation status: {status.Health} {status.ErrorMessage}");
                 count++;
@@ -39,17 +39,17 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
 
             if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(aosClient, workloadInstance))
                 return;
 
             Console.WriteLine($"Waiting for the {workloadInstance.VersionedWorkload.Workload.Name} workload initial sync to complete");
 
-            var count = 0;
+            int count = 0;
             do
             {
-                for (var i = 0; i < 10; i++) // wait 10 seconds before querying the status again.
+                for (int i = 0; i < 10; i++) // wait 10 seconds before querying the status again.
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                     Console.Write(".");
@@ -69,14 +69,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task InstallWorkloadsOnScaleUnit()
         {
-            var scaleUnitAosClient = await GetScaleUnitAosClient();
-            var hubAosClient = await GetHubAosClient();
+            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
+            IAOSClient hubAosClient = await GetHubAosClient();
 
             List<WorkloadInstance> workloadInstances = null;
 
             await ReliableRun.Execute(async () => workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances(), "Create workload instances");
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
                     continue;

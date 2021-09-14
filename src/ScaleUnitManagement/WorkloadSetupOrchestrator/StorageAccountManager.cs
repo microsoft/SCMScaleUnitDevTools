@@ -48,7 +48,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             await operation.WaitForCompletionAsync();
 
-            var response = await operation.UpdateStatusAsync();
+            Response response = await operation.UpdateStatusAsync();
             if (response.Status != 200)
             {
                 throw new Exception($"\nAn error occured while copying the workloads to the blob: \n{response.Status}: {response.Content}");
@@ -57,7 +57,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         private async Task DeleteBlobContainers()
         {
-            var blobClient = new BlobServiceClient(connectionString);
+            BlobServiceClient blobClient = new BlobServiceClient(connectionString);
             IEnumerable<BlobContainerItem> containers = blobClient.GetBlobContainers();
 
             if (containers is null || !containers.Any())
@@ -75,10 +75,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         private async Task DeleteSharedTables()
         {
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             TableContinuationToken continuationToken = null;
-            var count = 0;
+            int count = 0;
 
             do
             {

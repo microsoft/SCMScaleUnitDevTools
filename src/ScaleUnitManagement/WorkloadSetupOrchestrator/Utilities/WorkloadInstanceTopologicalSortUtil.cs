@@ -47,7 +47,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             node.InProgress = true;
 
-            foreach (var dependedNode in GetDependedNodes(node))
+            foreach (WorkloadInstanceDFSNode dependedNode in GetDependedNodes(node))
                 ProcessNode(dependedNode);
 
             node.InProgress = false;
@@ -59,7 +59,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             var dependedNodes = new List<WorkloadInstanceDFSNode>();
 
-            foreach (var workloadName in node.WorkloadInstance.VersionedWorkload.Workload.DependsOn)
+            foreach (string workloadName in node.WorkloadInstance.VersionedWorkload.Workload.DependsOn)
             {
                 dependedNodes = dependedNodes.Concat(nameToDFSNodesMap[workloadName]).ToList();
             }
@@ -83,7 +83,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             var nonProcessedNodes = new HashSet<WorkloadInstanceDFSNode>();
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 nonProcessedNodes.Add(new WorkloadInstanceDFSNode(workloadInstance));
             }
@@ -95,9 +95,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             var nameToDfsNodesMap = new Dictionary<string, List<WorkloadInstanceDFSNode>>();
 
-            foreach (var node in dfsNodes)
+            foreach (WorkloadInstanceDFSNode node in dfsNodes)
             {
-                if (!nameToDfsNodesMap.TryGetValue(node.WorkloadInstance.VersionedWorkload.Workload.Name, out var nodesForName))
+                if (!nameToDfsNodesMap.TryGetValue(node.WorkloadInstance.VersionedWorkload.Workload.Name, out List<WorkloadInstanceDFSNode> nodesForName))
                     nodesForName = new List<WorkloadInstanceDFSNode>();
 
                 nodesForName.Add(node);

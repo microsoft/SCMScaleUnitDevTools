@@ -27,7 +27,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw new Exception("No workload is defined in the UserConfig file.");
             }
 
-            var workloads = await client.GetWorkloads();
+            List<Workload> workloads = await client.GetWorkloads();
             var workloadInstances = new List<WorkloadInstance>();
             var sysWorkloadInstances = new List<WorkloadInstance>();
 
@@ -36,7 +36,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 throw new Exception("UserConfig file has some workload types which are not found on client.");
             }
 
-            foreach (var workload in workloads)
+            foreach (Workload workload in workloads)
             {
                 if (workload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase))
                 {
@@ -46,7 +46,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                 List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues;
 
-                foreach (var configuredworkload in Config.WorkloadList())
+                foreach (ConfiguredWorkload configuredworkload in Config.WorkloadList())
                 {
                     if (configuredworkload.Name.Equals(workload.Name))
                     {
@@ -57,7 +57,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                             throw new Exception("Expected domainNames of dynamic constraints for " + workload.Name + " don't match with what is in UserConfig file.");
                         }
 
-                        var scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
+                        ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
 
                         var workloadInstance = new WorkloadInstance()
                         {
@@ -102,13 +102,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         {
             var nonValidWorkloadNames = new List<string>();
 
-            foreach (var configuredworkload in Config.WorkloadList())
+            foreach (ConfiguredWorkload configuredworkload in Config.WorkloadList())
             {
                 if (configuredworkload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
 
-                var isFound = false;
+                bool isFound = false;
 
-                foreach (var workload in workloads)
+                foreach (Workload workload in workloads)
                 {
                     if (configuredworkload.Name.Equals(workload.Name, StringComparison.OrdinalIgnoreCase))
                     {
@@ -209,7 +209,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private List<DynamicConstraintValue> GetConfiguredDynamicConstraintValues(List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues)
         {
             var dynamicConstraintValues = new List<DynamicConstraintValue>();
-            foreach (var configuredDynamicConstraintValue in configuredDynamicConstraintValues)
+            foreach (ConfiguredDynamicConstraintValue configuredDynamicConstraintValue in configuredDynamicConstraintValues)
             {
                 var dynamicConstraintValue = new DynamicConstraintValue()
                 {
@@ -225,12 +225,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private List<WorkloadInstance> GetSYSWorkloadInstancesPerLegalEntity(Workload workload)
         {
-            var uniqueLegalEntityValues = Config.UniqueLegalEntityValues();
+            List<string> uniqueLegalEntityValues = Config.UniqueLegalEntityValues();
             var sysWorkloadInstances = new List<WorkloadInstance>();
-            var sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
-            var count = 0;
+            List<string> sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
+            int count = 0;
 
-            foreach (var legalEntityValue in uniqueLegalEntityValues)
+            foreach (string legalEntityValue in uniqueLegalEntityValues)
             {
                 var sysDynamicConstraintValues = new List<DynamicConstraintValue>();
                 var dynamicConstraintValue = new DynamicConstraintValue()
@@ -279,7 +279,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private static DateTime GetWorkloadEffectiveDate()
         {
-            var effectiveDate = DateTime.UtcNow;
+            DateTime effectiveDate = DateTime.UtcNow;
             // Always adding 5 minutes to the effective date to mitigate Bug 616219 on the AX.
             effectiveDate.AddMinutes(5);
             return effectiveDate;
@@ -292,28 +292,27 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public static async Task<bool> IsWorkloadInstanceInReadyState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == ReadyState;
         }
 
         public static async Task<bool> IsWorkloadInstanceInInstallingState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == InstallingState;
         }
 
         public static async Task<bool> IsWorkloadInStoppedState(IAOSClient client, WorkloadInstance workloadInstance)
         {
-            var status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
+            WorkloadInstanceStatus status = await GetWorkloadInstanceStatus(client, workloadInstance.Id);
             return status.Health == StoppedState;
         }
 
         public static bool IsWorkloadSYSOnSpoke(WorkloadInstance workloadInstance)
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            var name = workloadInstance.VersionedWorkload.Workload.Name;
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            string name = workloadInstance.VersionedWorkload.Workload.Name;
             return name.Equals("SYS") && !scaleUnit.IsHub();
         }
-
     }
 }

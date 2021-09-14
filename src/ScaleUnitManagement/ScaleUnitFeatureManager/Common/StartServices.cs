@@ -21,7 +21,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             ServiceHelper.StartService(scaleUnit.BatchServiceName(), timeout: TimeSpan.FromMinutes(1));
 

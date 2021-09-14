@@ -18,9 +18,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public Task Run()
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            var sqlQuery = $@"
+            string sqlQuery = $@"
             USE {scaleUnit.AxDbName};
             EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 

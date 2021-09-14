@@ -8,7 +8,7 @@ namespace CLI
     {
         protected override List<IStep> GetAvailableSteps()
         {
-            var steps = base.GetAvailableSteps();
+            List<IStep> steps = base.GetAvailableSteps();
 
             var sf = new StepFactory();
             steps.AddRange(sf.GetStepsOfType<IHubStep>());

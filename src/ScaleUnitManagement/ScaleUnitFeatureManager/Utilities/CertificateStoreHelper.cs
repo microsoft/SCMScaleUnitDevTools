@@ -8,7 +8,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
     {
         internal static byte[] GetCertificateHashFromLocalMachineStore(string certificateSubject)
         {
-            var certificate = RetrieveCertificateFromStore(certificateSubject);
+            X509Certificate2 certificate = RetrieveCertificateFromStore(certificateSubject);
 
             if (certificate == null)
             {
@@ -29,9 +29,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static void EnsureCertificateInstalledInTrustedRoot(X509Certificate2 certificate)
         {
-            var localMachineCertificates = GetCertificates(StoreName.Root, StoreLocation.LocalMachine);
+            X509Certificate2Collection localMachineCertificates = GetCertificates(StoreName.Root, StoreLocation.LocalMachine);
 
-            var certExistsInTrustedRoot = localMachineCertificates.Cast<X509Certificate2>().Any(cert => cert.Thumbprint == certificate.Thumbprint);
+            bool certExistsInTrustedRoot = localMachineCertificates.Cast<X509Certificate2>().Any(cert => cert.Thumbprint == certificate.Thumbprint);
 
             if (certExistsInTrustedRoot)
             {
@@ -49,10 +49,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static X509Certificate2 RetrieveCertificateFromStore(string certificateSubject)
         {
-            var certCollection = GetCertificates(StoreName.My, StoreLocation.LocalMachine);
+            X509Certificate2Collection certCollection = GetCertificates(StoreName.My, StoreLocation.LocalMachine);
             X509Certificate2 certificate = null;
 
-            foreach (var cert in certCollection.Cast<X509Certificate2>().Where(cert => cert.Subject.Equals($"CN={certificateSubject}")))
+            foreach (X509Certificate2 cert in certCollection.Cast<X509Certificate2>().Where(cert => cert.Subject.Equals($"CN={certificateSubject}")))
             {
                 certificate = cert;
             }
@@ -64,7 +64,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             var localMachineStore = new X509Store(storeName, storeLocation);
             localMachineStore.Open(OpenFlags.ReadOnly);
-            var certificates = localMachineStore.Certificates;
+            X509Certificate2Collection certificates = localMachineStore.Certificates;
             localMachineStore.Close();
             return certificates;
         }
@@ -73,7 +73,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
-            var cmd = "New-SelfSignedCertificate -NotBefore (Get-Date) -NotAfter (Get-Date).AddYears(1)"
+            string cmd = "New-SelfSignedCertificate -NotBefore (Get-Date) -NotAfter (Get-Date).AddYears(1)"
                 + " -Subject " + CommandExecutor.Quotes + certificateSubject + CommandExecutor.Quotes
                 + " -KeyAlgorithm " + CommandExecutor.Quotes + "RSA" + CommandExecutor.Quotes + " -KeyLength 2048"
                 + " -HashAlgorithm " + CommandExecutor.Quotes + "SHA256" + CommandExecutor.Quotes

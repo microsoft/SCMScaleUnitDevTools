@@ -39,7 +39,7 @@ namespace ScaleUnitManagement.Utilities
         public static string InterAOSAuthority() { return GetUserConfiguration().InterAOSAADConfiguration.Authority; }
         public static string InterAOSAppResourceId(ScaleUnitInstance hubInstance = null)
         {
-            var userConfig = GetUserConfiguration();
+            CloudAndEdgeConfiguration userConfig = GetUserConfiguration();
 
             return string.IsNullOrWhiteSpace(userConfig.InterAOSAADConfiguration.AppResourceId)
                 ? hubInstance?.Endpoint()
@@ -55,7 +55,7 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> UniqueLegalEntityValues()
         {
-            var configuredWorkloads = WorkloadList();
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
             return configuredWorkloads
                 .Select(x => x.ConfiguredDynamicConstraintValues
                 .FirstOrDefault(y => y.DomainName.Equals("LegalEntity", StringComparison.OrdinalIgnoreCase)).Value)
@@ -65,7 +65,7 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> ConfiguredWorkloadInstanceIds()
         {
-            var configuredWorkloads = WorkloadList();
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
             return configuredWorkloads
                 .Select(x => x.WorkloadInstanceId)
                 .ToList();
@@ -81,9 +81,9 @@ namespace ScaleUnitManagement.Utilities
                     return "0" + workloadInstanceId.Substring(1);
             }
 
-            var numOfIds = UniqueLegalEntityValues().Count;
+            int numOfIds = UniqueLegalEntityValues().Count;
 
-            var configuredWorkloads = WorkloadList();
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
             return configuredWorkloads
                 .Take(numOfIds)
                 .Select(x => Flip(x.WorkloadInstanceId))
@@ -98,15 +98,15 @@ namespace ScaleUnitManagement.Utilities
         public static List<WorkloadInstanceIdWithName> WorkloadInstanceIdWithNameList()
         {
             var result = new List<WorkloadInstanceIdWithName>();
-            var sysIds = SYSWorkloadInstanceIds();
-            var configuredWorkloads = WorkloadList();
+            List<string> sysIds = SYSWorkloadInstanceIds();
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
 
-            foreach (var id in sysIds)
+            foreach (string id in sysIds)
             {
                 result.Add(new WorkloadInstanceIdWithName() { Name = "SYS", WorkloadInstanceId = id });
             }
 
-            foreach (var configuredWorkload in configuredWorkloads)
+            foreach (ConfiguredWorkload configuredWorkload in configuredWorkloads)
             {
                 result.Add(
                     new WorkloadInstanceIdWithName()
@@ -120,7 +120,7 @@ namespace ScaleUnitManagement.Utilities
 
         private static void Validate()
         {
-            var hasAnyError = false;
+            bool hasAnyError = false;
 
             void ValidateValue(string fieldName, string fieldValue)
             {
@@ -145,7 +145,7 @@ namespace ScaleUnitManagement.Utilities
                 Console.Error.WriteLine("Missing hub scale unit instance. A scale unit instance with scale unit id @@ must exist.");
             }
 
-            foreach (var scaleUnit in ScaleUnitInstances())
+            foreach (ScaleUnitInstance scaleUnit in ScaleUnitInstances())
             {
                 Console.WriteLine($"Validating ScaleUnitInstance {scaleUnit.ScaleUnitId}");
                 ValidateValue("ScaleUnitId", scaleUnit.ScaleUnitId);
@@ -167,7 +167,7 @@ namespace ScaleUnitManagement.Utilities
                 {
                     try
                     {
-                        var integralScaleUnitId = ScaleUnitMnemonicCalculator.ToIntegralValue(scaleUnit.ScaleUnitId);
+                        int integralScaleUnitId = ScaleUnitMnemonicCalculator.ToIntegralValue(scaleUnit.ScaleUnitId);
                         if (integralScaleUnitId < 1 || integralScaleUnitId >= 1000)
                         {
                             Console.Error.WriteLine("ScaleUnitId \"" + (scaleUnit.ScaleUnitId) + "\" (" + integralScaleUnitId + ") is not in the mnemonic range (between 1 and 1000)");
@@ -222,7 +222,7 @@ namespace ScaleUnitManagement.Utilities
 
             Console.WriteLine("Validating Workloads");
 
-            foreach (var workload in WorkloadList())
+            foreach (ConfiguredWorkload workload in WorkloadList())
             {
                 ValidateValue("ScaleUnitId", workload.ScaleUnitId);
 
@@ -284,7 +284,7 @@ namespace ScaleUnitManagement.Utilities
         public string DomainSafe()
         {
             // trim surrounding whitespace
-            var domainName = Domain.Trim();
+            string domainName = Domain.Trim();
 
             // remove https?://
             domainName = Regex.Replace(domainName, @"^(http(s)?://)?", string.Empty);

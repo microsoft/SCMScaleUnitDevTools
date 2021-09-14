@@ -8,7 +8,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
     {
         public static void Configure(WebConfig webConfig, bool isScaleUnitFeatureEnabled = true)
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
             if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {

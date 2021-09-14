@@ -14,7 +14,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public void Execute(string query)
         {
-            var connectionString = $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=ScaleUnitDevTool";
+            string connectionString = $"Data Source=localhost;Initial Catalog={scaleUnit.AxDbName};Integrated Security=True;Enlist=True;Application Name=ScaleUnitDevTool";
             using (var conn = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand(query, conn))
             {

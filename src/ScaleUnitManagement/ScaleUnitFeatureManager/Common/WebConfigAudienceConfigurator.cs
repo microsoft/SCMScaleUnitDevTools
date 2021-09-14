@@ -11,7 +11,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
         {
             const string ValidAudienceConfigKey = "Aad.AADValidAudience";
 
-            var aadValidAudiences = webConfig.GetXElementValue(ValidAudienceConfigKey)?.Split(';');
+            string[] aadValidAudiences = webConfig.GetXElementValue(ValidAudienceConfigKey)?.Split(';');
 
             var validAudiencesToAdd = new List<string>();
 

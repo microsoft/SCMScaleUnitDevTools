@@ -17,7 +17,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         public List<IStep> GetStepsOfType<T>()
         {
             var objects = new List<IStep>();
-            foreach (var type in FindClassesDeriving(typeof(T)))
+            foreach (Type type in FindClassesDeriving(typeof(T)))
             {
                 objects.Add((IStep)Activator.CreateInstance(type));
             }

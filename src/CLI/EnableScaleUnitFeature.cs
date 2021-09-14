@@ -14,7 +14,7 @@ namespace CLI
 
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = SelectScaleUnitOptions(PrintAvailableStepsForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(PrintAvailableStepsForScaleUnit);
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
             await CLIController.ShowScreen(screen);
         }
@@ -31,7 +31,7 @@ namespace CLI
         protected virtual List<IStep> GetAvailableSteps()
         {
             var sf = new StepFactory();
-            var steps = sf.GetStepsOfType<ICommonStep>();
+            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
             return steps;
         }
 
@@ -41,19 +41,19 @@ namespace CLI
             availableSteps = GetAvailableSteps();
             availableSteps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
 
-            foreach (var step in availableSteps)
+            foreach (IStep step in availableSteps)
             {
                 options.Add(new CLIOption() { Name = step.Label(), Command = RunStepsFromTask });
             }
 
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             var screen = new CLIScreen(options, selectionHistory, $"Task sequence to run for {scaleUnit.PrintableName()}\n", "\nSelect task to start from: ");
             await CLIController.ShowScreen(screen);
         }
 
         private async Task RunStepsFromTask(int input, string selectionHistory)
         {
-            for (var i = input - 1; i < availableSteps.Count; i++)
+            for (int i = input - 1; i < availableSteps.Count; i++)
             {
                 try
                 {

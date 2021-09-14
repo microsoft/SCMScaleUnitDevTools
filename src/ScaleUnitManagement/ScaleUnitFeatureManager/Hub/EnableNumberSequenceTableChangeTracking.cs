@@ -18,9 +18,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
 
         public Task Run()
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            var sqlQuery = $@"
+            string sqlQuery = $@"
             USE {scaleUnit.AxDbName};
             IF NOT EXISTS (SELECT TOP 1 1 FROM sys.change_tracking_tables WHERE object_id = OBJECT_ID('NumberSequenceTable'))
 	            ALTER TABLE dbo.NumberSequenceTable ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = ON)

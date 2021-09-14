@@ -23,7 +23,7 @@ namespace CLI
 
         public async Task DrainAllPipelines(int input, string selectionHistory)
         {
-            foreach (var scaleUnit in GetSortedScaleUnits())
+            foreach (ScaleUnitInstance scaleUnit in GetSortedScaleUnits())
             {
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 var pipelineManager = new PipelineManager();
@@ -34,7 +34,7 @@ namespace CLI
 
         public async Task StartAllPipelines(int input, string selectionHistory)
         {
-            foreach (var scaleUnit in GetSortedScaleUnits())
+            foreach (ScaleUnitInstance scaleUnit in GetSortedScaleUnits())
             {
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 var pipelineManager = new PipelineManager();

@@ -18,9 +18,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public Task Run()
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            var sqlQuery = $"USE master; IF NOT EXISTS (SELECT * FROM sys.change_tracking_databases WHERE database_id=DB_ID('{scaleUnit.AxDbName}')) ALTER DATABASE {scaleUnit.AxDbName} SET CHANGE_TRACKING = ON(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON)";
+            string sqlQuery = $"USE master; IF NOT EXISTS (SELECT * FROM sys.change_tracking_databases WHERE database_id=DB_ID('{scaleUnit.AxDbName}')) ALTER DATABASE {scaleUnit.AxDbName} SET CHANGE_TRACKING = ON(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON)";
 
             var sqlQueryExecutor = new SqlQueryExecutor();
             sqlQueryExecutor.Execute(sqlQuery);
