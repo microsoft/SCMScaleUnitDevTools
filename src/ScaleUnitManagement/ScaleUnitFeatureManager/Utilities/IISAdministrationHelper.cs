@@ -85,6 +85,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
                 if (site?.State == ObjectState.Stopped)
                 {
+                    ServiceHelper.StartService("W3SVC", TimeSpan.FromMinutes(1));
                     Console.WriteLine($"Starting IIS site {site.Name}..");
                     site.Start();
                     Console.WriteLine($"Successfully started IIS site {site.Name}");
