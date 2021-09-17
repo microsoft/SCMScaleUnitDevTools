@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace CLI.SetupToolsOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(CleanUpScaleUnitStorageAccount);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), CleanUpScaleUnitStorageAccount);
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to clean the storage account of:\n", "\nScale unit storage to clean up: ");
             await CLIController.ShowScreen(screen);
@@ -19,7 +18,6 @@ namespace CLI.SetupToolsOptions
 
         private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
             var storageAccountManager = new StorageAccountManager();
             await storageAccountManager.CleanStorageAccount();
 

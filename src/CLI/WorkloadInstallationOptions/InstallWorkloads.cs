@@ -10,14 +10,13 @@ namespace CLI.WorkloadInstallationOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(InstallWorkloadsForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), InstallWorkloadsForScaleUnit);
             var screen = new CLIScreen(options, selectionHistory, "Install workloads on:\n", "\nEnvironment to install the workloads on?: ");
             await CLIController.ShowScreen(screen);
         }
 
         private async Task InstallWorkloadsForScaleUnit(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
             if (ScaleUnitContext.GetScaleUnitId() == "@@")
                 await new HubWorkloadInstaller().Install();
             else

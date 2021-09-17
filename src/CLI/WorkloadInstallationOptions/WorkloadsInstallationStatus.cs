@@ -10,7 +10,7 @@ namespace CLI.WorkloadInstallationOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(ShowWorkloadInstallationStatusForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), ShowWorkloadInstallationStatusForScaleUnit);
 
             var screen = new CLIScreen(options, selectionHistory, "Show status of workloads installation on:\n", "\nEnvironment?: ");
             await CLIController.ShowScreen(screen);
@@ -18,7 +18,6 @@ namespace CLI.WorkloadInstallationOptions
 
         private async Task ShowWorkloadInstallationStatusForScaleUnit(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
             if (ScaleUnitContext.GetScaleUnitId() == "@@")
                 await new HubWorkloadInstaller().InstallationStatus();
             else

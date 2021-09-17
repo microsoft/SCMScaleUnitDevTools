@@ -12,15 +12,9 @@ namespace CLI.SetupToolsOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            var options = new List<CLIOption>();
-
             List<ScaleUnitInstance> sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
             sortedNonHubScaleUnits.Sort();
-
-            foreach (ScaleUnitInstance scaleUnit in sortedNonHubScaleUnits)
-            {
-                options.Add(new CLIOption() { Name = scaleUnit.PrintableName(), Command = RunUpdateScaleunitId });
-            }
+            List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, RunUpdateScaleunitId);
 
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update the scale unit id of?: ");
             await CLIController.ShowScreen(screen);
@@ -28,7 +22,6 @@ namespace CLI.SetupToolsOptions
 
         private Task RunUpdateScaleunitId(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
             try
             {
                 new StopServices().Run();

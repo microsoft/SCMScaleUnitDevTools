@@ -14,14 +14,13 @@ namespace CLI
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(PrintAvailableStepsForScaleUnit);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PrintAvailableStepsForScaleUnit);
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
             await CLIController.ShowScreen(screen);
         }
 
         private async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
             if (ScaleUnitContext.GetScaleUnitId().Equals("@@"))
                 await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
             else

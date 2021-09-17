@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
 using System;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
@@ -12,15 +11,13 @@ namespace CLI.SetupToolsOptions
     {
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(RunDisableScaleUnitFeature);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), RunDisableScaleUnitFeature);
             var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to disable scale unit feature on?: ");
             await CLIController.ShowScreen(screen);
         }
 
         private Task RunDisableScaleUnitFeature(int input, string selectionHistory)
         {
-            using var context = ScaleUnitContext.CreateContext(GetScaleUnitId(input - 1));
-
             try
             {
                 new StopServices().Run();
