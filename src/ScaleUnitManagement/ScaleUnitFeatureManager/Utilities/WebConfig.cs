@@ -18,6 +18,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             webConfigPath = scaleUnit.WebConfigPath();
             configEncryptorExePath = scaleUnit.ConfigEncryptorExePath();
 
+            Decrypt();
+
             doc = XDocument.Load(webConfigPath);
 
             appSettingsElement = doc.Descendants()
@@ -68,6 +70,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 .FirstOrDefault();
 
             return element?.Attribute("value")?.Value;
+        }
+
+        private void Decrypt()
+        {
+            CommandExecutor ce = new CommandExecutor(configEncryptorExePath, "-decrypt " + webConfigPath);
+            ce.RunCommand();
         }
 
         public void Dispose()

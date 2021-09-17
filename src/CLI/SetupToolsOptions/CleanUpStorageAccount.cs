@@ -28,13 +28,17 @@ namespace CLI.SetupToolsOptions
 
         private static async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            using (var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId))
+            try
             {
+                using var context = ScaleUnitContext.CreateContext(sortedScaleUnits[input - 1].ScaleUnitId);
                 var storageAccountManager = new StorageAccountManager();
                 await storageAccountManager.CleanStorageAccount();
+                Console.WriteLine("Done");
             }
-
-            Console.WriteLine("Done");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An exception occured while cleaning up storage: {ex.Message}");
+            }
         }
     }
 }
