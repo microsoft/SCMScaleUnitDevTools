@@ -37,7 +37,7 @@ namespace CLI.SetupToolsOptions
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An exception occured while cleaning up storage: {ex.Message}");
+                Console.WriteLine($"An exception occured while cleaning up storage: \n{ex}");
             }
         }
     }

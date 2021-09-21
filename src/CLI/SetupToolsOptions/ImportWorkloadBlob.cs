@@ -39,7 +39,7 @@ namespace CLI.SetupToolsOptions
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"An exception occured while importing blobs: {ex.Message}");
+                    Console.WriteLine($"An exception occured while importing blobs: \n{ex}");
                 }
             }
 
