@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
 using ScaleUnitManagement.Utilities;
 
@@ -78,19 +77,12 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private XElement GetDecryptedElementWithAttribute(string key)
         {
-            string configPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            string tmpDirectory = $"{configPath}/tmp";
-            string decryptPath = $"{tmpDirectory}/web.config";
-
-            if (!Directory.Exists(tmpDirectory))
-            {
-                Directory.CreateDirectory(tmpDirectory);
-            }
-
+            string decryptPath = Path.GetTempFileName();
             XElement element = null;
+
             try
             {
-                File.Copy(webConfigPath, decryptPath);
+                File.Copy(webConfigPath, decryptPath, true);
                 var ce = new CommandExecutor(configEncryptorExePath, "-decrypt " + decryptPath);
                 ce.RunCommand();
 
