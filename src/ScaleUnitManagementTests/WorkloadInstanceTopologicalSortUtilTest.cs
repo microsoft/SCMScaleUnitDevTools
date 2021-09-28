@@ -10,9 +10,9 @@ namespace ScaleUnitManagementTests
     [TestClass]
     public class WorkloadInstanceTopologicalSortUtilTest
     {
-        private readonly string SYS = "Sys";
-        private readonly string MES = "Mes";
-        private readonly string WES = "Wes";
+        private const string SYS = "SYS";
+        private const string MES = "MES";
+        private const string WES = "WES";
 
         [TestMethod]
         public void New_NullWorkloadInstanceList_ExceptionThrown()
@@ -24,7 +24,7 @@ namespace ScaleUnitManagementTests
             // Act
             try
             {
-                WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+                var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             }
             catch (ArgumentNullException)
             {
@@ -38,10 +38,10 @@ namespace ScaleUnitManagementTests
         public void Sort_EmptyWorkloadInstanceList_EmptyListReturned()
         {
             // Arrange
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
+            var workloadInstances = new List<WorkloadInstance>();
 
             // Act
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             List<WorkloadInstance> sortedWorkloadInstances = topologicalSortUtil.Sort();
 
             // Assert
@@ -56,15 +56,15 @@ namespace ScaleUnitManagementTests
             WorkloadInstance w2 = BuildWorkloadInstance(MES);
             WorkloadInstance w3 = BuildWorkloadInstance(WES);
 
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>() { w1, w2, w3 };
+            var workloadInstances = new List<WorkloadInstance>() { w1, w2, w3 };
 
             // Act
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             List<WorkloadInstance> sortedWorkloadInstances = topologicalSortUtil.Sort();
 
             // Assert
             sortedWorkloadInstances.Should().HaveCount(workloadInstances.Count);
-            foreach (var expectedWorkloadInstance in workloadInstances)
+            foreach (WorkloadInstance expectedWorkloadInstance in workloadInstances)
             {
                 sortedWorkloadInstances.Should().Contain(expectedWorkloadInstance);
             }
@@ -76,16 +76,16 @@ namespace ScaleUnitManagementTests
             // Arrange
             WorkloadInstance w1 = BuildWorkloadInstance(SYS);
 
-            List<string> mesDependencies = new List<string> { SYS };
+            var mesDependencies = new List<string> { SYS };
             WorkloadInstance w2 = BuildWorkloadInstance(MES, mesDependencies);
 
-            List<string> wesDependencies = new List<string> { SYS };
+            var wesDependencies = new List<string> { SYS };
             WorkloadInstance w3 = BuildWorkloadInstance(WES, wesDependencies);
 
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>() { w2, w3, w1 };
+            var workloadInstances = new List<WorkloadInstance>() { w2, w3, w1 };
 
             // Act
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             List<WorkloadInstance> sortedWorkloadInstances = topologicalSortUtil.Sort();
 
             // Assert
@@ -98,16 +98,16 @@ namespace ScaleUnitManagementTests
             // Arrange
             WorkloadInstance w1 = BuildWorkloadInstance(SYS);
 
-            List<string> mesDependencies = new List<string> { SYS, WES };
+            var mesDependencies = new List<string> { SYS, WES };
             WorkloadInstance w2 = BuildWorkloadInstance(MES, mesDependencies);
 
-            List<string> wesDependencies = new List<string> { SYS };
+            var wesDependencies = new List<string> { SYS };
             WorkloadInstance w3 = BuildWorkloadInstance(WES, wesDependencies);
 
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>() { w2, w3, w1 };
+            var workloadInstances = new List<WorkloadInstance>() { w2, w3, w1 };
 
             // Act
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             List<WorkloadInstance> sortedWorkloadInstances = topologicalSortUtil.Sort();
 
             // Assert
@@ -120,25 +120,25 @@ namespace ScaleUnitManagementTests
         {
             const string TEST = "Test";
 
-            List<string> sysDependencies = new List<string> { MES };
+            var sysDependencies = new List<string> { MES };
             WorkloadInstance w1 = BuildWorkloadInstance(SYS, sysDependencies);
 
-            List<string> mesDependencies = new List<string> { TEST };
+            var mesDependencies = new List<string> { TEST };
             WorkloadInstance w2 = BuildWorkloadInstance(MES, mesDependencies);
 
-            List<string> wesDependencies = new List<string> { SYS, TEST };
+            var wesDependencies = new List<string> { SYS, TEST };
             WorkloadInstance w3 = BuildWorkloadInstance(WES, wesDependencies);
 
             WorkloadInstance w4 = BuildWorkloadInstance(TEST);
 
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>() { w1, w2, w3, w4 };
+            var workloadInstances = new List<WorkloadInstance>() { w1, w2, w3, w4 };
 
             // Act
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(workloadInstances);
             List<WorkloadInstance> sortedWorkloadInstances = topologicalSortUtil.Sort();
 
             // Assert
-            List<WorkloadInstance> expectedSortedList = new List<WorkloadInstance> { w4, w2, w1, w3 };
+            var expectedSortedList = new List<WorkloadInstance> { w4, w2, w1, w3 };
 
             for (int i = 0; i < sortedWorkloadInstances.Count; i++)
             {
@@ -156,7 +156,7 @@ namespace ScaleUnitManagementTests
                     Workload = new Workload()
                     {
                         Name = name,
-                        DependsOn = dependsOn == null ? new List<string>() : dependsOn
+                        DependsOn = dependsOn ?? new List<string>()
                     }
                 }
             };

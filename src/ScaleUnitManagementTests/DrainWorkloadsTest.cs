@@ -83,7 +83,7 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Running";
-            var corruptedWorkloadInstance = new ConfigurationHelper().GetExampleWorkload();
+            WorkloadInstance corruptedWorkloadInstance = new ConfigurationHelper().GetExampleWorkload();
             corruptedWorkloadInstance.Id = "scrambled id";
             aosClient.Setup(x => x.GetWorkloadInstances())
                 .ReturnsAsync(new List<WorkloadInstance> { corruptedWorkloadInstance });

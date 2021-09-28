@@ -49,10 +49,10 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         private static X509Certificate2 RetrieveCertificateFromStore(string certificateSubject)
         {
-            var certCollection = GetCertificates(StoreName.My, StoreLocation.LocalMachine);
+            X509Certificate2Collection certCollection = GetCertificates(StoreName.My, StoreLocation.LocalMachine);
             X509Certificate2 certificate = null;
 
-            foreach (var cert in certCollection.Cast<X509Certificate2>().Where(cert => cert.Subject.Equals($"CN={certificateSubject}")))
+            foreach (X509Certificate2 cert in certCollection.Cast<X509Certificate2>().Where(cert => cert.Subject.Equals($"CN={certificateSubject}")))
             {
                 certificate = cert;
             }
@@ -64,7 +64,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             var localMachineStore = new X509Store(storeName, storeLocation);
             localMachineStore.Open(OpenFlags.ReadOnly);
-            var certificates = localMachineStore.Certificates;
+            X509Certificate2Collection certificates = localMachineStore.Certificates;
             localMachineStore.Close();
             return certificates;
         }
@@ -83,7 +83,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
                 + "," + CommandExecutor.Quotes + "2.5.29.37={critical}{text}1.3.6.1.5.5.7.3.1" + CommandExecutor.Quotes
                 + "," + CommandExecutor.Quotes + "2.5.29.17={critical}{text}DNS=" + certificateSubject + CommandExecutor.Quotes + ")";
 
-            CommandExecutor ce = new CommandExecutor(cmd);
+            var ce = new CommandExecutor(cmd);
             ce.RunCommand();
         }
 

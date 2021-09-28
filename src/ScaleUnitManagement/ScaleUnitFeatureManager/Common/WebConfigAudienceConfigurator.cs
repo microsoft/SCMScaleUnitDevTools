@@ -9,9 +9,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
     {
         public static void AddValidAudiences(this WebConfig webConfig, ScaleUnitInstance scaleUnit)
         {
-            const string validAudienceConfigKey = "Aad.AADValidAudience";
+            const string ValidAudienceConfigKey = "Aad.AADValidAudience";
 
-            string[] aadValidAudiences = webConfig.GetXElementValue(validAudienceConfigKey)?.Split(';');
+            string[] aadValidAudiences = webConfig.GetXElementValue(ValidAudienceConfigKey)?.Split(';');
 
             var validAudiencesToAdd = new List<string>();
 
@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             if (validAudiencesToAdd.Any())
             {
-                webConfig.UpdateXElementIfExists(validAudienceConfigKey, string.Join(";", aadValidAudiences.Concat(validAudiencesToAdd)));
+                webConfig.UpdateXElementIfExists(ValidAudienceConfigKey, string.Join(";", aadValidAudiences.Concat(validAudiencesToAdd)));
             }
         }
     }

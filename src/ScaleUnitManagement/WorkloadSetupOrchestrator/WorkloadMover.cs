@@ -13,11 +13,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (workloadInstance.ExecutingEnvironment.Any())
                 {
@@ -35,11 +35,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task ShowMovementStatus()
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 string name = workloadInstance.VersionedWorkload.Workload.Name;
                 string state = await GetMovementState(workloadInstance);
@@ -51,7 +51,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         private async Task<string> GetMovementState(WorkloadInstance workloadInstance)
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             string state = null;
             TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
             await ReliableRun.Execute(async () => state = await aosClient.GetWorkloadMovementState(workloadInstance.Id, lastAssignment.EffectiveDate), "Getting movement state");

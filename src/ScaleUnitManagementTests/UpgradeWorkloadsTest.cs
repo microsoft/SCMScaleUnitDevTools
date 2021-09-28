@@ -46,7 +46,7 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             workloadStatus.Health = "Stopped";
-            var oldVersionedWorkloadId = exampleWorkload.VersionedWorkload.Id;
+            string oldVersionedWorkloadId = exampleWorkload.VersionedWorkload.Id;
 
             // Act
             using (ScaleUnitContext.CreateContext(scaleUnitId))
@@ -58,7 +58,7 @@ namespace ScaleUnitManagementTests
             }
 
             // Assert
-            var newVersionedWorkloadId = workloadInstances.First().VersionedWorkload.Id;
+            string newVersionedWorkloadId = workloadInstances.First().VersionedWorkload.Id;
             newVersionedWorkloadId.Should().NotBe(oldVersionedWorkloadId);
         }
 

@@ -37,12 +37,14 @@ namespace ScaleUnitManagementTests
                 hub,
             };
 
-            var constraintValues = new List<ConfiguredDynamicConstraintValue>();
-            constraintValues.Add(new ConfiguredDynamicConstraintValue()
+            var constraintValues = new List<ConfiguredDynamicConstraintValue>
             {
-                Value = "1",
-                DomainName = "LegalEntity"
-            });
+                new ConfiguredDynamicConstraintValue()
+                {
+                    Value = "1",
+                    DomainName = "LegalEntity"
+                }
+            };
 
             var workload = new ConfiguredWorkload()
             {

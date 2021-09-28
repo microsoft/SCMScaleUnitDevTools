@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.WorkloadInstallationOptions;
 using CLIFramework;
 
 namespace CLI
 {
-    internal static class WorkloadInstallationMenu
+    internal class WorkloadInstallationMenu : DevToolMenu
     {
-        public static async Task Show(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            var installWorkloadsOption = new CLIOption() { Name = "Install workloads", Command = InstallWorkloads.Show };
-            var workloadsInstallationStatusOption = new CLIOption() { Name = "Show workloads installation status", Command = WorkloadsInstallationStatus.Show };
-
-            var options = new List<CLIOption>() { installWorkloadsOption, workloadsInstallationStatusOption };
+            var options = new List<CLIOption>()
+            {
+                Option("Install workloads", new InstallWorkloads().Show),
+                Option("Show workloads installation status", new WorkloadsInstallationStatus().Show),
+            };
 
             var screen = new CLIScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");
-            await CLIMenu.ShowScreen(screen);
+            await CLIController.ShowScreen(screen);
         }
     }
 }
