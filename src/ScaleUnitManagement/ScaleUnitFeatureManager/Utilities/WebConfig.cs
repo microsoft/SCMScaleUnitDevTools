@@ -82,8 +82,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
             try
             {
-                File.Copy(webConfigPath, decryptPath, true);
-                var ce = new CommandExecutor(configEncryptorExePath, "-decrypt " + decryptPath);
+                File.Copy(sourceFileName: webConfigPath, destFileName: decryptPath, overwrite: true);
+
+                var ce = new CommandExecutor(configEncryptorExePath, $"-decrypt \"{decryptPath}\"");
                 ce.RunCommand();
 
                 XDocument decryptedDoc = XDocument.Load(decryptPath);
@@ -100,7 +101,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         private XElement GetElementWithAttribute(XDocument document, string key)
         {
             return document.Descendants()
-                .Where(x => (string)x.Attribute("key") == key)
+                .Where(x => x.Attribute("key") is null ? false : ((string)x.Attribute("key")).ToLower().Equals(key.ToLower()))
                 .FirstOrDefault();
         }
 
@@ -109,7 +110,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             doc.Save(webConfigPath);
 
             //Encrypt config file
-            CommandExecutor ce = new CommandExecutor(configEncryptorExePath, "-encrypt " + webConfigPath);
+            CommandExecutor ce = new CommandExecutor(configEncryptorExePath, $"-encrypt \"{webConfigPath}\"");
             ce.RunCommand();
         }
     }
