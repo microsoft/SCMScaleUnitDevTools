@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ScaleUnitManagement.Utilities;
@@ -12,17 +13,41 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         private readonly string webConfigPath;
         private readonly string configEncryptorExePath;
 
-        public WebConfig()
+        public WebConfig(bool decrypt = false)
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             webConfigPath = scaleUnit.WebConfigPath();
             configEncryptorExePath = scaleUnit.ConfigEncryptorExePath();
 
-            doc = XDocument.Load(webConfigPath);
+            if (decrypt)
+            {
+                string decryptPath = Path.GetTempFileName();
+                try
+                {
+                    DecryptWebConfig(decryptPath);
+                    doc = XDocument.Load(decryptPath);
+                }
+                finally
+                {
+                    File.Delete(decryptPath);
+                }
+            }
+            else
+            {
+                doc = XDocument.Load(webConfigPath);
+            }
 
             appSettingsElement = doc.Descendants()
                     .Where(x => (string)x.Name.LocalName == "appSettings")
                     .FirstOrDefault();
+        }
+
+        private void DecryptWebConfig(string decryptPath)
+        {
+            File.Copy(sourceFileName: webConfigPath, destFileName: decryptPath, overwrite: true);
+
+            var ce = new CommandExecutor(configEncryptorExePath, $"-decrypt \"{decryptPath}\"");
+            ce.RunCommand();
         }
 
         public void AddKey(string keyName, string keyValue)
@@ -49,9 +74,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public void UpdateXElementIfExists(string key, string value)
         {
-            XElement element = doc.Descendants()
-                    .Where(x => (string)x.Attribute("key") == key)
-                    .FirstOrDefault();
+            XElement element = GetElementWithAttribute(doc, key);
 
             if (element is null)
             {
@@ -63,11 +86,15 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public string GetXElementValue(string key)
         {
-            XElement element = doc.Descendants()
-                .Where(x => (string)x.Attribute("key") == key)
-                .FirstOrDefault();
-
+            XElement element = GetElementWithAttribute(doc, key);
             return element?.Attribute("value")?.Value;
+        }
+
+        private XElement GetElementWithAttribute(XDocument document, string key)
+        {
+            return document.Descendants()
+                .Where(x => x.Attribute("key") is null ? false : ((string)x.Attribute("key")).Equals(key, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
         }
 
         public void Dispose()
@@ -75,8 +102,9 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             doc.Save(webConfigPath);
 
             //Encrypt config file
-            var ce = new CommandExecutor(configEncryptorExePath, "-encrypt " + webConfigPath);
+            var ce = new CommandExecutor(configEncryptorExePath, $"-encrypt \"{webConfigPath}\"");
             ce.RunCommand();
         }
     }
 }
+
