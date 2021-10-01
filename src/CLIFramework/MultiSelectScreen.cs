@@ -26,20 +26,29 @@ namespace CLIFramework
                 }
             }
 
-            string[] commaSeparatedInput = input.Split(',');
-
             var runSteps = new List<int>();
             var skipSteps = new List<int>();
 
-            try
+            if (input.Equals(""))
             {
-                int[] enteredNumbers = ParseInputList(commaSeparatedInput);
-                DivideBySign(enteredNumbers, positives: runSteps, negatives: skipSteps);
+                for (int i = 1; i <= options.Count; i++)
+                {
+                    runSteps.Add(i);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                inputValidationError = ex.Message;
-                return;
+                string[] commaSeparatedInput = input.Split(',');
+                try
+                {
+                    int[] enteredNumbers = ParseInputList(commaSeparatedInput);
+                    PartitionBySign(enteredNumbers, positives: runSteps, negatives: skipSteps);
+                }
+                catch (Exception ex)
+                {
+                    inputValidationError = ex.Message;
+                    return;
+                }
             }
 
             if (runSteps.Count > 0 && skipSteps.Count > 0)
@@ -76,7 +85,7 @@ namespace CLIFramework
             return runSteps;
         }
 
-        private void DivideBySign(int[] enteredNumbers, List<int> positives, List<int> negatives)
+        private void PartitionBySign(int[] enteredNumbers, List<int> positives, List<int> negatives)
         {
             foreach (int number in enteredNumbers)
             {

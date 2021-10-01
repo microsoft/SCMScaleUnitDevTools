@@ -43,6 +43,18 @@ namespace ScaleUnitManagementTests.CLITests
             screen.inputValidationError.Should().BeEmpty();
         }
 
+        [TestMethod]
+        public async Task EnterNothing_ExecutesAllSteps()
+        {
+            // Arrange + Act
+            await screen.PerformAction("");
+
+            // Assert
+            executedSteps.Should().BeEquivalentTo(new List<int> { 1, 2, 3, 4, 5 });
+            screen.inputValidationError.Should().BeEmpty();
+        }
+
+        [TestMethod]
         public async Task EnterAllStepsBackwards_ExecutesAllStepsInOrder()
         {
             // Arrange + Act
