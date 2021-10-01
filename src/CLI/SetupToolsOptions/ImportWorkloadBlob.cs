@@ -11,7 +11,7 @@ namespace CLI.SetupToolsOptions
         public override async Task Show(int input, string selectionHistory)
         {
             List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), ImportWorkloadBlobFromSasToken);
-            var screen = new CLIScreen(options, selectionHistory, "Please select the scale unit you would like to import workloads to:\n", "\nScale unit storage to import to: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Please select the scale unit you would like to import workloads to:\n", "\nScale unit storage to import to: ");
             await CLIController.ShowScreen(screen);
         }
 
