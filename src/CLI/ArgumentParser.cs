@@ -23,7 +23,7 @@ namespace CLI
 
             for (int i = 0; i < matched.Length; i++)
             {
-                if (matched[i] == false)
+                if (!matched[i])
                 {
                     throw new Exception($"Did not recognize argument {args[i]}. Allowed arguments are \"--deploy\" and \"--clean-storage\"");
                 }
@@ -32,7 +32,7 @@ namespace CLI
 
         private bool ParseArgument(string argument)
         {
-            var cliOption = Array.FindIndex(arguments, option => option.Equals(argument));
+            int cliOption = Array.FindIndex(arguments, option => option.Equals(argument));
             if (cliOption != -1)
             {
                 matched[cliOption] = true;
