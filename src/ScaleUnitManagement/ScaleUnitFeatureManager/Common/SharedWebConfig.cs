@@ -12,7 +12,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             if (scaleUnit.EnvironmentType == EnvironmentType.VHD || Config.UseSingleOneBox())
             {
-                if (!String.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
+                if (!string.IsNullOrEmpty(scaleUnit.AzureStorageConnectionString))
                     webConfig.UpdateXElementIfExists("AzureStorage.StorageConnectionString", scaleUnit.AzureStorageConnectionString);
             }
 

@@ -9,13 +9,13 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
 
-            XmlDocument wifDoc = new XmlDocument();
+            var wifDoc = new XmlDocument();
             wifDoc.Load(scaleUnit.WifServicesConfigPath());
 
             // Update urls in wif.services.config
-            var cookieHandlerNode = wifDoc.SelectSingleNode("/system.identityModel.services/federationConfiguration/cookieHandler");
+            XmlNode cookieHandlerNode = wifDoc.SelectSingleNode("/system.identityModel.services/federationConfiguration/cookieHandler");
             XmlAttributeCollection attrColl = cookieHandlerNode.Attributes;
-            XmlAttribute attr = (XmlAttribute)attrColl.GetNamedItem("domain");
+            var attr = (XmlAttribute)attrColl.GetNamedItem("domain");
             attr.Value = scaleUnit.DomainSafe();
 
             wifDoc.Save(scaleUnit.WifServicesConfigPath());

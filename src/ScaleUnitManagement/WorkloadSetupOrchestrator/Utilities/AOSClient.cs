@@ -35,31 +35,29 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             };
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
-            AOSClient client = new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
-
-            return client;
+            return new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
         }
 
         public async Task<ScaleUnitEnvironmentConfiguration> WriteScaleUnitConfiguration(ScaleUnitEnvironmentConfiguration config)
         {
-            var path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/";
+            string path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/configureScaleUnit/";
 
-            var serializedConfig = JsonConvert.SerializeObject(config);
+            string serializedConfig = JsonConvert.SerializeObject(config);
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"configuration\": {serializedConfig},\"runSync\": true}}";
+            string writePayload = $"{{\"configuration\": {serializedConfig},\"runSync\": true}}";
 
             string result = await SendRequest(path, writePayload);
 
-            ScaleUnitEnvironmentConfiguration parsed = Newtonsoft.Json.JsonConvert.DeserializeObject<ScaleUnitEnvironmentConfiguration>(result);
+            ScaleUnitEnvironmentConfiguration parsed = JsonConvert.DeserializeObject<ScaleUnitEnvironmentConfiguration>(result);
             return parsed;
         }
 
         public async Task<ScaleUnitStatus> CheckScaleUnitConfigurationStatus()
         {
             // Call requires an empty payload.
-            var path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/";
-            var getPayload = "{}";
+            string path = $"{requestPathPrefix}api/services/ScaleUnitInitializationServiceGroup/ScaleUnitInitializationService/checkStatus/";
+            string getPayload = "{}";
 
             string result = await SendRequest(path, getPayload);
 
@@ -69,14 +67,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> WriteWorkloadInstances(List<WorkloadInstance> workloadInstances)
         {
-            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/write/";
+            string path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/write/";
 
             // Double serialize the payload in order to avoid serialization complication issues on the AOS.
-            var serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
-            var serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
+            string serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
+            string serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": true}}";
+            string writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": true}}";
 
             string result = await SendRequest(path, writePayload);
             string json = JsonConvert.DeserializeObject<string>(result);
@@ -86,14 +84,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> DeleteWorkloadInstances(List<WorkloadInstance> workloadInstances)
         {
-            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/";
+            string path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/delete/";
 
             // Double serialize the payload in order to avoid serialization complication issues on the AOS.
-            var serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
-            var serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
+            string serializedWlInstances = JsonConvert.SerializeObject(workloadInstances);
+            string serializedAsString = JsonConvert.SerializeObject(serializedWlInstances);
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": false}}";
+            string writePayload = $"{{\"workloadInstancesListAsJsonString\": {serializedAsString},\"runSync\": false}}";
 
             string result = await SendRequest(path, writePayload);
 
@@ -104,10 +102,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<Workload>> GetWorkloads()
         {
-            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/";
+            string path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadService/get/";
 
             // Call requires an empty payload.
-            var getPayload = "{}";
+            string getPayload = "{}";
 
             // The result is a double serialized string coming back from the AOS. This is done to avoid serialization "complications" on the AOS.
             string result = await SendRequest(path, getPayload);
@@ -119,10 +117,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<List<WorkloadInstance>> GetWorkloadInstances()
         {
-            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/get/";
+            string path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/get/";
 
             // Call requires an empty payload.
-            var getPayload = "{}";
+            string getPayload = "{}";
 
             // The result is a double serialized string coming back from the AOS. This is done to avoid serialization "complications" on the AOS.
             string result = await SendRequest(path, getPayload);
@@ -134,10 +132,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId)
         {
-            var path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/";
+            string path = $"{requestPathPrefix}api/services/SysWorkloadServices/SysWorkloadInstanceService/checkStatus/";
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
+            string writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
 
             string result = await SendRequest(path, writePayload);
 
@@ -147,10 +145,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task<string> GetWorkloadMovementState(string workloadInstanceId, DateTime afterDateTime)
         {
-            var path = $"{requestPathPrefix}/api/services/ScaleUnitInitializationServiceGroup/ScaleUnitLifeCycleService/getWorkloadMovementState";
+            string path = $"{requestPathPrefix}/api/services/ScaleUnitInitializationServiceGroup/ScaleUnitLifeCycleService/getWorkloadMovementState";
 
             // Wrap in object that allows the AOS to map in to method params on the service class.
-            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
+            string writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\",\"afterDateTime\": \"{afterDateTime}\"}}";
 
             string result = await SendRequest(path, writePayload);
 
@@ -160,30 +158,30 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public async Task DrainWorkload(string workloadInstanceId)
         {
-            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/drain/";
+            string path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/drain/";
 
-            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
+            string writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
 
             await SendRequest(path, writePayload);
         }
 
         public async Task StartWorkload(string workloadInstanceId)
         {
-            var path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/start/";
+            string path = $"{requestPathPrefix}/api/services/SysWorkloadServices/SysWorkloadInstanceService/start/";
 
-            var writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
+            string writePayload = $"{{\"workloadInstanceId\": \"{workloadInstanceId}\"}}";
 
             await SendRequest(path, writePayload);
         }
 
-        private async Task<String> SendRequest(string path, string payload)
+        private async Task<string> SendRequest(string path, string payload)
         {
             var msg = new HttpRequestMessage(HttpMethod.Post, path)
             {
                 Content = new StringContent(payload, Encoding.UTF8, "application/json")
             };
 
-            var response = await httpClient.SendAsync(msg);
+            HttpResponseMessage response = await httpClient.SendAsync(msg);
             string result = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)

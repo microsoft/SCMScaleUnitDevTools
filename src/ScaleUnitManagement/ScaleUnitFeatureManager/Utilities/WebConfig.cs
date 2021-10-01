@@ -52,7 +52,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public void AddKey(string keyName, string keyValue)
         {
-            var element = appSettingsElement.Descendants()
+            XElement element = appSettingsElement.Descendants()
                     .Where(x => (string)x.Attribute("key") == keyName)
                     .FirstOrDefault();
 
@@ -63,7 +63,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
             else
             {
-                XElement addElement = new XElement("add");
+                var addElement = new XElement("add");
 
                 addElement.Add(new XAttribute("key", keyName));
                 addElement.Add(new XAttribute("value", keyValue));
@@ -102,7 +102,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             doc.Save(webConfigPath);
 
             //Encrypt config file
-            CommandExecutor ce = new CommandExecutor(configEncryptorExePath, $"-encrypt \"{webConfigPath}\"");
+            var ce = new CommandExecutor(configEncryptorExePath, $"-encrypt \"{webConfigPath}\"");
             ce.RunCommand();
         }
     }

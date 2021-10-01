@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public List<WorkloadInstance> Sort()
         {
-            while(nonProcessedNodes.Count > 0)
+            while (nonProcessedNodes.Count > 0)
             {
                 ProcessNode(nonProcessedNodes.First());
             }
@@ -42,24 +42,24 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             if (!nonProcessedNodes.Contains(node))
                 return;
 
-            if (node.inProgress)
+            if (node.InProgress)
                 throw new Exception("Cyclic dependency detected between workloads.");
 
-            node.inProgress = true;
+            node.InProgress = true;
 
             foreach (WorkloadInstanceDFSNode dependedNode in GetDependedNodes(node))
                 ProcessNode(dependedNode);
 
-            node.inProgress = false;
+            node.InProgress = false;
             nonProcessedNodes.Remove(node);
-            sortedWorkloadInstanceList.Add(node.workloadInstance);
+            sortedWorkloadInstanceList.Add(node.WorkloadInstance);
         }
 
         private IEnumerable<WorkloadInstanceDFSNode> GetDependedNodes(WorkloadInstanceDFSNode node)
         {
-            List<WorkloadInstanceDFSNode> dependedNodes = new List<WorkloadInstanceDFSNode>();
+            var dependedNodes = new List<WorkloadInstanceDFSNode>();
 
-            foreach (string workloadName in node.workloadInstance.VersionedWorkload.Workload.DependsOn)
+            foreach (string workloadName in node.WorkloadInstance.VersionedWorkload.Workload.DependsOn)
             {
                 dependedNodes = dependedNodes.Concat(nameToDFSNodesMap[workloadName]).ToList();
             }
@@ -69,19 +69,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         class WorkloadInstanceDFSNode
         {
-            public WorkloadInstance workloadInstance { get; set; }
-            public bool inProgress { get; set; }
+            public WorkloadInstance WorkloadInstance { get; set; }
+            public bool InProgress { get; set; }
 
             public WorkloadInstanceDFSNode(WorkloadInstance workloadInstance)
             {
-                this.workloadInstance = workloadInstance;
-                this.inProgress = false;
+                this.WorkloadInstance = workloadInstance;
+                this.InProgress = false;
             }
         }
 
         private HashSet<WorkloadInstanceDFSNode> BuildNonProcessedNodes(List<WorkloadInstance> workloadInstances)
         {
-            HashSet<WorkloadInstanceDFSNode> nonProcessedNodes = new HashSet<WorkloadInstanceDFSNode>();
+            var nonProcessedNodes = new HashSet<WorkloadInstanceDFSNode>();
 
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
@@ -93,16 +93,15 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private Dictionary<string, List<WorkloadInstanceDFSNode>> BuildNameToDFSNodesMap(HashSet<WorkloadInstanceDFSNode> dfsNodes)
         {
-            Dictionary<string, List<WorkloadInstanceDFSNode>> nameToDfsNodesMap = new Dictionary<string, List<WorkloadInstanceDFSNode>>();
+            var nameToDfsNodesMap = new Dictionary<string, List<WorkloadInstanceDFSNode>>();
 
-            List<WorkloadInstanceDFSNode> nodesForName;
             foreach (WorkloadInstanceDFSNode node in dfsNodes)
             {
-                if (!nameToDfsNodesMap.TryGetValue(node.workloadInstance.VersionedWorkload.Workload.Name, out nodesForName))
+                if (!nameToDfsNodesMap.TryGetValue(node.WorkloadInstance.VersionedWorkload.Workload.Name, out List<WorkloadInstanceDFSNode> nodesForName))
                     nodesForName = new List<WorkloadInstanceDFSNode>();
 
                 nodesForName.Add(node);
-                nameToDfsNodesMap[node.workloadInstance.VersionedWorkload.Workload.Name] = nodesForName;
+                nameToDfsNodesMap[node.WorkloadInstance.VersionedWorkload.Workload.Name] = nodesForName;
             }
 
             return nameToDfsNodesMap;

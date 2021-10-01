@@ -13,11 +13,11 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         internal static void CreateSite(string siteName, string siteRoot,
             string bindingInformation, string certSubject, string appPoolName)
         {
-            if (String.IsNullOrEmpty(siteName)
-                || String.IsNullOrEmpty(siteRoot)
-                || String.IsNullOrEmpty(bindingInformation)
-                || String.IsNullOrEmpty(certSubject)
-                || String.IsNullOrEmpty(appPoolName))
+            if (string.IsNullOrEmpty(siteName)
+                || string.IsNullOrEmpty(siteRoot)
+                || string.IsNullOrEmpty(bindingInformation)
+                || string.IsNullOrEmpty(certSubject)
+                || string.IsNullOrEmpty(appPoolName))
                 throw new ArgumentNullException();
 
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
@@ -25,7 +25,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             if (!scaleUnit.IsHub() && Config.UseSingleOneBox())
                 CreateAppPoolForScaleUnit(scaleUnit, appPoolName);
 
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
                 Site site = manager.Sites.FirstOrDefault((s) => s.Name.Equals(siteName));
 
@@ -48,7 +48,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         internal static void StopAppPoolAndSite(string appPoolName, string siteName)
         {
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
                 ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
                 Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
@@ -71,7 +71,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         internal static void StartAppPoolAndSite(string appPoolName, string siteName)
         {
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
                 ApplicationPool pool = manager.ApplicationPools.FirstOrDefault(p => p.Name.Equals(appPoolName));
                 Site site = manager.Sites.FirstOrDefault(s => s.Name.Equals(siteName));
@@ -97,23 +97,23 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         {
             CloneScaleUnitWebRoot(scaleUnit);
 
-            using (ServerManager manager = new ServerManager())
+            using (var manager = new ServerManager())
             {
-                var hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(Config.HubScaleUnit().AppPoolName()));
+                ApplicationPool hubAppPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(Config.HubScaleUnit().AppPoolName()));
 
                 if (hubAppPool == null)
                 {
                     throw new Exception("Hub App Pool not found.");
                 }
 
-                var appPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(appPoolName));
+                ApplicationPool appPool = manager.ApplicationPools.FirstOrDefault((p) => p.Name.Equals(appPoolName));
 
                 if (appPool != null)
                 {
                     manager.ApplicationPools.Remove(appPool);
                 }
 
-                var newAppPool = manager.ApplicationPools.Add(appPoolName);
+                ApplicationPool newAppPool = manager.ApplicationPools.Add(appPoolName);
                 newAppPool.ProcessModel.IdentityType = hubAppPool.ProcessModel.IdentityType;
                 newAppPool.Failure.RapidFailProtection = hubAppPool.Failure.RapidFailProtection;
                 newAppPool.Recycling.PeriodicRestart.Time = new TimeSpan(hubAppPool.Recycling.PeriodicRestart.Time.Ticks);
@@ -133,7 +133,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
             string cmd =
                 $@"robocopy {Config.HubScaleUnit().SiteRoot()} {scaleUnit.SiteRoot()} /MIR /MT /log+:{robocopyLogPath};";
 
-            CommandExecutor ce = new CommandExecutor(cmd);
+            var ce = new CommandExecutor(cmd);
             ce.RunCommand(0, 1);
         }
     }

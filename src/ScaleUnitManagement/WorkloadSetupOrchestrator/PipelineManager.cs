@@ -12,11 +12,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task DrainWorkloadDataPipelines()
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 /* Bug #614217 in the AX causes the client to fail if the SYS workload is stopped and started repeatedly on the spoke. 
                     * Since the SYS workload on the spoke never sends any packages, draining and starting it can be skipped.
@@ -30,7 +30,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 await ReliableRun.Execute(async () => await aosClient.DrainWorkload(workloadInstance.Id), "Draining workload instance");
             }
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {
@@ -43,11 +43,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task StartWorkloadDataPipelines()
         {
-            var aosClient = await GetScaleUnitAosClient();
+            IAOSClient aosClient = await GetScaleUnitAosClient();
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
-            foreach (var workloadInstance in workloadInstances)
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
                 {

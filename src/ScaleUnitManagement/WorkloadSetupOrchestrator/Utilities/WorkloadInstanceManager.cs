@@ -11,9 +11,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
     class WorkloadInstanceManager
     {
         private readonly IAOSClient client;
-        private static readonly string ReadyState = "Running";
-        private static readonly string InstallingState = "Installing";
-        private static readonly string StoppedState = "Stopped";
+        private const string ReadyState = "Running";
+        private const string InstallingState = "Installing";
+        private const string StoppedState = "Stopped";
 
         public WorkloadInstanceManager(IAOSClient client)
         {
@@ -28,8 +28,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             List<Workload> workloads = await client.GetWorkloads();
-            List<WorkloadInstance> workloadInstances = new List<WorkloadInstance>();
-            List<WorkloadInstance> sysWorkloadInstances = new List<WorkloadInstance>();
+            var workloadInstances = new List<WorkloadInstance>();
+            var sysWorkloadInstances = new List<WorkloadInstance>();
 
             if (!ValidateIfConfigWorkloadsExistOnClient(workloads))
             {
@@ -59,7 +59,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                         ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(configuredworkload.ScaleUnitId);
 
-                        WorkloadInstance workloadInstance = new WorkloadInstance()
+                        var workloadInstance = new WorkloadInstance()
                         {
                             Id = configuredworkload.WorkloadInstanceId,
                             LogicalEnvironmentId = Config.LogicalEnvironmentId,
@@ -94,19 +94,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
             }
 
-            WorkloadInstanceTopologicalSortUtil topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(sysWorkloadInstances.Concat(workloadInstances).ToList());
+            var topologicalSortUtil = new WorkloadInstanceTopologicalSortUtil(sysWorkloadInstances.Concat(workloadInstances).ToList());
             return topologicalSortUtil.Sort();
         }
 
         private bool ValidateIfConfigWorkloadsExistOnClient(List<Workload> workloads)
         {
-            List<string> nonValidWorkloadNames = new List<string>();
+            var nonValidWorkloadNames = new List<string>();
 
             foreach (ConfiguredWorkload configuredworkload in Config.WorkloadList())
             {
                 if (configuredworkload.Name.Equals("SYS", StringComparison.OrdinalIgnoreCase)) continue;
 
-                var isFound = false;
+                bool isFound = false;
 
                 foreach (Workload workload in workloads)
                 {
@@ -135,12 +135,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private bool ValidateDynamicConstraints(string workloadName, List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues)
         {
-            List<string> mesDynamicConstraintDomainNames = new List<string>()
+            var mesDynamicConstraintDomainNames = new List<string>()
             {
                 "LegalEntity", "Site"
             };
 
-            List<string> wesDynamicConstraintDomainNames = new List<string>()
+            var wesDynamicConstraintDomainNames = new List<string>()
             {
                 "LegalEntity", "Site", "Warehouse"
             };
@@ -148,9 +148,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             switch (workloadName.ToUpper())
             {
                 case "MES":
-                    List<string> nonValidDomainNamesMESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName)
+                    var nonValidDomainNamesMESInConfig = configuredDynamicConstraintValues.Select(x => x.DomainName)
                         .Except(mesDynamicConstraintDomainNames).ToList();
-                    List<string> missingDomainNamesMESInConfig = (List<string>)mesDynamicConstraintDomainNames
+                    var missingDomainNamesMESInConfig = mesDynamicConstraintDomainNames
                         .Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
                     if (missingDomainNamesMESInConfig != null && missingDomainNamesMESInConfig.Any())
@@ -174,8 +174,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     break;
 
                 case "WES":
-                    List<string> nonValidDomainNamesWESInConfig = (List<string>)configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames).ToList();
-                    List<string> missingDomainNamesWESInConfig = (List<string>)wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
+                    var nonValidDomainNamesWESInConfig = configuredDynamicConstraintValues.Select(x => x.DomainName).Except(wesDynamicConstraintDomainNames).ToList();
+                    var missingDomainNamesWESInConfig = wesDynamicConstraintDomainNames.Except(configuredDynamicConstraintValues.Select(x => x.DomainName)).ToList();
 
                     if (missingDomainNamesWESInConfig != null && missingDomainNamesWESInConfig.Any())
                     {
@@ -208,10 +208,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private List<DynamicConstraintValue> GetConfiguredDynamicConstraintValues(List<ConfiguredDynamicConstraintValue> configuredDynamicConstraintValues)
         {
-            List<DynamicConstraintValue> dynamicConstraintValues = new List<DynamicConstraintValue>();
+            var dynamicConstraintValues = new List<DynamicConstraintValue>();
             foreach (ConfiguredDynamicConstraintValue configuredDynamicConstraintValue in configuredDynamicConstraintValues)
             {
-                DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+                var dynamicConstraintValue = new DynamicConstraintValue()
                 {
                     DomainName = configuredDynamicConstraintValue.DomainName,
                     Value = configuredDynamicConstraintValue.Value,
@@ -226,14 +226,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private List<WorkloadInstance> GetSYSWorkloadInstancesPerLegalEntity(Workload workload)
         {
             List<string> uniqueLegalEntityValues = Config.UniqueLegalEntityValues();
-            List<WorkloadInstance> sysWorkloadInstances = new List<WorkloadInstance>();
+            var sysWorkloadInstances = new List<WorkloadInstance>();
             List<string> sysWorkloadInstanceIds = Config.SYSWorkloadInstanceIds();
             int count = 0;
 
             foreach (string legalEntityValue in uniqueLegalEntityValues)
             {
-                List<DynamicConstraintValue> sysDynamicConstraintValues = new List<DynamicConstraintValue>();
-                DynamicConstraintValue dynamicConstraintValue = new DynamicConstraintValue()
+                var sysDynamicConstraintValues = new List<DynamicConstraintValue>();
+                var dynamicConstraintValue = new DynamicConstraintValue()
                 {
                     DomainName = "LegalEntity",
                     Value = legalEntityValue,
@@ -241,7 +241,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
                 sysDynamicConstraintValues.Add(dynamicConstraintValue);
 
-                WorkloadInstance workloadInstance = new WorkloadInstance()
+                var workloadInstance = new WorkloadInstance()
                 {
                     Id = sysWorkloadInstanceIds[count++],
                     LogicalEnvironmentId = Config.LogicalEnvironmentId,
@@ -280,7 +280,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
         private static DateTime GetWorkloadEffectiveDate()
         {
             // Always adding 5 minutes to the effective date to mitigate Bug 616219 on the AX.
-            var effectiveDate = DateTime.UtcNow.AddMinutes(5);
+            DateTime effectiveDate = DateTime.UtcNow.AddMinutes(5);
             return effectiveDate;
         }
 
@@ -309,10 +309,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         public static bool IsWorkloadSYSOnSpoke(WorkloadInstance workloadInstance)
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            var name = workloadInstance.VersionedWorkload.Workload.Name;
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            string name = workloadInstance.VersionedWorkload.Workload.Name;
             return name.Equals("SYS") && !scaleUnit.IsHub();
         }
-
     }
 }

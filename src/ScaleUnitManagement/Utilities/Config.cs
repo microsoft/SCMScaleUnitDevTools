@@ -39,7 +39,7 @@ namespace ScaleUnitManagement.Utilities
         public static string InterAOSAuthority() { return GetUserConfiguration().InterAOSAADConfiguration.Authority; }
         public static string InterAOSAppResourceId(ScaleUnitInstance hubInstance = null)
         {
-            var userConfig = GetUserConfiguration();
+            CloudAndEdgeConfiguration userConfig = GetUserConfiguration();
 
             return string.IsNullOrWhiteSpace(userConfig.InterAOSAADConfiguration.AppResourceId)
                 ? hubInstance?.Endpoint()
@@ -55,8 +55,8 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> UniqueLegalEntityValues()
         {
-            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
-            return (List<string>)configuredWorkloads
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
+            return configuredWorkloads
                 .Select(x => x.ConfiguredDynamicConstraintValues
                 .FirstOrDefault(y => y.DomainName.Equals("LegalEntity", StringComparison.OrdinalIgnoreCase)).Value)
                 .Distinct().ToList();
@@ -65,8 +65,8 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> ConfiguredWorkloadInstanceIds()
         {
-            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
-            return (List<string>)configuredWorkloads
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
+            return configuredWorkloads
                 .Select(x => x.WorkloadInstanceId)
                 .ToList();
         }
@@ -81,10 +81,10 @@ namespace ScaleUnitManagement.Utilities
                     return "0" + workloadInstanceId.Substring(1);
             }
 
-            var numOfIds = UniqueLegalEntityValues().Count;
+            int numOfIds = UniqueLegalEntityValues().Count;
 
-            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
-            return (List<string>)configuredWorkloads
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
+            return configuredWorkloads
                 .Take(numOfIds)
                 .Select(x => Flip(x.WorkloadInstanceId))
                 .ToList();
@@ -92,14 +92,14 @@ namespace ScaleUnitManagement.Utilities
 
         public static List<string> AllWorkloadInstanceIds()
         {
-            return (List<string>)SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds()).ToList();
+            return SYSWorkloadInstanceIds().Concat(ConfiguredWorkloadInstanceIds()).ToList();
         }
 
         public static List<WorkloadInstanceIdWithName> WorkloadInstanceIdWithNameList()
         {
-            List<WorkloadInstanceIdWithName> result = new List<WorkloadInstanceIdWithName>();
+            var result = new List<WorkloadInstanceIdWithName>();
             List<string> sysIds = SYSWorkloadInstanceIds();
-            List<ConfiguredWorkload> configuredWorkloads = Config.WorkloadList();
+            List<ConfiguredWorkload> configuredWorkloads = WorkloadList();
 
             foreach (string id in sysIds)
             {
@@ -124,7 +124,7 @@ namespace ScaleUnitManagement.Utilities
 
             void ValidateValue(string fieldName, string fieldValue)
             {
-                if (String.IsNullOrEmpty(fieldValue))
+                if (string.IsNullOrEmpty(fieldValue))
                 {
                     hasAnyError = true;
                     Console.Error.WriteLine("Missing expected field: " + fieldName);
@@ -139,7 +139,7 @@ namespace ScaleUnitManagement.Utilities
 
             Console.WriteLine("Validating ScaleUnitConfiguration");
 
-            if (HubScaleUnit() == null)
+            if (HubScaleUnit() is null)
             {
                 hasAnyError = true;
                 Console.Error.WriteLine("Missing hub scale unit instance. A scale unit instance with scale unit id @@ must exist.");
@@ -182,7 +182,7 @@ namespace ScaleUnitManagement.Utilities
                 }
 
 
-                if (Config.ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
+                if (ScaleUnitInstances().Where(s => s.ScaleUnitId == scaleUnit.ScaleUnitId).Count() != 1)
                     Console.Error.WriteLine("ScaleUnitId is not unique");
 
                 if (scaleUnit.EnvironmentType == EnvironmentType.Unknown)

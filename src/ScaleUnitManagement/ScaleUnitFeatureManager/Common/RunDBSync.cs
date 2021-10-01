@@ -44,7 +44,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
                 Console.WriteLine("\nDBSync started at: " + DateTime.UtcNow + ", this will take approximately 30 minutes.\n");
 
-                CommandExecutor ce = new CommandExecutor(dbSyncTool, args);
+                var ce = new CommandExecutor(dbSyncTool, args);
                 ce.AddOutputFile(outputFile);
                 ce.RunCommand();
 

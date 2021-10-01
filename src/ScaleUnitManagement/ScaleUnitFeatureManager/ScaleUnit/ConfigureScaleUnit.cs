@@ -84,7 +84,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
                 New-Service -Name '{scaleUnit.BatchServiceName()}' -BinaryPathName '{scaleUnit.DynamicsBatchExePath()} -service {scaleUnit.WebConfigPath()}' -credential $creds -startupType Manual;
             ";
 
-            CommandExecutor ce = new CommandExecutor(cmd);
+            var ce = new CommandExecutor(cmd);
             ce.RunCommand();
         }
     }
