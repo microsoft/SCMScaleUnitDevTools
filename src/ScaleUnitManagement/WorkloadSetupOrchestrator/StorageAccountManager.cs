@@ -22,7 +22,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             connectionString = scaleUnit.AzureStorageConnectionString;
             if (string.IsNullOrEmpty(connectionString) && scaleUnit.EnvironmentType == EnvironmentType.LCSHosted)
             {
-                using (var webConfig = new WebConfig())
+                using (var webConfig = new WebConfig(decrypt: true))
                 {
                     connectionString = webConfig.GetXElementValue("AzureStorage.StorageConnectionString");
                 }

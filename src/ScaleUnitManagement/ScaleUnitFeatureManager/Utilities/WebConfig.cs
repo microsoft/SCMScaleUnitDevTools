@@ -13,17 +13,41 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         private readonly string webConfigPath;
         private readonly string configEncryptorExePath;
 
-        public WebConfig()
+        public WebConfig(bool decrypt = false)
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             webConfigPath = scaleUnit.WebConfigPath();
             configEncryptorExePath = scaleUnit.ConfigEncryptorExePath();
 
-            doc = XDocument.Load(webConfigPath);
+            if (decrypt)
+            {
+                string decryptPath = Path.GetTempFileName();
+                try
+                {
+                    DecryptWebConfig(decryptPath);
+                    doc = XDocument.Load(decryptPath);
+                }
+                finally
+                {
+                    File.Delete(decryptPath);
+                }
+            }
+            else
+            {
+                doc = XDocument.Load(webConfigPath);
+            }
 
             appSettingsElement = doc.Descendants()
                     .Where(x => (string)x.Name.LocalName == "appSettings")
                     .FirstOrDefault();
+        }
+
+        private void DecryptWebConfig(string decryptPath)
+        {
+            File.Copy(sourceFileName: webConfigPath, destFileName: decryptPath, overwrite: true);
+
+            var ce = new CommandExecutor(configEncryptorExePath, $"-decrypt \"{decryptPath}\"");
+            ce.RunCommand();
         }
 
         public void AddKey(string keyName, string keyValue)
@@ -62,46 +86,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
         public string GetXElementValue(string key)
         {
-            XElement element;
-            if (key.Equals("AzureStorage.StorageConnectionString"))
-            {
-                element = GetDecryptedElementWithAttribute(key);
-            }
-            else
-            {
-                element = GetElementWithAttribute(doc, key);
-            }
-
+            XElement element = GetElementWithAttribute(doc, key);
             return element?.Attribute("value")?.Value;
-        }
-
-        private XElement GetDecryptedElementWithAttribute(string key)
-        {
-            string decryptPath = Path.GetTempFileName();
-            XElement element = null;
-
-            try
-            {
-                File.Copy(sourceFileName: webConfigPath, destFileName: decryptPath, overwrite: true);
-
-                var ce = new CommandExecutor(configEncryptorExePath, $"-decrypt \"{decryptPath}\"");
-                ce.RunCommand();
-
-                XDocument decryptedDoc = XDocument.Load(decryptPath);
-                element = GetElementWithAttribute(decryptedDoc, key);
-            }
-            finally
-            {
-                File.Delete(decryptPath);
-            }
-
-            return element;
         }
 
         private XElement GetElementWithAttribute(XDocument document, string key)
         {
             return document.Descendants()
-                .Where(x => x.Attribute("key") is null ? false : ((string)x.Attribute("key")).ToLower().Equals(key.ToLower()))
+                .Where(x => x.Attribute("key") is null ? false : ((string)x.Attribute("key")).Equals(key, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
         }
 
@@ -115,3 +107,4 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
         }
     }
 }
+
