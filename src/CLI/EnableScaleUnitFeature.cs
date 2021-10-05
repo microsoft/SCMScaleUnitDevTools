@@ -49,7 +49,7 @@ namespace CLI
 
             string helpMessage = $"Please select steps you would like to run by supplying the step numbers\n" +
                 $"in a comma separated list, e.g. \"1,2,5,6\", or skip specific steps by supplying the negative step numbers\n" +
-                $"to skip in a comma separated list, e.g. \"-3,-4\".\n" +
+                $"to skip in a comma separated list, e.g. \"-3,-4\". You can also enter dash-separated intervals, e.g. \"1-4,6\"\n" +
                 $"\nTasks to run for {scaleUnit.PrintableName()}:\n";
 
             CLIScreen screen = new MultiSelectScreen(options, selectionHistory, helpMessage, "\nSelect tasks to run/skip: ");

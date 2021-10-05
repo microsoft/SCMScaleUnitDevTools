@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CLIFramework
@@ -26,14 +27,14 @@ namespace CLIFramework
                 }
             }
 
-            var runSteps = new List<int>();
-            var skipSteps = new List<int>();
+            var runOptions = new List<int>();
+            var skipOptions = new List<int>();
 
             if (input.Equals(""))
             {
                 for (int i = 1; i <= options.Count; i++)
                 {
-                    runSteps.Add(i);
+                    runOptions.Add(i);
                 }
             }
             else
@@ -41,8 +42,8 @@ namespace CLIFramework
                 string[] commaSeparatedInput = input.Split(',');
                 try
                 {
-                    int[] enteredNumbers = ParseInputList(commaSeparatedInput);
-                    PartitionBySign(enteredNumbers, positives: runSteps, negatives: skipSteps);
+                    List<int> enteredNumbers = ParseInputList(commaSeparatedInput);
+                    PartitionBySign(enteredNumbers, positives: runOptions, negatives: skipOptions);
                 }
                 catch (Exception ex)
                 {
@@ -51,41 +52,43 @@ namespace CLIFramework
                 }
             }
 
-            if (runSteps.Count > 0 && skipSteps.Count > 0)
+            if (runOptions.Count > 0 && skipOptions.Count > 0)
             {
-                inputValidationError = "Either choose a set of steps to skip or a set of steps to run.";
+                inputValidationError = "Either choose a set of options to skip or a set of options to run.";
                 return;
             }
 
             state = CLIScreenState.Complete;
 
-            if (runSteps.Count == 0)
+            if (runOptions.Count == 0)
             {
-                runSteps = FindStepsNotSkipped(skipSteps);
+                runOptions = FindOptionsNotSkipped(skipOptions);
             }
 
-            runSteps.Sort();
-            for (int i = 0; i < runSteps.Count; i++)
+            runOptions.Sort();
+
+            Console.WriteLine($"You selected: {string.Join(", ", runOptions)} \n");
+            for (int i = 0; i < runOptions.Count; i++)
             {
-                await RunCommand(options, runSteps[i]);
+                await RunCommand(options, runOptions[i]);
             }
         }
 
-        private List<int> FindStepsNotSkipped(List<int> skipSteps)
+        private List<int> FindOptionsNotSkipped(List<int> skipOptions)
         {
-            var runSteps = new List<int>();
+            var runOptions = new List<int>();
 
-            for (int step = 1; step <= options.Count; step++)
+            for (int option = 1; option <= options.Count; option++)
             {
-                if (!skipSteps.Contains(step))
+                if (!skipOptions.Contains(option))
                 {
-                    runSteps.Add(step);
+                    runOptions.Add(option);
                 }
             }
-            return runSteps;
+            return runOptions;
         }
 
-        private void PartitionBySign(int[] enteredNumbers, List<int> positives, List<int> negatives)
+        private void PartitionBySign(List<int> enteredNumbers, List<int> positives, List<int> negatives)
         {
             foreach (int number in enteredNumbers)
             {
@@ -100,20 +103,25 @@ namespace CLIFramework
             }
         }
 
-        private int[] ParseInputList(string[] commaSeparatedInput)
+        private List<int> ParseInputList(string[] commaSeparatedInput)
         {
-            int[] numbers = new int[commaSeparatedInput.Length];
+            var dashSeparatedNumbers = new Regex(@"^(\d+)\s*-\s*(\d+)");
+
+            var numbers = new List<int>();
             for (int i = 0; i < commaSeparatedInput.Length; i++)
             {
                 string substring = commaSeparatedInput[i];
-                substring.Trim();
                 if (int.TryParse(substring, out int number))
                 {
-                    numbers[i] = number;
+                    numbers.Add(number);
+                }
+                else if (dashSeparatedNumbers.IsMatch(substring))
+                {
+                    numbers.AddRange(GetNumberInterval(substring));
                 }
                 else
                 {
-                    throw new Exception($"Invalid input. \"{ substring }\" is not a number.");
+                    throw new Exception($"Invalid input. \"{substring}\" is not a number or interval.");
                 }
             }
             foreach (int number in numbers)
@@ -124,6 +132,32 @@ namespace CLIFramework
                 }
             }
             return numbers;
+        }
+
+        private List<int> GetNumberInterval(string intervalString)
+        {
+            var numbers = new List<int>();
+
+            string[] substrings = intervalString.Split('-');
+            if (substrings.Length != 2)
+            {
+                throw new Exception($"Expected {intervalString} to be a dash-separated interval");
+            }
+
+            if (int.TryParse(substrings[0], out int intervalStart) &&
+                int.TryParse(substrings[1], out int intervalEnd))
+            {
+                for (int i = intervalStart; i<= intervalEnd; i++)
+                {
+                    numbers.Add(i);
+                }
+
+                return numbers;
+            }
+            else
+            {
+                throw new Exception($"Could not parse the endpoints of the interval {intervalString}");
+            }
         }
     }
 }

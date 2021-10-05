@@ -88,6 +88,39 @@ namespace ScaleUnitManagementTests.CLITests
         }
 
         [TestMethod]
+        public async Task RunStepInterval_RunsAllStepsInInterval()
+        {
+            // Arrange + Act
+            await screen.PerformAction("1-4");
+
+            // Assert
+            executedSteps.Should().BeEquivalentTo(new List<int> { 1, 2, 3, 4 });
+            screen.inputValidationError.Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public async Task RunCombinationOfNumbersAndIntervals_RunsAllStepsOnce()
+        {
+            // Arrange + Act
+            await screen.PerformAction("1-3,1,5");
+
+            // Assert
+            screen.inputValidationError.Should().BeEmpty();
+            executedSteps.Should().BeEquivalentTo(new List<int> { 1, 2, 3, 5 });
+        }
+
+        [TestMethod]
+        public async Task RunIntervalWithUnknownOperation_ThrowsException()
+        {
+            // Arrange + Act
+            await screen.PerformAction("1 - 6");
+
+            // Assert
+            screen.inputValidationError.Should().Be("Operation 6 not found.");
+            executedSteps.Should().BeEmpty();
+        }
+
+        [TestMethod]
         public async Task SkipAndRunSteps_ThrowsException()
         {
             // Arrange + Act
@@ -95,7 +128,7 @@ namespace ScaleUnitManagementTests.CLITests
 
             // Assert
             executedSteps.Should().BeEmpty();
-            screen.inputValidationError.Should().Be("Either choose a set of steps to skip or a set of steps to run.");
+            screen.inputValidationError.Should().Be("Either choose a set of options to skip or a set of options to run.");
         }
 
         [TestMethod]
@@ -117,7 +150,7 @@ namespace ScaleUnitManagementTests.CLITests
 
             // Assert
             executedSteps.Should().BeEmpty();
-            screen.inputValidationError.Should().Be("Invalid input. \"ABC\" is not a number.");
+            screen.inputValidationError.Should().Be("Invalid input. \"ABC\" is not a number or interval.");
         }
     }
 }
