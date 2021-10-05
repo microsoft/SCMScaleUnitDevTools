@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using ScaleUnitManagement.Utilities;
 using System;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 {
@@ -19,6 +20,13 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
         {
             var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             connectionString = scaleUnit.AzureStorageConnectionString;
+            if (string.IsNullOrEmpty(connectionString) && scaleUnit.EnvironmentType == EnvironmentType.LCSHosted)
+            {
+                using (var webConfig = new WebConfig(decrypt: true))
+                {
+                    connectionString = webConfig.GetXElementValue("AzureStorage.StorageConnectionString");
+                }
+            }
         }
 
         public async Task CleanStorageAccount()

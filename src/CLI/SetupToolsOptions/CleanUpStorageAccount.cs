@@ -18,10 +18,16 @@ namespace CLI.SetupToolsOptions
 
         private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            var storageAccountManager = new StorageAccountManager();
-            await storageAccountManager.CleanStorageAccount();
-
-            Console.WriteLine("Done");
+            try
+            {
+                var storageAccountManager = new StorageAccountManager();
+                await storageAccountManager.CleanStorageAccount();
+                Console.WriteLine("Done");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An exception occured while cleaning up storage: \n{ex}");
+            }
         }
     }
 }
