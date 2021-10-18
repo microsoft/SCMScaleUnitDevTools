@@ -18,14 +18,14 @@ namespace CLI
                 matched[i] = false;
             }
 
-            deploy = ParseArgument("--deploy");
+            deploy = ParseArgument("--single-box-deploy");
             cleanStorage = ParseArgument("--clean-storage");
 
             for (int i = 0; i < matched.Length; i++)
             {
                 if (!matched[i])
                 {
-                    throw new Exception($"Did not recognize argument {args[i]}. Allowed arguments are \"--deploy\" and \"--clean-storage\"");
+                    throw new Exception($"Did not recognize argument {args[i]}. Allowed arguments are \"--single-box-deploy\" and \"--clean-storage\"");
                 }
             }
         }

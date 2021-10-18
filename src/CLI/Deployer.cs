@@ -14,6 +14,11 @@ namespace CLI
     {
         public async Task Deploy()
         {
+            if (!Config.UseSingleOneBox())
+            {
+                throw new Exception("You can only use automatic deployment in a SingleOneBox environment");
+            }
+
             await InitializeEnvironments();
             await PrepareEnvironments();
             await InstallWorkloads();
