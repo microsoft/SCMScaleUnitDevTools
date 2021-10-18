@@ -30,14 +30,48 @@ namespace CLIFramework
         {
             screen.previousScreen = currentScreen;
             currentScreen = screen;
+            AddNavigationOptions(screen);
 
             while (screen.state == CLIScreenState.Incomplete)
             {
                 PrintScreen(screen);
-                await PerformScreenAction(screen);
+
+                string input = Console.ReadLine();
+                await screen.PerformAction(input);
             }
 
             currentScreen = screen.previousScreen;
+        }
+
+        private static void AddNavigationOptions(CLIScreen screen)
+        {
+            if (screen.navigationOptions.Count == 0)
+            {
+                if (screen.previousScreen is null)
+                {
+                    screen.navigationOptions.Add(new CLIOption() { Name = "Exit", Command = ExitCLI });
+                }
+                else
+                {
+                    screen.navigationOptions.Add(new CLIOption() { Name = "Back", Command = BackToPreviousMenu(screen) });
+                }
+            }
+        }
+
+        private static Task ExitCLI(int input, string selectionHistory)
+        {
+            repeat = false;
+            return Task.CompletedTask;
+        }
+
+        private static Func<int, string, Task> BackToPreviousMenu(CLIScreen screen)
+        {
+            return (input, selectionHistory) =>
+            {
+                screen.state = CLIScreenState.Complete;
+                screen.previousScreen.state = CLIScreenState.Incomplete;
+                return Task.CompletedTask;
+            };
         }
 
         /// <summary>
@@ -46,7 +80,7 @@ namespace CLIFramework
         /// <param name="screen">The <c>CLIScreen</c> object to print.</param>
         private static void PrintScreen(CLIScreen screen)
         {
-            var totalOptions = screen.options.Count;
+            int totalOptions = screen.options.Count;
 
             if (totalOptions == 0)
             {
@@ -82,57 +116,12 @@ namespace CLIFramework
                 currOptionNumber++;
             }
 
-            if (screen.previousScreen != null)
+            foreach (CLIOption option in screen.navigationOptions)
             {
-                Console.WriteLine("\t" + currOptionNumber.ToString() + ". " + "Back");
+                Console.WriteLine("\t" + currOptionNumber.ToString() + ". " + option.Name);
+                currOptionNumber++;
             }
-            else
-            {
-                Console.WriteLine("\t" + currOptionNumber.ToString() + ". " + "Exit");
-            }
-        }
 
-        /// <summary>
-        /// This function performs the action indicated by the user's input. 
-        /// </summary>
-        private static async Task PerformScreenAction(CLIScreen screen)
-        {
-            int totalOptions = screen.options.Count;
-            string input = Console.ReadLine();
-            if (int.TryParse(input, out int enteredNumber))
-            {
-                if (enteredNumber >= 1 && enteredNumber <= totalOptions)
-                {
-                    screen.state = CLIScreenState.Complete;
-                    await screen.options[enteredNumber - 1].Command(enteredNumber, string.IsNullOrEmpty(screen.selectionHistory) ? screen.options[enteredNumber - 1].Name : screen.selectionHistory + " -> " + screen.options[enteredNumber - 1].Name);
-                }
-
-                else if (enteredNumber == totalOptions + 1)
-                {
-                    if (screen.previousScreen != null)
-                    {
-                        screen.previousScreen.state = CLIScreenState.Incomplete; // show previous screen again.
-                        screen.state = CLIScreenState.Complete;
-                    }
-                    else
-                    {
-                        repeat = false;
-                        screen.state = CLIScreenState.Complete;
-                    }
-                    return;
-                }
-
-                else
-                {
-                    screen.inputValidationError = "Operation " + enteredNumber + " not found. Please enter the number for the operation you like to start.";
-                    return;
-                }
-            }
-            else
-            {
-                screen.inputValidationError = "Invalid input. Please enter a number.";
-                return;
-            }
         }
 
         public static bool YesNoPrompt(string message)

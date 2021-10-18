@@ -20,7 +20,7 @@ namespace CLI
                 Option("Setup tools", new SetupTools().Show),
             };
 
-            var screen = new CLIScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
+            var screen = new SingleSelectScreen(options, "Home", "Please select the operation you want to perform:\n", "\nOperation to perform: ");
             await CLIController.ShowScreen(screen);
         }
     }

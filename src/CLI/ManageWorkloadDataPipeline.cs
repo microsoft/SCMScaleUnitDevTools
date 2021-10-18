@@ -17,7 +17,7 @@ namespace CLI
                 Option("Start all workload data pipelines", StartAllPipelines),
             };
 
-            var screen = new CLIScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");
             await CLIController.ShowScreen(screen);
         }
 

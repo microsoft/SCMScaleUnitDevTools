@@ -16,7 +16,7 @@ namespace CLI.SetupToolsOptions
             sortedNonHubScaleUnits.Sort();
             List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, RunUpdateScaleunitId);
 
-            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update the scale unit id of?: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to update the scale unit id of?: ");
             await CLIController.ShowScreen(screen);
         }
 

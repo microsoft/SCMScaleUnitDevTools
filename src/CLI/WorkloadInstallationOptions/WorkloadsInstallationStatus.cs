@@ -12,7 +12,7 @@ namespace CLI.WorkloadInstallationOptions
         {
             List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), ShowWorkloadInstallationStatusForScaleUnit);
 
-            var screen = new CLIScreen(options, selectionHistory, "Show status of workloads installation on:\n", "\nEnvironment?: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Show status of workloads installation on:\n", "\nEnvironment?: ");
             await CLIController.ShowScreen(screen);
         }
 
