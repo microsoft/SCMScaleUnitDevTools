@@ -17,10 +17,10 @@ namespace CLI
                 return;
             }
 
-            var arguments = new ArgumentParser();
+            var argumentParser = new ArgumentParser();
             try
             {
-                arguments.Parse(args);
+                argumentParser.Parse(args);
             }
             catch (Exception ex)
             {
@@ -30,12 +30,12 @@ namespace CLI
 
             var deployer = new Deployer();
 
-            if (arguments.cleanStorage)
+            if (argumentParser.CleanStorage)
             {
                 await deployer.CleanStorage();
             }
 
-            if (arguments.deploy)
+            if (argumentParser.Deploy)
             {
                 await deployer.Deploy();
             }

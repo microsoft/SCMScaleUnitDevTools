@@ -4,8 +4,8 @@ namespace CLI
 {
     class ArgumentParser
     {
-        public bool deploy = false;
-        public bool cleanStorage = false;
+        public bool Deploy { get; set; } = false;
+        public bool CleanStorage { get; set; } = false;
         private bool[] matched;
         private string[] arguments;
 
@@ -13,13 +13,9 @@ namespace CLI
         {
             arguments = args;
             matched = new bool[args.Length];
-            for (int i = 0; i < matched.Length; i++)
-            {
-                matched[i] = false;
-            }
 
-            deploy = ParseArgument("--single-box-deploy");
-            cleanStorage = ParseArgument("--clean-storage");
+            Deploy = ParseArgument("--single-box-deploy");
+            CleanStorage = ParseArgument("--clean-storage");
 
             for (int i = 0; i < matched.Length; i++)
             {

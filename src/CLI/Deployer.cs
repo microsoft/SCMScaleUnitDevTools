@@ -12,6 +12,14 @@ namespace CLI
 {
     internal class Deployer
     {
+        private readonly List<ScaleUnitInstance> sortedScaleUnitInstances;
+
+        public Deployer()
+        {
+            sortedScaleUnitInstances = Config.ScaleUnitInstances();
+            sortedScaleUnitInstances.Sort((s1, s2) => s1.ScaleUnitId.CompareTo(s2.ScaleUnitId));
+        }
+
         public async Task Deploy()
         {
             if (!Config.UseSingleOneBox())
@@ -28,7 +36,7 @@ namespace CLI
 
         public async Task CleanStorage()
         {
-            foreach (ScaleUnitInstance scaleUnit in Config.ScaleUnitInstances())
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 Console.WriteLine($"\nCleaning environment on {scaleUnit.PrintableName()}");
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
@@ -39,7 +47,7 @@ namespace CLI
 
         private async Task InitializeEnvironments()
         {
-            foreach (ScaleUnitInstance scaleUnit in Config.ScaleUnitInstances())
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 Console.WriteLine($"\nInitializing environment on {scaleUnit.PrintableName()}");
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
@@ -84,7 +92,7 @@ namespace CLI
 
         private async Task PrepareEnvironments()
         {
-            foreach (ScaleUnitInstance scaleUnit in Config.ScaleUnitInstances())
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 Console.WriteLine($"\nPreparing {scaleUnit.PrintableName()} for installation");
@@ -101,17 +109,18 @@ namespace CLI
 
         private async Task InstallWorkloads()
         {
-            Console.WriteLine("\nInstalling workloads on hub");
-            using (var context = ScaleUnitContext.CreateContext("@@"))
-            {
-                await new HubWorkloadInstaller().Install();
-            }
-
-            foreach (ScaleUnitInstance scaleUnit in Config.NonHubScaleUnitInstances())
+            foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 Console.WriteLine($"\nInstalling workloads on {scaleUnit.PrintableName()}");
-                await new ScaleUnitWorkloadInstaller().Install();
+                if (scaleUnit.IsHub())
+                {
+                    await new HubWorkloadInstaller().Install();
+                }
+                else
+                {
+                    await new ScaleUnitWorkloadInstaller().Install();
+                }
             }
         }
     }
