@@ -2,7 +2,7 @@ using System;
 
 namespace CLI
 {
-    class ArgumentParser
+    public class ArgumentParser
     {
         public bool Deploy { get; set; } = false;
         public bool CleanStorage { get; set; } = false;

@@ -17,7 +17,7 @@ namespace CLI
         public Deployer()
         {
             sortedScaleUnitInstances = Config.ScaleUnitInstances();
-            sortedScaleUnitInstances.Sort((s1, s2) => s1.ScaleUnitId.CompareTo(s2.ScaleUnitId));
+            sortedScaleUnitInstances.Sort();
         }
 
         public async Task Deploy()
