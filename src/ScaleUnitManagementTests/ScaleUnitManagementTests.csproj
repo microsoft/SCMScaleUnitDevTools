@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CLI\CLI.csproj" />
+    <ProjectReference Include="..\CLIFramework\CLIFramework.csproj" />
     <ProjectReference Include="..\CloudAndEdgeLibs\CloudAndEdgeLibs.csproj" />
     <ProjectReference Include="..\ScaleUnitManagement\ScaleUnitManagement.csproj" />
   </ItemGroup>

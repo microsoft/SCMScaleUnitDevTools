@@ -11,7 +11,7 @@ namespace CLI
         public override async Task Show(int input, string selectionHistory)
         {
             List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), ConfigureScaleUnit);
-            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
             await CLIController.ShowScreen(screen);
         }
 

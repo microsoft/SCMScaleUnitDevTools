@@ -12,7 +12,7 @@ namespace CLI.SetupToolsOptions
         public override async Task Show(int input, string selectionHistory)
         {
             List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), RunDisableScaleUnitFeature);
-            var screen = new CLIScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to disable scale unit feature on?: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to disable scale unit feature on?: ");
             await CLIController.ShowScreen(screen);
         }
 

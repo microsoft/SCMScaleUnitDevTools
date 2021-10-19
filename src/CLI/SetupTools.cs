@@ -18,7 +18,7 @@ namespace CLI
                 Option("Import workloads from Azure storage blob with SAS url", new ImportWorkloadBlob().Show),
             };
 
-            var screen = new CLIScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
+            var screen = new SingleSelectScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
             await CLIController.ShowScreen(screen);
         }
     }
