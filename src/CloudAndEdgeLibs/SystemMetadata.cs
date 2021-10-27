@@ -1,4 +1,4 @@
-namespace CloudAndEdgeLibs
+namespace CloudAndEdgeLibs.Contracts
 {
     using System;
     using System.Collections.Generic;

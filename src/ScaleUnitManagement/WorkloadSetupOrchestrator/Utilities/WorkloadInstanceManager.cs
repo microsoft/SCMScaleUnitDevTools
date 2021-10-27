@@ -28,6 +28,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             List<Workload> workloads = await client.GetWorkloads();
+            workloads.PruneRedundancies();
+
             var workloadInstances = new List<WorkloadInstance>();
             var sysWorkloadInstances = new List<WorkloadInstance>();
 
