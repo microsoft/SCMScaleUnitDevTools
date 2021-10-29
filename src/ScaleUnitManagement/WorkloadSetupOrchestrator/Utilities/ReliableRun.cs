@@ -26,33 +26,37 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
                 catch (AOSClientError e)
                 {
-                    HandleError(e, commandName, tryCount);
-                    string tsg = SuggestTSG(e);
-                    if (!string.IsNullOrEmpty(tsg))
-                    {
-                        Console.WriteLine(tsg);
-                        throw;
-                    }
-                    if (!IsRetryableAOSCall(e.StatusCode))
+                    if (TryHandleError(e, commandName))
                     {
                         throw;
                     }
-                }
 
-                tryCount++;
-                Console.WriteLine("\nRetrying...");
+                    if (tryCount == Config.RetryCount - 1)
+                    {
+                        Console.WriteLine(commandName + " failed. Retry count exceeded. Execution will not continue.");
+                        throw;
+                    }
+
+                    tryCount++;
+                    Console.WriteLine("\nRetrying...");
+                }
             }
         }
 
-        private static void HandleError(Exception e, string commandName, int tryCount)
+        private static bool TryHandleError(AOSClientError e, string commandName)
         {
             LogErrorToFile(commandName, e);
             Console.WriteLine($"\n{commandName} failed with exception: {e.Message} \nFind complete error output in {ErrorLogFilePath}");
 
-            if (tryCount == Config.RetryCount - 1)
+            string tsg = SuggestTSG(e);
+            if (!string.IsNullOrEmpty(tsg))
             {
-                Console.WriteLine(commandName + " failed. Retry count exceeded. Execution will not continue.");
-                throw e;
+                Console.WriteLine(tsg);
+                return true;
+            }
+            else
+            {
+                return !IsRetryableAOSCall(e.StatusCode);
             }
         }
 
@@ -68,16 +72,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private static string SuggestTSG(Exception e)
         {
-            string spokeConfiguredBeforeHubError = "The provided Dynamics.AX.Application.ScaleUnitEnvironmentConfiguration is invalid";
-            if (e.Message.Contains(spokeConfiguredBeforeHubError))
+            string invalidConfigurationError = "The provided Dynamics.AX.Application.ScaleUnitEnvironmentConfiguration is invalid";
+            if (e.Message.Contains(invalidConfigurationError))
             {
-                return "\nDid you try to configure the spoke before configuring the hub?\n";
+                return "\nThere was a problem with the configuration. This could be caused by:\n" +
+                    "1. Trying to configure the spoke before configuring the hub.\n" +
+                    "2. Empty or missing fields in the configuration file. Make sure that the configuration file is filled out correctly, see details on the devTool wiki page.\n" +
+                    "3. Other errors that make this scale unit unable to communicate with the hub.\n";
             }
 
             string axNotRunningError = "No connection could be made because the target machine actively refused it";
             if (e.Message.Contains(axNotRunningError))
             {
-                return "\nIs the AX batch service running?\n";
+                return "\nIs the IIS and the W3WP instance for AX running? If not, try running the \"Start services\" initialization step.\n";
             }
 
             return "";
