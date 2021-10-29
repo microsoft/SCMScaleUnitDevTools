@@ -26,14 +26,14 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 }
                 catch (AOSClientError e)
                 {
-                    if (TryHandleError(e, commandName))
+                    if (TryDiagnoseError(e, commandName) || !IsRetryableAOSCall(e.StatusCode))
                     {
                         throw;
                     }
 
                     if (tryCount == Config.RetryCount - 1)
                     {
-                        Console.WriteLine(commandName + " failed. Retry count exceeded. Execution will not continue.");
+                        Console.WriteLine("Retry count exceeded. Execution will not continue.");
                         throw;
                     }
 
@@ -43,7 +43,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
-        private static bool TryHandleError(AOSClientError e, string commandName)
+        private static bool TryDiagnoseError(AOSClientError e, string commandName)
         {
             LogErrorToFile(commandName, e);
             Console.WriteLine($"\n{commandName} failed with exception: {e.Message} \nFind complete error output in {ErrorLogFilePath}");
@@ -54,10 +54,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 Console.WriteLine(tsg);
                 return true;
             }
-            else
-            {
-                return !IsRetryableAOSCall(e.StatusCode);
-            }
+            else return false;
         }
 
         private static bool IsRetryableAOSCall(HttpStatusCode statusCode)
