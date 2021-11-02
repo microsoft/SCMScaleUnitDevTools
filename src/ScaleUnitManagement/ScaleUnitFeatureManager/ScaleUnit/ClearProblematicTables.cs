@@ -13,7 +13,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 
         public float Priority()
         {
-            return 2.5F;
+            return 4.5F;
         }
 
         public Task Run()
@@ -30,6 +30,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             DELETE FROM SysFlighting;
 
             TRUNCATE TABLE NumberSequenceScope;
+            TRUNCATE TABLE NumberSequenceReference;
 
             EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
             ";
