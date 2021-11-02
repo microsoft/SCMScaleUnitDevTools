@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
+using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 
@@ -37,6 +38,60 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             }
         }
 
+        private async Task InstallWorkloadsOnScaleUnit()
+        {
+            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
+            IAOSClient hubAosClient = await GetHubAosClient();
+
+            List<WorkloadInstance> workloadInstances = null;
+
+            await ReliableRun.Execute(async () => workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances(), "Create workload instances");
+
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
+            {
+                if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
+                    continue;
+
+                if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
+                {
+                    ClearPotentiallyProblematicTables();
+                }
+
+                if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
+                {
+                    Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
+                    var workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
+                    await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
+                }
+
+                // Assuming that the LBD environment will be on the app version >= 10.0.17
+                if (scaleUnit.EnvironmentType == EnvironmentType.LBD || AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
+                    await WaitForWorkloadInstallation(workloadInstance);
+            }
+        }
+
+        private void ClearPotentiallyProblematicTables()
+        {
+            string sqlQuery = $@"
+            USE {scaleUnit.AxDbName};
+            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
+
+            DELETE FROM SysFeatureStateV0;
+            DELETE FROM FeatureManagementState;
+            DELETE FROM FeatureManagementMetadata;
+            DELETE FROM SysFlighting;
+
+            TRUNCATE TABLE NumberSequenceScope;
+            TRUNCATE TABLE NumberSequenceReference;
+            TRUNCATE TABLE NumberSequenceTable;
+
+            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
+            ";
+
+            var sqlQueryExecutor = new SqlQueryExecutor();
+            sqlQueryExecutor.Execute(sqlQuery);
+        }
+
         private async Task WaitForWorkloadInstallation(WorkloadInstance workloadInstance)
         {
             IAOSClient aosClient = await GetScaleUnitAosClient();
@@ -65,33 +120,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             } while (!await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(aosClient, workloadInstance));
 
             Console.WriteLine();
-        }
-
-        private async Task InstallWorkloadsOnScaleUnit()
-        {
-            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
-            IAOSClient hubAosClient = await GetHubAosClient();
-
-            List<WorkloadInstance> workloadInstances = null;
-
-            await ReliableRun.Execute(async () => workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances(), "Create workload instances");
-
-            foreach (WorkloadInstance workloadInstance in workloadInstances)
-            {
-                if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
-                    continue;
-
-                if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
-                {
-                    Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
-                    var workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
-                    await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
-                }
-
-                // Assuming that the LBD environment will be on the app version >= 10.0.17
-                if (scaleUnit.EnvironmentType == EnvironmentType.LBD || AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
-                    await WaitForWorkloadInstallation(workloadInstance);
-            }
         }
     }
 }
