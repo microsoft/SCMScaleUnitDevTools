@@ -11,9 +11,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     {
         public WorkloadMover() : base() { }
 
-        public async Task MoveWorkloads(string moveToId, DateTime movementDateTime)
+        public async Task MoveWorkloads(string moveToId)
         {
             IAOSClient aosClient = await GetScaleUnitAosClient();
+            DateTime movementDateTime = DateTime.UtcNow.AddMinutes(5);
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
@@ -30,6 +31,20 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
 
                 await ReliableRun.Execute(async () => await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+            }
+        }
+
+        public async Task EmergencyTransitionToHub()
+        {
+            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
+            IAOSClient hubAosClient = await GetHubAosClient();
+            List<WorkloadInstance> workloadInstances = null;
+            await ReliableRun.Execute(async () => workloadInstances = await scaleUnitAosClient.GetWorkloadInstances(), "Getting workload instances");
+
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
+            {
+                workloadInstance.ExecutingEnvironmentOverride = CreateTemporalAssignment("@@", DateTime.UtcNow);
+                await ReliableRun.Execute(async () => await hubAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
             }
         }
 
