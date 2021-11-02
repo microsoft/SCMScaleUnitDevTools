@@ -8,19 +8,19 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI.SetupToolsOptions
 {
-    internal class TransitionToHub : DevToolMenu
+    internal class PerformEmergencyTransitionToHub : DevToolMenu
     {
         public override async Task Show(int input, string selectionHistory)
         {
             List<ScaleUnitInstance> sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
             sortedNonHubScaleUnits.Sort();
-            List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, RunTransition);
+            List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, PerformTransition);
 
             var screen = new SingleSelectScreen(options, selectionHistory, "\nSelect the scale unit where you want to perform emergency transition to hub:\n", "\nScale unit: ");
             await CLIController.ShowScreen(screen);
         }
 
-        private async Task RunTransition(int input, string selectionHistory)
+        private async Task PerformTransition(int input, string selectionHistory)
         {
             try
             {
