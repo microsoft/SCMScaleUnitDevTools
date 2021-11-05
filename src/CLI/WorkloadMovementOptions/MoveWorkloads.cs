@@ -30,10 +30,8 @@ namespace CLI.WorkloadMovementOptions
         {
             using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
             string hubId = "@@";
-            ScaleUnitInstance hub = Config.HubScaleUnit();
-            DateTime effectiveTime = DateTime.UtcNow.AddMinutes(5);
             var workloadMover = new WorkloadMover();
-            await workloadMover.MoveWorkloads(hubId, effectiveTime);
+            await workloadMover.MoveWorkloads(hubId);
         }
     }
 }
