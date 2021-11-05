@@ -52,15 +52,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
                     continue;
 
-                if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
-                {
-                    ClearPotentiallyProblematicTables();
-                }
-
                 if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
                 {
                     Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
                     var workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
+
+                    if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
+                    {
+                        ClearPotentiallyProblematicTables();
+                    }
+
                     await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                 }
 
@@ -76,16 +77,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             USE {scaleUnit.AxDbName};
             EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
-            DELETE FROM SysFeatureStateV0;
-            DELETE FROM FeatureManagementState;
-            DELETE FROM FeatureManagementMetadata;
-            DELETE FROM SysFlighting;
+            TRUNCATE FROM SysFeatureStateV0;
+            TRUNCATE FROM FeatureManagementState;
+            TRUNCATE FROM FeatureManagementMetadata;
+            TRUNCATE FROM SysFlighting;
 
             TRUNCATE TABLE NumberSequenceScope;
             TRUNCATE TABLE NumberSequenceReference;
             TRUNCATE TABLE NumberSequenceTable;
 
-            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '@A';
+            EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '{scaleUnit.ScaleUnitId}';
             ";
 
             var sqlQueryExecutor = new SqlQueryExecutor();
