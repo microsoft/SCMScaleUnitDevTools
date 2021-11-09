@@ -57,12 +57,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
                     var workloadInstanceToInstallList = new List<WorkloadInstance>() { workloadInstance };
 
+                    await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
+
                     if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
                     {
                         ClearPotentiallyProblematicTables();
                     }
-
-                    await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
                 }
 
                 // Assuming that the LBD environment will be on the app version >= 10.0.17
@@ -77,10 +77,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             USE {scaleUnit.AxDbName};
             EXEC sys.sp_set_session_context @key = N'ActiveScaleUnitId', @value = '';
 
-            TRUNCATE FROM SysFeatureStateV0;
-            TRUNCATE FROM FeatureManagementState;
-            TRUNCATE FROM FeatureManagementMetadata;
-            TRUNCATE FROM SysFlighting;
+            TRUNCATE TABLE SysFeatureStateV0;
+            TRUNCATE TABLE FeatureManagementState;
+            TRUNCATE TABLE FeatureManagementMetadata;
+            TRUNCATE TABLE SysFlighting;
 
             TRUNCATE TABLE NumberSequenceScope;
             TRUNCATE TABLE NumberSequenceReference;
