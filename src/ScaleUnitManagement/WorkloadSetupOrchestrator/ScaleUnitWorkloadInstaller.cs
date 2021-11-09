@@ -61,7 +61,10 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                     if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
                     {
-                        ClearPotentiallyProblematicTables();
+                        if (await CountInstalledWorkloads(scaleUnitAosClient) == 0)
+                        {
+                            ClearPotentiallyProblematicTables();
+                        }
                     }
                 }
 
@@ -69,6 +72,24 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 if (scaleUnit.EnvironmentType == EnvironmentType.LBD || AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
                     await WaitForWorkloadInstallation(workloadInstance);
             }
+        }
+
+        private async Task<int> CountInstalledWorkloads(IAOSClient scaleUnitAosClient)
+        {
+            List<WorkloadInstance> workloadInstances = null;
+
+            await ReliableRun.Execute(async () => workloadInstances = await scaleUnitAosClient.GetWorkloadInstances(), "Get workload instances");
+
+            int count = 0;
+
+            foreach (WorkloadInstance workloadInstance in workloadInstances)
+            {
+                if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
         private void ClearPotentiallyProblematicTables()
