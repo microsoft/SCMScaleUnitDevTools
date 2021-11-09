@@ -16,6 +16,7 @@ namespace CLI
                 Option("Update scale unit id", new UpdateScaleUnitId().Show),
                 Option("Clean up Azure storage account for a scale unit", new CleanUpStorageAccount().Show),
                 Option("Import workloads from Azure storage blob with SAS url", new ImportWorkloadBlob().Show),
+                Option("Perform emergency transition from scale unit to hub", new PerformEmergencyTransitionToHub().Show)
             };
 
             var screen = new SingleSelectScreen(options, selectionHistory, "Please select the operation you want to perform:\n", "\nOperation to perform: ");
