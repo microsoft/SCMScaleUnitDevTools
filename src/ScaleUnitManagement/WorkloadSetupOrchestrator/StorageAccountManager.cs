@@ -18,7 +18,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         public StorageAccountManager()
         {
-            var scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             connectionString = scaleUnit.AzureStorageConnectionString;
             if (string.IsNullOrEmpty(connectionString) && scaleUnit.EnvironmentType == EnvironmentType.LCSHosted)
             {
@@ -47,8 +47,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 throw new Exception($"{sasUrlString} is not a valid Uri");
             }
 
-            var blobContainerName = "sysworkloadinstancesharedserviceunitstorage";
-            var blobName = "current.json";
+            string blobContainerName = "sysworkloadinstancesharedserviceunitstorage";
+            string blobName = "current.json";
 
             var targetBlobClient = new BlobClient(connectionString, blobContainerName, blobName);
 
@@ -59,7 +59,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
             var blobUri = blobUriBuilder.ToUri();
 
 
-            var operation = await targetBlobClient.StartCopyFromUriAsync(blobUri);
+            CopyFromUriOperation operation = await targetBlobClient.StartCopyFromUriAsync(blobUri);
 
             await operation.WaitForCompletionAsync();
 
@@ -72,7 +72,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         private async Task DeleteBlobContainers()
         {
-            BlobServiceClient blobClient = new BlobServiceClient(connectionString);
+            var blobClient = new BlobServiceClient(connectionString);
             IEnumerable<BlobContainerItem> containers = blobClient.GetBlobContainers();
 
             if (containers is null || !containers.Any())
@@ -81,7 +81,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
                 return;
             }
 
-            foreach (var container in containers)
+            foreach (BlobContainerItem container in containers)
             {
                 Console.WriteLine("Deleting Azure container: " + container.Name);
                 await blobClient.DeleteBlobContainerAsync(container.Name);
@@ -90,17 +90,17 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
         private async Task DeleteSharedTables()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             TableContinuationToken continuationToken = null;
             int count = 0;
 
             do
             {
-                var listingResult = await tableClient.ListTablesSegmentedAsync(continuationToken);
+                TableResultSegment listingResult = await tableClient.ListTablesSegmentedAsync(continuationToken);
                 var tables = listingResult.Results.ToList();
                 continuationToken = listingResult.ContinuationToken;
-                foreach (var table in tables)
+                foreach (CloudTable table in tables)
                 {
                     count++;
                     Console.WriteLine("Deleting Azure table: " + table.Name);
