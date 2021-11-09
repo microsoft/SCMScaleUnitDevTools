@@ -24,9 +24,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                     await command();
                     break;
                 }
-                catch (AOSClientError e)
+                catch (Exception exception)
                 {
-                    if (TryDiagnoseError(e, commandName) || !IsRetryableAOSCall(e.StatusCode))
+                    if (TryDiagnoseError(exception, commandName) || !IsRetryableAOSCall(exception))
                     {
                         throw;
                     }
@@ -43,12 +43,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
         }
 
-        private static bool TryDiagnoseError(AOSClientError e, string commandName)
+        private static bool TryDiagnoseError(Exception exception, string commandName)
         {
-            LogErrorToFile(commandName, e);
-            Console.WriteLine($"\n{commandName} failed with exception: {e.Message} \nFind complete error output in {ErrorLogFilePath}");
+            LogErrorToFile(commandName, exception);
+            Console.WriteLine($"\n{commandName} failed with exception: {exception.Message} \nFind complete error output in {ErrorLogFilePath}");
 
-            string tsg = SuggestTSG(e);
+            string tsg = SuggestTSG(exception);
             if (!string.IsNullOrEmpty(tsg))
             {
                 Console.WriteLine(tsg);
@@ -57,20 +57,28 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             else return false;
         }
 
-        private static bool IsRetryableAOSCall(HttpStatusCode statusCode)
+        private static bool IsRetryableAOSCall(Exception exception)
         {
-            Console.WriteLine((int)statusCode);
-            return (int)statusCode >= 300 &&
-                statusCode != HttpStatusCode.BadRequest &&
-                statusCode != HttpStatusCode.NotFound &&
-                statusCode != HttpStatusCode.Unauthorized &&
-                statusCode != HttpStatusCode.Forbidden;
+            if (!(exception is AOSClientError))
+            {
+                return false;
+            }
+            else
+            {
+                var aosClientError = exception as AOSClientError;
+                HttpStatusCode statusCode = aosClientError.StatusCode;
+                return (int)statusCode >= 300 &&
+                    statusCode != HttpStatusCode.BadRequest &&
+                    statusCode != HttpStatusCode.NotFound &&
+                    statusCode != HttpStatusCode.Unauthorized &&
+                    statusCode != HttpStatusCode.Forbidden;
+            }
         }
 
-        private static string SuggestTSG(Exception e)
+        private static string SuggestTSG(Exception exception)
         {
             string invalidConfigurationError = "The provided Dynamics.AX.Application.ScaleUnitEnvironmentConfiguration is invalid";
-            if (e.Message.Contains(invalidConfigurationError))
+            if (exception.Message.Contains(invalidConfigurationError))
             {
                 return "\nThere was a problem with the configuration. This could be caused by:\n" +
                     "1. Trying to configure the spoke before configuring the hub.\n" +
@@ -79,7 +87,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
 
             string axNotRunningError = "No connection could be made because the target machine actively refused it";
-            if (e.Message.Contains(axNotRunningError))
+            if (exception.Message.Contains(axNotRunningError))
             {
                 return "\nIs the IIS and the W3WP instance for AX running? If not, try running the \"Start services\" initialization step.\n";
             }
