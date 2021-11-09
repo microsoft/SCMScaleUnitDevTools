@@ -52,7 +52,14 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
 
             var targetBlobClient = new BlobClient(connectionString, blobContainerName, blobName);
 
-            var operation = await targetBlobClient.StartCopyFromUriAsync(sasUri);
+            var blobUriBuilder = new BlobUriBuilder(sasUri)
+            {
+                BlobName = blobName
+            };
+            var blobUri = blobUriBuilder.ToUri();
+
+
+            var operation = await targetBlobClient.StartCopyFromUriAsync(blobUri);
 
             await operation.WaitForCompletionAsync();
 
