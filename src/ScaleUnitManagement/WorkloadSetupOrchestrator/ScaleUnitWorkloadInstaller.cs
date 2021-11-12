@@ -47,6 +47,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             await ReliableRun.Execute(async () => workloadInstances = await new WorkloadInstanceManager(hubAosClient).CreateWorkloadInstances(), "Create workload instances");
 
+            int installedWorkloadCount = await CountInstalledWorkloads(scaleUnitAosClient);
+
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
@@ -59,12 +61,9 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
                     await scaleUnitAosClient.WriteWorkloadInstances(workloadInstanceToInstallList);
 
-                    if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance))
+                    if (WorkloadInstanceManager.IsSYSWorkload(workloadInstance) && installedWorkloadCount == 0)
                     {
-                        if (await CountInstalledWorkloads(scaleUnitAosClient) == 0)
-                        {
-                            ClearPotentiallyProblematicTables();
-                        }
+                        ClearPotentiallyProblematicTables();
                     }
                 }
 
