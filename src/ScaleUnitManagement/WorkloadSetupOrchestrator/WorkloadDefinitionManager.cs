@@ -42,7 +42,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
         {
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
-                if (WorkloadInstanceManager.IsWorkloadSYSOnSpoke(workloadInstance))
+                if (WorkloadInstanceManager.IsSYSWorkloadOnSpoke(workloadInstance))
                 {
                     continue;
                 }

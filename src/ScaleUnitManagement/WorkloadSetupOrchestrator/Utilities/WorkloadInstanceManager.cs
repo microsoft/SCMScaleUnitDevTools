@@ -309,11 +309,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             return status.Health == StoppedState;
         }
 
-        public static bool IsWorkloadSYSOnSpoke(WorkloadInstance workloadInstance)
+        public static bool IsSYSWorkload(WorkloadInstance workloadInstance)
+        {
+            string name = workloadInstance.VersionedWorkload.Workload.Name;
+            return name.Equals("SYS", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsSYSWorkloadOnSpoke(WorkloadInstance workloadInstance)
         {
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            string name = workloadInstance.VersionedWorkload.Workload.Name;
-            return name.Equals("SYS") && !scaleUnit.IsHub();
+            return IsSYSWorkload(workloadInstance) && !scaleUnit.IsHub();
         }
     }
 }
