@@ -14,7 +14,7 @@ namespace CLI
                 Option("Prepare environments for workload installation", new ConfigureEnvironment().Show),
                 Option("Show workload installation options", new WorkloadInstallationMenu().Show),
                 Option("Show workload movement options", new WorkloadMovementMenu().Show),
-                Option("Upgrade workloads definition", new UpgradeWorkloadsDefinition().UpgradeAllWorkloadDefinitions),
+                Option("Upgrade workloads definition", new UpgradeWorkloadsDefinition().Show),
                 Option("Show workload data pipeline management options", new ManageWorkloadDataPipeline().Show),
                 Option("Delete workloads from environment", new DeleteWorkloads().Show),
                 Option("Setup tools", new SetupTools().Show),

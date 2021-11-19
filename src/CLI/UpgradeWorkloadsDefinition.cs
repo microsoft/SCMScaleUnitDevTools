@@ -1,27 +1,26 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {
-    internal class UpgradeWorkloadsDefinition
+    internal class UpgradeWorkloadsDefinition : DevToolMenu
     {
-        public async Task UpgradeAllWorkloadDefinitions(int input, string selectionHistory)
+        public override async Task Show(int input, string selectionHistory)
         {
-            if (!CLIController.YesNoPrompt("You are about to upgrade the workload definitions on all scale units. Do you wish to continue? [y]: "))
-                return;
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), Upgrade);
+            var screen = new MultiSelectScreen(options, selectionHistory,
+                $"Please select the environment(s) you want to upgrade the workload definitions on\n" +
+                $"Press enter to upgrade the workloads on all environments.\n",
+                "\nWhich environment would you like to upgrade the workloads on?: ");
+            await CLIController.ShowScreen(screen);
+        }
 
-            List<ScaleUnitInstance> scaleUnits = Config.ScaleUnitInstances();
-            foreach (ScaleUnitInstance scaleUnit in scaleUnits)
-            {
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-                var workloadDefinitionManager = new WorkloadDefinitionManager();
-                await workloadDefinitionManager.UpgradeWorkloadsDefinition();
-            }
-            Console.WriteLine("Done");
+        public async Task Upgrade(int input, string selectionHistory)
+        {
+            var workloadDefinitionManager = new WorkloadDefinitionManager();
+            await workloadDefinitionManager.UpgradeWorkloadsDefinition();
         }
     }
 }
