@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
@@ -15,6 +16,8 @@ namespace CLI
                 $"Press enter to upgrade the workloads on all environments.\n",
                 "\nWhich environment would you like to upgrade the workloads on?: ");
             await CLIController.ShowScreen(screen);
+
+            Console.WriteLine("Done\n");
         }
 
         public async Task Upgrade(int input, string selectionHistory)
