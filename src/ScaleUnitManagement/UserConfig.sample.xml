@@ -50,9 +50,7 @@ UserConfig.xml according to this sample. You can follow the documentation from h
          (we are considering support for multiple scale units for the future) -->
     <ScaleUnitInstance>
       <Domain>YOUR_SCALEUNIT_ENVIRONMENT_URL</Domain>
-	  <!-- If environment type is VHD put the hub IpAddress below.
-	  Otherwise put the IpAddress of this scale unit, which should be
-	  different from the IpAddress of the hub and other scale units -->
+	  <!-- The IPAdress should be different from the IpAddress of the hub and any other scale units -->
       <IpAddress></IpAddress>
       <AzureStorageConnectionString></AzureStorageConnectionString>
       <AxDbName>AxDB</AxDbName>
