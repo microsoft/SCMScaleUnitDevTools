@@ -34,6 +34,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             {
                 BaseAddress = new Uri(scaleUnitInstance.Endpoint())
             };
+            httpClient.Timeout = TimeSpan.FromMinutes(20);
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
             return new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
