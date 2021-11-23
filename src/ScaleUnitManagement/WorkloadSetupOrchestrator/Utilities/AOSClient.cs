@@ -202,7 +202,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
             catch (TaskCanceledException)
             {
-                throw new TaskCanceledException("The server did not respond before timeout");
+                throw new Exception("The server did not respond before timeout");
             }
 
             string result = await response.Content.ReadAsStringAsync();
