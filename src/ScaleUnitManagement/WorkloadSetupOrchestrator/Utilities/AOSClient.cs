@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             {
                 BaseAddress = new Uri(scaleUnitInstance.Endpoint())
             };
+            httpClient.Timeout = TimeSpan.FromMinutes(20);
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
             return new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
@@ -190,13 +192,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             }
             else
             {
-                throw RequestFailure((int)response.StatusCode, result);
+                throw RequestFailure(response.StatusCode, result);
             }
         }
 
-        private static Exception RequestFailure(int statusCode, string response)
+        private static Exception RequestFailure(HttpStatusCode statusCode, string response)
         {
-            return new Exception($"[{statusCode}]: Error - {response}");
+            return new AOSClientError(statusCode, response);
         }
     }
 }
