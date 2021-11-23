@@ -59,7 +59,11 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
         private static bool IsRetryableAOSCall(Exception exception)
         {
-            if (!(exception is AOSClientError))
+            if (exception is TaskCanceledException)
+            {
+                return true;
+            }
+            else if (!(exception is AOSClientError))
             {
                 return false;
             }

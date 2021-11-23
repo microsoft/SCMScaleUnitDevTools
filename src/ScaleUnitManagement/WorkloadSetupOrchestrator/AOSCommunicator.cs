@@ -20,7 +20,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             if (scaleUnitAosClient is null)
             {
                 ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-                SetScaleUnitAosClient(await AOSClient.Construct(scaleUnit));
+                await ReliableRun.Execute(async () => SetScaleUnitAosClient(await AOSClient.Construct(scaleUnit)), "Connecting to AOS");
             }
             return scaleUnitAosClient;
         }
@@ -30,7 +30,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             if (hubAosClient is null)
             {
                 ScaleUnitInstance hub = Config.HubScaleUnit();
-                SetHubAosClient(await AOSClient.Construct(hub));
+                await ReliableRun.Execute(async () => SetHubAosClient(await AOSClient.Construct(hub)), "Connecting to AOS");
             }
             return hubAosClient;
         }

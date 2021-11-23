@@ -37,7 +37,19 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             httpClient.Timeout = TimeSpan.FromMinutes(20);
             httpClient.DefaultRequestHeaders.Add("Authorization", await OAuthHelper.GetAuthenticationHeader(aadTenant, aadClientAppId, aadClientAppSecret, aadResource));
 
-            return new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
+            var aosClient = new AOSClient(httpClient, scaleUnitInstance.AOSRequestPathPrefix());
+
+            await aosClient.Ping();
+
+            return aosClient;
+        }
+
+        private async Task Ping()
+        {
+            string path = $"{requestPathPrefix}ping/";
+            string getPayload = "{}";
+
+            _ = await SendRequest(path, getPayload);
         }
 
         public async Task<ScaleUnitEnvironmentConfiguration> WriteScaleUnitConfiguration(ScaleUnitEnvironmentConfiguration config)
@@ -183,7 +195,16 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
                 Content = new StringContent(payload, Encoding.UTF8, "application/json")
             };
 
-            HttpResponseMessage response = await httpClient.SendAsync(msg);
+            HttpResponseMessage response;
+            try
+            {
+                response = await httpClient.SendAsync(msg);
+            }
+            catch (TaskCanceledException)
+            {
+                throw new TaskCanceledException("The server did not respond before timeout");
+            }
+
             string result = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
