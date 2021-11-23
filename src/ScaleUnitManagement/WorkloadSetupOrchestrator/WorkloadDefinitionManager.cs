@@ -34,6 +34,8 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 workloadInstance.VersionedWorkload.Workload = workload;
                 workloadInstance.VersionedWorkload.Id = Guid.NewGuid().ToString();
 
+                Console.WriteLine($"Upgrading the definition of {workloadName} workload on {scaleUnit.PrintableName()}");
+
                 await ReliableRun.Execute(async () => await scaleUnitAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), "Writing workload instance");
             }
         }
