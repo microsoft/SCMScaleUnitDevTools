@@ -51,9 +51,6 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
-                if (await WorkloadInstanceManager.IsWorkloadInstanceInReadyState(scaleUnitAosClient, workloadInstance))
-                    continue;
-
                 if (!await WorkloadInstanceManager.IsWorkloadInstanceInInstallingState(scaleUnitAosClient, workloadInstance))
                 {
                     Console.WriteLine($"Installing the {workloadInstance.VersionedWorkload.Workload.Name} workload");
