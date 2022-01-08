@@ -18,6 +18,12 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
 
+            if (workloadInstances.Count == 0)
+            {
+                Console.WriteLine($"There are no workloads to move on scale unit {scaleUnit.ScaleUnitId}.");
+            }
+            int movedWorkloads = 0;
+
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (workloadInstance.ExecutingEnvironment.Any())
@@ -31,6 +37,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
 
                 await ReliableRun.Execute(async () => await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+                Console.WriteLine($"Initiated movement to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload on scale unit {scaleUnit.ScaleUnitId}");
+                movedWorkloads++;
+            }
+
+            if (movedWorkloads == 0)
+            {
+                Console.WriteLine($"All workloads on scale unit {scaleUnit.ScaleUnitId} where already assigned to the hub.");
             }
         }
 
