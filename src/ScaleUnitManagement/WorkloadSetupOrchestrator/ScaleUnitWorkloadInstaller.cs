@@ -66,10 +66,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                         ClearPotentiallyProblematicTables();
                     }
                 }
-
-                // Assuming that the LBD environment will be on the app version >= 10.0.17
-                if (scaleUnit.EnvironmentType == EnvironmentType.LBD || AxDeployment.IsApplicationVersionMoreRecentThan("10.8.581.0"))
-                    await WaitForWorkloadInstallation(workloadInstance);
+                await WaitForWorkloadInstallation(workloadInstance);
             }
         }
 
