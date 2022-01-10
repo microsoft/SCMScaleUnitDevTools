@@ -93,7 +93,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
             string result = await SendRequest(path, writePayload);
             string json = JsonConvert.DeserializeObject<string>(result);
             List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
-            return parsed;
+            return parsed ?? new List<WorkloadInstance>();
         }
 
         public async Task<List<WorkloadInstance>> DeleteWorkloadInstances(List<WorkloadInstance> workloadInstances)
@@ -111,7 +111,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             string json = JsonConvert.DeserializeObject<string>(result);
             List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
-            return parsed;
+            return parsed ?? new List<WorkloadInstance>();
         }
 
         public async Task<List<Workload>> GetWorkloads()
@@ -126,7 +126,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             string json = JsonConvert.DeserializeObject<string>(result);
             List<Workload> parsed = JsonConvert.DeserializeObject<List<Workload>>(json);
-            return parsed;
+            return parsed ?? new List<Workload>();
         }
 
         public async Task<List<WorkloadInstance>> GetWorkloadInstances()
@@ -141,7 +141,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities
 
             string json = JsonConvert.DeserializeObject<string>(result);
             List<WorkloadInstance> parsed = JsonConvert.DeserializeObject<List<WorkloadInstance>>(json);
-            return parsed;
+            return parsed ?? new List<WorkloadInstance>();
         }
 
         public async Task<WorkloadInstanceStatus> CheckWorkloadStatus(string workloadInstanceId)

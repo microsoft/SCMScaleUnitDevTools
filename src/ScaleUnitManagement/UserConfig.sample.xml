@@ -50,7 +50,7 @@ UserConfig.xml according to this sample. You can follow the documentation from h
          (we are considering support for multiple scale units for the future) -->
     <ScaleUnitInstance>
       <Domain>YOUR_SCALEUNIT_ENVIRONMENT_URL</Domain>
-      <!--The ip address is only necessry for single VM deployment-->
+	  <!-- The IPAdress should be different from the IpAddress of the hub and any other scale units -->
       <IpAddress></IpAddress>
       <AzureStorageConnectionString></AzureStorageConnectionString>
       <AxDbName>AxDB</AxDbName>
