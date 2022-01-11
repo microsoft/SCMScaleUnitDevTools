@@ -37,13 +37,13 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                 workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
 
                 await ReliableRun.Execute(async () => await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
-                Console.WriteLine($"Initiated movement to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload on scale unit {scaleUnit.ScaleUnitId}");
+                Console.WriteLine($"Registered movement to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload with id {workloadInstance.Id} on scale unit {scaleUnit.ScaleUnitId}");
                 movedWorkloads++;
             }
 
             if (movedWorkloads == 0)
             {
-                Console.WriteLine($"All workloads on scale unit {scaleUnit.ScaleUnitId} where already assigned to the hub.");
+                Console.WriteLine($"All workloads on scale unit {scaleUnit.ScaleUnitId} where already assigned to the hub. See movement status to check the progress.");
             }
         }
 
