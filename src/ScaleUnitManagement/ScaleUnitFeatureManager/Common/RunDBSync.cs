@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common

@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLI.WorkloadDataPipelineOptions;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {

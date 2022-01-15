@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ScaleUnitManagement.DatabaseManager;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
 using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;

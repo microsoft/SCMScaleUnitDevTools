@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.AOS;
 using CloudAndEdgeLibs.Contracts;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
 

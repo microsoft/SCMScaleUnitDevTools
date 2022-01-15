@@ -29,7 +29,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
                 INSERT INTO SysFlighting (FlightName, Enabled, FlightServiceId) VALUES ('{MESFlightName}', 1, 12719367);
             ";
 
-            var sqlQueryExecutor = new Utilities.SqlQueryExecutor();
+            var sqlQueryExecutor = new SqlQueryExecutor();
             sqlQueryExecutor.Execute(sqlQuery);
 
             return Task.CompletedTask;
