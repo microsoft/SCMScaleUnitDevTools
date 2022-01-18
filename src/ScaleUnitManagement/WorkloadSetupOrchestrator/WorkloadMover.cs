@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CloudAndEdgeLibs.Contracts;
 using ScaleUnitManagement.WorkloadSetupOrchestrator.Utilities;
+using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 {
@@ -11,26 +12,40 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
     {
         public WorkloadMover() : base() { }
 
-        public async Task MoveWorkloads(string moveToId)
+        public async Task MoveWorkloadsToHub()
         {
             IAOSClient aosClient = await GetScaleUnitAosClient();
+            string hubId = Config.HubScaleUnit().ScaleUnitId;
             DateTime movementDateTime = DateTime.UtcNow.AddMinutes(5);
             List<WorkloadInstance> workloadInstances = null;
             await ReliableRun.Execute(async () => workloadInstances = await aosClient.GetWorkloadInstances(), "Getting workload instances");
+
+            if (workloadInstances.Count == 0)
+            {
+                Console.WriteLine($"There are no workloads to move on scale unit {scaleUnit.ScaleUnitId}.");
+            }
+            int movedWorkloads = 0;
 
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
                 if (workloadInstance.ExecutingEnvironment.Any())
                 {
                     TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
-                    if (moveToId.Equals(lastAssignment?.Environment.ScaleUnitId))
+                    if (hubId.Equals(lastAssignment?.Environment.ScaleUnitId))
                     {
                         continue;
                     }
                 }
-                workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(moveToId, movementDateTime));
+                workloadInstance.ExecutingEnvironment.Add(CreateTemporalAssignment(hubId, movementDateTime));
 
                 await ReliableRun.Execute(async () => await aosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+                Console.WriteLine($"Registered movement to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload with id {workloadInstance.Id} on scale unit {scaleUnit.ScaleUnitId}");
+                movedWorkloads++;
+            }
+
+            if (movedWorkloads == 0)
+            {
+                Console.WriteLine($"All workloads on scale unit {scaleUnit.ScaleUnitId} where already assigned to the hub. See movement status to check the progress.");
             }
         }
 

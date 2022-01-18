@@ -29,9 +29,8 @@ namespace CLI.WorkloadMovementOptions
         private async Task MoveWorkloadsFromScaleUnitToHub(ScaleUnitInstance scaleUnit)
         {
             using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-            string hubId = "@@";
             var workloadMover = new WorkloadMover();
-            await workloadMover.MoveWorkloads(hubId);
+            await workloadMover.MoveWorkloadsToHub();
         }
     }
 }
