@@ -4,11 +4,11 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
 {
-    public class SetAutoClose : IScaleUnitStep
+    public class DisableDbAutoClose : IScaleUnitStep
     {
         public string Label()
         {
-            return "Set DB auto-close to false";
+            return "Disable DB auto-close";
         }
 
         public float Priority()
