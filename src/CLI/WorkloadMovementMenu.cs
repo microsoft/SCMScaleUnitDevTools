@@ -13,6 +13,7 @@ namespace CLI
             {
                 Option("Move all workloads to the hub", new MoveWorkloads().MoveAllWorkloads),
                 Option("Show workload movement status", new WorkloadMovementStatus().Show),
+                Option("Perform emergency transition from scale unit to hub", new PerformEmergencyTransitionToHub().Show)
             };
 
             var screen = new SingleSelectScreen(options, selectionHistory, "Please select the operation you would like to perform:\n", "\nOperation to perform: ");

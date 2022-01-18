@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI.SetupToolsOptions
+namespace CLI
 {
     internal class PerformEmergencyTransitionToHub : DevToolMenu
     {
