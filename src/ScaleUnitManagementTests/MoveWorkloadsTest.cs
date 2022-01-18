@@ -30,7 +30,7 @@ namespace ScaleUnitManagementTests
             {
                 WorkloadMover workloadMover = new WorkloadMover();
                 workloadMover.SetScaleUnitAosClient(aosClient.Object);
-                await workloadMover.MoveWorkloads(hubId);
+                await workloadMover.MoveWorkloadsToHub();
             }
 
             // Assert
