@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System;
 using System.Collections.Generic;
+using ScaleUnitManagement.DatabaseManager;
 
 namespace CLI.SetupToolsOptions
 {

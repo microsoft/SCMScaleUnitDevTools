@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using ScaleUnitManagement.Utilities;
 
-namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
+namespace ScaleUnitManagement.Utilities
 {
     public class WebConfig : IDisposable
     {

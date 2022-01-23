@@ -1,7 +1,6 @@
 using System.Data.SqlClient;
-using ScaleUnitManagement.Utilities;
 
-namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
+namespace ScaleUnitManagement.Utilities
 {
     public class SqlQueryExecutor
     {

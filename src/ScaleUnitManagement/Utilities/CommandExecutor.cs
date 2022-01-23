@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
+namespace ScaleUnitManagement.Utilities
 {
     public class CommandExecutor
     {

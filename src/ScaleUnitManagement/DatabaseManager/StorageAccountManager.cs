@@ -8,9 +8,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using ScaleUnitManagement.Utilities;
 using System;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
-namespace ScaleUnitManagement.ScaleUnitFeatureManager.Common
+namespace ScaleUnitManagement.DatabaseManager
 {
     public class StorageAccountManager
     {
