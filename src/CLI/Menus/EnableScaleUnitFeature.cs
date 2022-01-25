@@ -6,7 +6,7 @@ using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class EnableScaleUnitFeature : DevToolMenu
     {
@@ -21,6 +21,8 @@ namespace CLI
 
         private async Task PrintAvailableStepsForScaleUnit(int input, string selectionHistory)
         {
+            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            using var context = ScaleUnitContext.CreateContext(scaleUnitId);
             if (ScaleUnitContext.GetScaleUnitId().Equals("@@"))
                 await new EnableScaleUnitFeatureOnHub().PrintAvailableSteps(input, selectionHistory);
             else

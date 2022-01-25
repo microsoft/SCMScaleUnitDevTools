@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class UpgradeWorkloadsDefinition : DevToolMenu
     {
@@ -22,8 +22,9 @@ namespace CLI
 
         public async Task Upgrade(int input, string selectionHistory)
         {
-            var workloadDefinitionManager = new WorkloadDefinitionManager();
-            await workloadDefinitionManager.UpgradeWorkloadsDefinition();
+            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            var action = new WorkloadsInstallationStatusAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

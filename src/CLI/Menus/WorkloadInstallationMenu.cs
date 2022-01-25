@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CLI.WorkloadInstallationOptions;
+using CLI.Menus.WorkloadInstallationOptions;
 using CLIFramework;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class WorkloadInstallationMenu : DevToolMenu
     {

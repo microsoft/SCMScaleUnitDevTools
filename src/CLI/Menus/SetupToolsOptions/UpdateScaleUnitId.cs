@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 using ScaleUnitManagement.Utilities;
-using System;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
+using CLI.Actions;
 
-namespace CLI.SetupToolsOptions
+namespace CLI.Menus.SetupToolsOptions
 {
     internal class UpdateScaleUnitId : DevToolMenu
     {
+        private List<ScaleUnitInstance> sortedNonHubScaleUnits;
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<ScaleUnitInstance> sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
+            sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
             sortedNonHubScaleUnits.Sort();
             List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, RunUpdateScaleunitId);
 
@@ -20,22 +20,11 @@ namespace CLI.SetupToolsOptions
             await CLIController.ShowScreen(screen);
         }
 
-        private Task RunUpdateScaleunitId(int input, string selectionHistory)
+        private async Task RunUpdateScaleunitId(int input, string selectionHistory)
         {
-            try
-            {
-                new StopServices().Run();
-                using (var webConfig = new WebConfig())
-                {
-                    SharedWebConfig.Configure(webConfig);
-                }
-                new StartServices().Run();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"An error occured while trying to update scale unit id:\n{ex}");
-            }
-            return Task.CompletedTask;
+            string scaleUnitId = sortedNonHubScaleUnits[input - 1].ScaleUnitId;
+            var action = new SyncDBAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

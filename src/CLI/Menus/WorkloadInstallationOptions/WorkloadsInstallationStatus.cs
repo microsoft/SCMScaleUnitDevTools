@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI.WorkloadInstallationOptions
+namespace CLI.Menus.WorkloadInstallationOptions
 {
     internal class WorkloadsInstallationStatus : DevToolMenu
     {
@@ -18,10 +17,9 @@ namespace CLI.WorkloadInstallationOptions
 
         private async Task ShowWorkloadInstallationStatusForScaleUnit(int input, string selectionHistory)
         {
-            if (ScaleUnitContext.GetScaleUnitId() == "@@")
-                await new HubWorkloadInstaller().InstallationStatus();
-            else
-                await new ScaleUnitWorkloadInstaller().InstallationStatus();
+            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            var action = new WorkloadsInstallationStatusAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

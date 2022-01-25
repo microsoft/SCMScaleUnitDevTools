@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class EnableScaleUnitFeatureOnHub : EnableScaleUnitFeature
     {

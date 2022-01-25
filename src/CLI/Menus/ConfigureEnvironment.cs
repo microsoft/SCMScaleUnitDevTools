@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class ConfigureEnvironment : DevToolMenu
     {
@@ -17,10 +16,9 @@ namespace CLI
 
         private async Task ConfigureScaleUnit(int input, string selectionHistory)
         {
-            if (ScaleUnitContext.GetScaleUnitId() == "@@")
-                await new HubConfigurationManager().Configure();
-            else
-                await new ScaleUnitConfigurationManager().Configure();
+            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            var action = new ConfigureEnvironmentAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

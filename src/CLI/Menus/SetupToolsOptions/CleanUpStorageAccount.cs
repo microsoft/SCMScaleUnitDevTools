@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using System;
 using System.Collections.Generic;
-using ScaleUnitManagement.DatabaseManager;
+using CLI.Actions;
 
-namespace CLI.SetupToolsOptions
+namespace CLI.Menus.SetupToolsOptions
 {
     internal class CleanUpStorageAccount : DevToolMenu
     {
@@ -18,16 +17,9 @@ namespace CLI.SetupToolsOptions
 
         private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            try
-            {
-                var storageAccountManager = new StorageAccountManager();
-                await storageAccountManager.CleanStorageAccount();
-                Console.WriteLine("Done");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An exception occured while cleaning up storage: \n{ex}");
-            }
+            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            var action = new CleanUpStorageAccountAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }
