@@ -1,0 +1,19 @@
+parameters:
+- name: scan_pattern
+  type: string
+  default: |
+    $(build.artifactstagingdirectory)\*.dll
+    $(build.artifactstagingdirectory)\*.exe
+- name: symbols_pattern
+  type: string
+  default: SRV*https://symweb;$(build.artifactstagingdirectory)
+
+steps:
+  - task: BinSkim@4
+    displayName: 'Run BinSkim'
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      TargetPattern: 'binskimPattern'
+      AnalyzeTargetBinskim: ${{ parameters.scan_pattern }}
+      AnalyzeLocalSymbolDirectories: ${{ parameters.symbols_pattern }}

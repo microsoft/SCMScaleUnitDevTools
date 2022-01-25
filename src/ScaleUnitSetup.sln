@@ -14,12 +14,44 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7556C323-BE8A-474F-A930-EF3D80503D94}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\GitVersion.yml = ..\GitVersion.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaleUnitManagementTests", "ScaleUnitManagementTests\ScaleUnitManagementTests.csproj", "{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaleUnitManagementTests", "ScaleUnitManagementTests\ScaleUnitManagementTests.csproj", "{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BC507C5-03C6-4C12-9958-1E9BC018F27F} = {7BC507C5-03C6-4C12-9958-1E9BC018F27F}
 		{728FACCA-8DB6-47BF-BAFE-E580F349F969} = {728FACCA-8DB6-47BF-BAFE-E580F349F969}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{0B3A4843-2E73-40FA-810E-E53D02725CE3}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\.pipelines\azure-pipelines-compliance.yml = ..\build\.pipelines\azure-pipelines-compliance.yml
+		..\build\.pipelines\azure-pipelines-rel.yml = ..\build\.pipelines\azure-pipelines-rel.yml
+		..\build\.pipelines\azure-pipelines.yml = ..\build\.pipelines\azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "steps", "steps", "{477B29EA-89C0-47CD-BEF9-A325F64204D0}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\.pipelines\steps\AntiMalware-Template.yml = ..\build\.pipelines\steps\AntiMalware-Template.yml
+		..\build\.pipelines\steps\Binskim-Template.yml = ..\build\.pipelines\steps\Binskim-Template.yml
+		..\build\.pipelines\steps\CodeQL-Template.yml = ..\build\.pipelines\steps\CodeQL-Template.yml
+		..\build\.pipelines\steps\CodeSigning-template.yml = ..\build\.pipelines\steps\CodeSigning-template.yml
+		..\build\.pipelines\steps\CodeSignValidation-Template.yml = ..\build\.pipelines\steps\CodeSignValidation-Template.yml
+		..\build\.pipelines\steps\CredScan-Template.yml = ..\build\.pipelines\steps\CredScan-Template.yml
+		..\build\.pipelines\steps\Disable-StrongName-template.yml = ..\build\.pipelines\steps\Disable-StrongName-template.yml
+		..\build\.pipelines\steps\Policheck-Template.yml = ..\build\.pipelines\steps\Policheck-Template.yml
+		..\build\.pipelines\steps\PostAnalysis-template.yml = ..\build\.pipelines\steps\PostAnalysis-template.yml
+		..\build\.pipelines\steps\Roslyn-Template.yml = ..\build\.pipelines\steps\Roslyn-Template.yml
+		..\build\.pipelines\steps\SBOM-Template.yml = ..\build\.pipelines\steps\SBOM-Template.yml
+		..\build\.pipelines\steps\TSAUpload-Template.yml = ..\build\.pipelines\steps\TSAUpload-Template.yml
+		..\build\.pipelines\steps\Variables-template.yml = ..\build\.pipelines\steps\Variables-template.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{5B7FE382-0EAD-47BD-B92A-3587986EB42F}"
+	ProjectSection(SolutionItems) = preProject
+		..\.config\CredScanSuppressions.json = ..\.config\CredScanSuppressions.json
+		..\.config\PoliCheckExclusions.xml = ..\.config\PoliCheckExclusions.xml
+		..\.config\tsaconfig.json = ..\.config\tsaconfig.json
 	EndProjectSection
 EndProject
 Global
@@ -51,6 +83,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0B3A4843-2E73-40FA-810E-E53D02725CE3} = {7556C323-BE8A-474F-A930-EF3D80503D94}
+		{477B29EA-89C0-47CD-BEF9-A325F64204D0} = {0B3A4843-2E73-40FA-810E-E53D02725CE3}
+		{5B7FE382-0EAD-47BD-B92A-3587986EB42F} = {7556C323-BE8A-474F-A930-EF3D80503D94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {239EC2FD-37C2-44AB-B513-5520A1621104}

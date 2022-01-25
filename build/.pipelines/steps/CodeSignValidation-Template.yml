@@ -1,0 +1,10 @@
+parameters:
+- name: scan_pattern
+  type: string
+  default: $(build.artifactstagingdirectory)
+
+steps:
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-codesignvalidation.CodeSign@1
+    displayName: 'Run Codesign Validation'
+    inputs:
+      path: ${{ parameters.scan_pattern }}

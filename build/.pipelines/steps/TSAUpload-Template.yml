@@ -1,0 +1,12 @@
+parameters:
+- name: TSA_Config_Path
+  type: string
+  default: |
+    $(Build.SourcesDirectory)\.config\tsaconfig.json
+
+steps:
+  - task: TSAUpload@2
+    displayName: 'Upload to TSA'
+    inputs:
+      GdnPublishTsaOnboard: true
+      GdnPublishTsaConfigFile:  ${{ parameters.TSA_Config_Path }}
