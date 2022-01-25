@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CLI.SetupToolsOptions;
+using CLI.Menus.SetupToolsOptions;
 using CLIFramework;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class SetupTools : DevToolMenu
     {

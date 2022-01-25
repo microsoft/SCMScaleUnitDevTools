@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLIFramework;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class RootMenu : DevToolMenu
     {

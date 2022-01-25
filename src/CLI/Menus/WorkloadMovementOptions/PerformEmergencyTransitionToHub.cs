@@ -1,18 +1,18 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using System;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System.Collections.Generic;
 using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
+using CLI.Actions;
 
-namespace CLI
+namespace CLI.Menus.WorkloadMovementOptions
 {
     internal class PerformEmergencyTransitionToHub : DevToolMenu
     {
+        private List<ScaleUnitInstance> sortedNonHubScaleUnits;
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<ScaleUnitInstance> sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
+            sortedNonHubScaleUnits = Config.NonHubScaleUnitInstances();
             sortedNonHubScaleUnits.Sort();
             List<CLIOption> options = SelectScaleUnitOptions(sortedNonHubScaleUnits, PerformTransition);
 
@@ -22,16 +22,9 @@ namespace CLI
 
         private async Task PerformTransition(int input, string selectionHistory)
         {
-            try
-            {
-                var workloadMover = new WorkloadMover();
-                await workloadMover.EmergencyTransitionToHub();
-                Console.WriteLine("Done");
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"An error occured while trying to run emergency transition to hub:\n{ex}");
-            }
+            string scaleUnitId = sortedNonHubScaleUnits[input - 1].ScaleUnitId;
+            var action = new PerformEmergencyTransitionToHubAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }
