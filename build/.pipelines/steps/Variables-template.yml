@@ -1,6 +1,3 @@
-# Starter pipeline
-# https://aka.ms/yaml
-
 variables:      # pipeline-level
 - name: BuildPlatform
   value: 'win-x64'

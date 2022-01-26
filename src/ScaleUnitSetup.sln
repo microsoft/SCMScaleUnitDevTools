@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		..\GitVersion.yml = ..\GitVersion.yml
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaleUnitManagementTests", "ScaleUnitManagementTests\ScaleUnitManagementTests.csproj", "{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}"
