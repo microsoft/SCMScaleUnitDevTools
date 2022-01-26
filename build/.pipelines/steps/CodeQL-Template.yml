@@ -2,9 +2,9 @@
 steps:
   - task: Semmle@1
     inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
+      sourceCodeDirectory: '$(Build.SourcesDirectory)\src'
       language: 'csharp'
-      buildCommandsString: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $(Solution) /t:clean /p:platform="$(BuildPlatform)" /p:configuration="$(BuildConfiguration)" /p:VisualStudioVersion="$(VSBuildVer)"# "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $(Solution) /maxcpucount:1 /p:platform="$(BuildPlatform)" /p:configuration="$(BuildConfiguration)" /p:VisualStudioVersion="$(VSBuildVer)"'
+      buildCommandsString: 'dotnet clean --configuration $(BuildConfiguration)# dotnet build --configuration $(BuildConfiguration) --no-restore'
       querySuite: 'Recommended'
       timeout: '1800'
       ram: '16384'
