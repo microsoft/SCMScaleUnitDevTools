@@ -131,12 +131,12 @@ stages:
           - template: steps/CredScan-Template.yml
             parameters:
               scan_pattern: |
-                $(Build.SourcesDirectory)\Source
+                $(Build.SourcesDirectory)\src
 
           - template: steps/Policheck-Template.yml
             parameters:
               scan_pattern: |
-                $(Build.SourcesDirectory)\Source
+                $(Build.SourcesDirectory)\src
 
           - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}: # Only run on CI builds
             - template: steps/TSAUpload-Template.yml
