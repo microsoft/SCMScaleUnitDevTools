@@ -74,6 +74,9 @@ stages:
             PathtoPublish: $(build.artifactstagingdirectory)
             ArtifactName: Build
 
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Component Detection
+
         - task: PublishSecurityAnalysisLogs@3
           inputs:
             ArtifactName: "CodeAnalysisLogs"

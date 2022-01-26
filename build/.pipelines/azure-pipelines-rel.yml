@@ -126,6 +126,9 @@ stages:
           inputs:
             PathtoPublish: $(build.artifactstagingdirectory)
             ArtifactName: NugetPackages
+        
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Component Detection
 
         - task: PublishSecurityAnalysisLogs@3
           inputs:
