@@ -1,0 +1,16 @@
+{
+  "codebaseName": "D365-FinOps_SCMScaleUnitDevTools",
+  "ppe": false,
+  "serviceTreeId": "160fd384-570d-427d-bf36-f83fe6a09605",
+  "notificationAliases": [
+    "daxtsaadmin@microsoft.com;scmcneplat@microsoft.com"
+  ],
+  "codebaseAdmins": [
+    "REDMOND\\daxtsaadmin"
+  ],
+  "instanceUrl": "https://msdyneng.visualstudio.com/defaultcollection",
+  "projectName": "FinOps",
+  "areaPath": "FinOps\\Cloud and Edge\\Platform",
+  "iterationPath": "FinOps",
+  "allTools": true
+}

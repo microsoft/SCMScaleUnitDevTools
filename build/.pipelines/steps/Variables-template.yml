@@ -1,0 +1,16 @@
+# Starter pipeline
+# https://aka.ms/yaml
+
+variables:      # pipeline-level
+- name: BuildPlatform
+  value: 'win-x64'
+- name: BuildConfiguration
+  value: 'Release'
+- name: VSBuildVer
+  value: 16.0
+- name: LGTM.UploadSnapshot
+  value: true
+- name: Semmle.SkipAnalysis
+  value: true
+- name: PoolName
+  value: '1ES-windows-2019-msdyneng'

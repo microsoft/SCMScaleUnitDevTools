@@ -1,0 +1,13 @@
+
+steps:
+  - task: Semmle@1
+    inputs:
+      sourceCodeDirectory: '$(Build.SourcesDirectory)'
+      language: 'csharp'
+      buildCommandsString: '"%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $(Solution) /t:clean /p:platform="$(BuildPlatform)" /p:configuration="$(BuildConfiguration)" /p:VisualStudioVersion="$(VSBuildVer)"# "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $(Solution) /maxcpucount:1 /p:platform="$(BuildPlatform)" /p:configuration="$(BuildConfiguration)" /p:VisualStudioVersion="$(VSBuildVer)"'
+      querySuite: 'Recommended'
+      timeout: '1800'
+      ram: '16384'
+      addProjectDirToScanningExclusionList: true
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)

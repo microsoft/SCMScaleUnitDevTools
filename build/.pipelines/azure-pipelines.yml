@@ -1,32 +1,150 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+name: build
 
 trigger:
-- main
+  branches:
+    include:
+    - main
 
-pool:
-  vmImage: 'windows-latest'
+pool: $(PoolName)
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  - template: steps/Variables-template.yml   #template for Variables
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '$(build.sourcesdirectory)/src'
+stages:
+  - stage: Build
+    jobs:
+      - job: Build_Phase
+        displayName: 'Build'
+        cancelTimeoutInMinutes: 1
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '$(build.sourcesdirectory)/src'
-    arguments: '--configuration $(buildConfiguration) --no-restore'
+        steps:
+        - checkout: self
+          clean: true
+          persistCredentials: true
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '$(build.sourcesdirectory)/src'
+        - task: gitversion/setup@0
+          inputs:
+            versionSpec: '5.x'
+
+        - task: GitVersion@5
+          displayName: 'GitVersion'
+          inputs:
+            runtime: full
+
+        - script: |
+              echo Major: $(GitVersion.Major)
+              echo Minor: $(GitVersion.Minor)
+              echo Patch: $(GitVersion.Patch)
+              echo PreReleaseTag: $(GitVersion.PreReleaseTag)
+              echo PreReleaseTagWithDash: $(GitVersion.PreReleaseTagWithDash)
+              echo PreReleaseLabel: $(GitVersion.PreReleaseLabel)
+              echo PreReleaseNumber: $(GitVersion.PreReleaseNumber)
+              echo WeightedPreReleaseNumber: $(GitVersion.WeightedPreReleaseNumber)
+              echo BuildMetaData: $(GitVersion.BuildMetaData)
+              echo BuildMetaDataPadded: $(GitVersion.BuildMetaDataPadded)
+              echo FullBuildMetaData: $(GitVersion.FullBuildMetaData)
+              echo MajorMinorPatch: $(GitVersion.MajorMinorPatch)
+              echo SemVer: $(GitVersion.SemVer)
+              echo LegacySemVer: $(GitVersion.LegacySemVer)
+              echo LegacySemVerPadded: $(GitVersion.LegacySemVerPadded)
+              echo AssemblySemVer: $(GitVersion.AssemblySemVer)
+              echo AssemblySemFileVer: $(GitVersion.AssemblySemFileVer)
+              echo FullSemVer: $(GitVersion.FullSemVer)
+              echo InformationalVersion: $(GitVersion.InformationalVersion)
+              echo BranchName: $(GitVersion.BranchName)
+              echo EscapedBranchName: $(GitVersion.EscapedBranchName)
+              echo Sha: $(GitVersion.Sha)
+              echo ShortSha: $(GitVersion.ShortSha)
+              echo NuGetVersionV2: $(GitVersion.NuGetVersionV2)
+              echo NuGetVersion: $(GitVersion.NuGetVersion)
+              echo NuGetPreReleaseTagV2: $(GitVersion.NuGetPreReleaseTagV2)
+              echo NuGetPreReleaseTag: $(GitVersion.NuGetPreReleaseTag)
+              echo VersionSourceSha: $(GitVersion.VersionSourceSha)
+              echo CommitsSinceVersionSource: $(GitVersion.CommitsSinceVersionSource)
+              echo CommitsSinceVersionSourcePadded: $(GitVersion.CommitsSinceVersionSourcePadded)
+              echo UncommittedChanges: $(GitVersion.UncommittedChanges)
+              echo CommitDate: $(GitVersion.CommitDate)
+
+        - template: steps/Disable-StrongName-template.yml   #template for Disable Strong Name
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Restore
+          inputs:
+            command: 'restore'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Build
+          inputs:
+            command: 'build'
+            projects: '$(build.sourcesdirectory)/src'
+            arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Test
+          inputs:
+            command: 'test'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Publish
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '$(build.sourcesdirectory)/src/CLI/CLI.csproj'
+            arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) /p:Version=$(GitVersion.AssemblySemVer) /p:AssemblyVersion=$(GitVersion.AssemblySemFileVer) --output $(build.artifactstagingdirectory)'
+            modifyOutputPath: false
+            zipAfterPublish: false
+
+        - template: steps/Roslyn-Template.yml
+
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifact
+          inputs:
+            PathtoPublish: $(build.artifactstagingdirectory)
+            ArtifactName: Build
+
+        - task: PublishSecurityAnalysisLogs@3
+          inputs:
+            ArtifactName: "CodeAnalysisLogs"
+            ArtifactType: "Container"
+
+        - template: steps/PostAnalysis-template.yml
+
+  - stage: CodeScanning
+    dependsOn: [] # this removes the implicit dependency on any previous stage and causes this to run in parallel
+    displayName: 'Source scanning'
+
+    jobs:
+      - job: CodeScanningJob
+        displayName: 'Source scanning'
+
+        variables:
+          - name: runCodesignValidationInjection
+            value: false
+
+        steps:
+          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+            clean: true
+            fetchDepth: 1 # the depth of commits to ask Git to fetch
+
+          - template: steps/CredScan-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)\Source
+
+          - template: steps/Policheck-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)\Source
+
+          - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}: # Only run on CI builds
+            - template: steps/TSAUpload-Template.yml
+
+          - task: PublishSecurityAnalysisLogs@3
+            inputs:
+              ArtifactName: "CodeAnalysisLogs"
+              ArtifactType: "Container"
+
+          - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+            - template: steps/PostAnalysis-template.yml

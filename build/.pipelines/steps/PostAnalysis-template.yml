@@ -1,0 +1,4 @@
+steps:
+  - task: PostAnalysis@2
+    inputs:
+      GdnBreakAllTools: true

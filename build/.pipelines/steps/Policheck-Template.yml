@@ -1,0 +1,19 @@
+parameters:
+- name: scan_pattern
+  type: string
+  default: |
+    $(Build.SourcesDirectory)\Source
+- name: supressions_file
+  type: string
+  default: |
+    $(Build.SourcesDirectory)\.config\PoliCheckExclusions.xml
+
+steps:
+  - task: PoliCheck@2
+    displayName: 'Run PoliCheck'
+    inputs:
+      targetType: 'F'
+      targetArgument: ${{ parameters.scan_pattern }}
+      optionsFC: '1'
+      optionsXS: '1'
+      optionsUEPATH: ${{ parameters.supressions_file }}

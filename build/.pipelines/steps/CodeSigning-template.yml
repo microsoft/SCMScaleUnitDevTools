@@ -1,0 +1,130 @@
+parameters:
+- name: codesigning_path
+  type: string
+  default: $(build.sourcesdirectory)
+
+steps:
+  - task: EsrpCodeSigning@1
+    displayName: 'CodeSigning: Strong Name'
+    inputs:
+      ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
+      FolderPath: ${{ parameters.codesigning_path }}
+      Pattern: ""
+      UseMinimatch: true
+      signConfigType: inlineSignParams
+      inlineOperation: >-
+        [
+          {
+            "keyCode": "CP-233863-SN",
+            "operationSetCode": "StrongNameSign",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          },
+          {
+            "keyCode": "CP-233863-SN",
+            "operationSetCode": "StrongNameVerify",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      VerboseLogin: true
+
+  - task: EsrpCodeSigning@1
+    displayName: 'CodeSigning: Authenticode (inline)'
+    inputs:
+      ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
+      FolderPath: ${{ parameters.codesigning_path }}
+      Pattern: ""
+      UseMinimatch: true
+      signConfigType: inlineSignParams
+      inlineOperation: >-
+        [
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd \"SHA256\""
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          },
+          {
+            "keyCode": "CP-230012",
+            "operationSetCode": "SigntoolVerify",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+
+  - task: EsrpCodeSigning@1
+    displayName: 'CodeSigning: Authenticode (inline) 3rd Party/OSS'
+    inputs:
+      ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
+      FolderPath: ${{ parameters.codesigning_path }}
+      Pattern: ""
+      UseMinimatch: true
+      signConfigType: inlineSignParams
+      inlineOperation: >-
+        [
+          {
+            "keyCode": "CP-231522",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "Append",
+                "parameterValue": "/as"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd \"SHA256\""
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          },
+          {
+            "keyCode": "CP-231522",
+            "operationSetCode": "SigntoolVerify",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ] 
