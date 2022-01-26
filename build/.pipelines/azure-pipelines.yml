@@ -26,10 +26,10 @@ stages:
           inputs:
             versionSpec: '5.x'
 
-        - task: GitVersion@5
-          displayName: 'GitVersion'
+        - task: gitversion/execute@0
           inputs:
-            runtime: full
+            useConfigFile: true
+            configFilePath: '$(build.sourcesdirectory)\GitVersion.yml'
 
         - script: |
               echo Major: $(GitVersion.Major)
