@@ -1,28 +1,27 @@
-name: build
-
-trigger: none
-
-pr:
-  branches:
-    include:
-    - main
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/release
 
 pool: $(PoolName)
 
 variables:
   - template: steps/Variables-template.yml   #template for Variables
 
+trigger:
+  branches:
+    include:
+    - main
+
 stages:
   - stage: Build
     jobs:
       - job: Build_Phase
-        displayName: 'Build'
-        cancelTimeoutInMinutes: 1
+        displayName: Build
 
         steps:
         - checkout: self
-          clean: true
-          persistCredentials: true
 
         - task: gitversion/setup@0
           inputs:
@@ -64,15 +63,67 @@ stages:
             projects: '$(build.sourcesdirectory)/src/CLI/CLI.csproj'
             arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) --output $(build.artifactstagingdirectory)'
             modifyOutputPath: false
-            zipAfterPublish: true
+            zipAfterPublish: false
 
-        - template: steps/Roslyn-Template.yml
+        - template: steps/CodeQL-Template.yml
+
+        - template: steps/CodeSigning-template.yml   #template for CodeSigning for StrongName and Authenticode 
+          parameters:
+            codesigning_path: $(build.artifactstagingdirectory)
+            strongname_codesigning_pattern: $(strongname_signing_pattern)
+            codesigning_pattern: $(signing_pattern)
+            enable_oss_codesigning : true
+            oss_codesigning_pattern: $(oss_signing_pattern)
+
+        - template: steps/SBOM-Template.yml
+          parameters: 
+            software_name: 'D365-SCMScaleUnitDevTools'
+            pipeline_output: $(build.artifactstagingdirectory)
+
+        - template: steps/CodeSignValidation-Template.yml
+          parameters: 
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - template: steps/AntiMalware-Template.yml
+          parameters: 
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - template: steps/CredScan-Template.yml
+          parameters:
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - template: steps/Binskim-Template.yml
+          parameters:
+            scan_pattern: |
+                $(build.artifactstagingdirectory)\*.dll
+                $(build.artifactstagingdirectory)\*.exe
+            symbols_pattern: |
+                SRV*https://symweb;$(build.artifactstagingdirectory)\
+
+        #- template: steps/TSAUpload-Template.yml
+
+        - task: GithubRelease@1 
+          displayName: 'Create GitHub Release'      
+          inputs:
+            gitHubConnection: 'Osfaixat_Github'
+            action: 'create'
+            repositoryName: microsoft/SCMScaleUnitDevTools
+            target: '$(Build.SourceVersion)'
+            tagSource: userSpecifiedTag
+            tag: v$(GitVersion.SemVer)
+            changeLogCompareToRelease: 'lastFullRelease'
+            changeLogType: 'commitBased'
+            assets: |
+                $(Build.ArtifactStagingDirectory)/*.zip
 
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact
           inputs:
             PathtoPublish: $(build.artifactstagingdirectory)
-            ArtifactName: Build
+            ArtifactName: NugetPackages
 
         - task: PublishSecurityAnalysisLogs@3
           inputs:
@@ -108,13 +159,11 @@ stages:
               scan_pattern: |
                 $(Build.SourcesDirectory)
 
-          - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}: # Only run on CI builds
-            - template: steps/TSAUpload-Template.yml
+          - template: steps/TSAUpload-Template.yml
 
           - task: PublishSecurityAnalysisLogs@3
             inputs:
               ArtifactName: "CodeAnalysisLogs"
               ArtifactType: "Container"
 
-          - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
-            - template: steps/PostAnalysis-template.yml
+          - template: steps/PostAnalysis-template.yml

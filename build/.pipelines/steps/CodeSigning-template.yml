@@ -1,7 +1,19 @@
 parameters:
 - name: codesigning_path
   type: string
-  default: $(build.sourcesdirectory)
+  default: $(build.artifactstagingdirectory)
+- name: strongname_codesigning_pattern
+  type: string
+  default: '*.dll'
+- name: codesigning_pattern
+  type: string
+  default: '*.dll'
+- name: enable_oss_codesigning
+  type: boolean
+  default: false
+- name: oss_codesigning_pattern
+  type: string
+  default: 'nofile.not'
 
 steps:
   - task: EsrpCodeSigning@1
@@ -9,7 +21,7 @@ steps:
     inputs:
       ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
       FolderPath: ${{ parameters.codesigning_path }}
-      Pattern: ""
+      Pattern: ${{ parameters.strongname_codesigning_pattern }}
       UseMinimatch: true
       signConfigType: inlineSignParams
       inlineOperation: >-
@@ -36,7 +48,7 @@ steps:
     inputs:
       ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
       FolderPath: ${{ parameters.codesigning_path }}
-      Pattern: ""
+      Pattern: ${{ parameters.codesigning_pattern }}
       UseMinimatch: true
       signConfigType: inlineSignParams
       inlineOperation: >-
@@ -80,10 +92,11 @@ steps:
 
   - task: EsrpCodeSigning@1
     displayName: 'CodeSigning: Authenticode (inline) 3rd Party/OSS'
+    enabled: ${{ parameters.enable_oss_codesigning }}
     inputs:
       ConnectedServiceName: 0704edca-60b2-4db1-9e46-05e363266b5e
       FolderPath: ${{ parameters.codesigning_path }}
-      Pattern: ""
+      Pattern: ${{ parameters.oss_codesigning_pattern }}
       UseMinimatch: true
       signConfigType: inlineSignParams
       inlineOperation: >-
@@ -101,12 +114,12 @@ steps:
                 "parameterValue": "http://www.microsoft.com"
               },
               {
-                "parameterName": "Append",
-                "parameterValue": "/as"
-              },
-              {
                 "parameterName": "FileDigest",
                 "parameterValue": "/fd \"SHA256\""
+              },
+              {
+                "parameterName": "Append",
+                "parameterValue": "/as"
               },
               {
                 "parameterName": "PageHash",

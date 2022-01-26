@@ -14,3 +14,21 @@ variables:      # pipeline-level
   value: true
 - name: PoolName
   value: '1ES-windows-2019-msdyneng'
+- name: strongname_signing_pattern
+  value: |
+    CLI.dll
+    CLI.exe
+    CLIFramework.dll
+    CloudAndEdgeLibs.dll
+    ScaleUnitManagement.dll
+- name: signing_pattern
+  value: |
+    CLI.dll
+    CLI.exe
+    CLIFramework.dll
+    CloudAndEdgeLibs.dll
+    ScaleUnitManagement.dll
+- name: oss_signing_pattern
+  value: |
+    Newtonsoft.Json.dll
+
