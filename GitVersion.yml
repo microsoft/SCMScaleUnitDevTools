@@ -12,7 +12,6 @@ commits-since-version-source-padding: 4
 branches:
   main:
     regex: ^main$
-    mode: Mainline
     tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
