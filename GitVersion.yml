@@ -1,6 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
-mode: ContinuousDeployment
+mode: Mainline
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
@@ -26,5 +26,13 @@ branches:
     prevent-increment-of-merged-branch-version: false
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
+  other:
+   regex: ^(?!pull$|pr$|main$).+$
+   mode: ContinuousDeployment
+   tag: ci
+   increment: Patch
+   prevent-increment-of-merged-branch-version: false
+   tag-number-pattern: '[/-](?<number>\d+)[-/]'
+   track-merge-target: false
 ignore:
   sha: []
