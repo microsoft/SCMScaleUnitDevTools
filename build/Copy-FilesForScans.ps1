@@ -21,3 +21,6 @@ if (!(Test-Path $nugetOutput))
 
 Copy-Item $nugetOutput\* -Destination $DestinationDir -Recurse -Verbose
 
+# Unable to find private pdbs, so we need to exclude this file from scanning.
+Remove-Item $DestinationDir\Microsoft.DiaSymReader.Native.amd64.dll
+
