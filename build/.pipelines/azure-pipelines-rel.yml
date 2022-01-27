@@ -142,7 +142,7 @@ stages:
             symbols_pattern: |
                 $(build.artifactstagingdirectory)/ScaleUnitManagementTools/
 
-        #- template: steps/TSAUpload-Template.yml
+        - template: steps/TSAUpload-Template.yml
 
         - task: GithubRelease@1 
           displayName: 'Create GitHub Release'
