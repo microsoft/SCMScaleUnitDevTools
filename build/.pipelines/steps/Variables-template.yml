@@ -27,4 +27,6 @@ variables:      # pipeline-level
 - name: oss_signing_pattern
   value: |
     Newtonsoft.Json.dll
+    DeepEqual.dll
+    FluentAssertions.dll
 

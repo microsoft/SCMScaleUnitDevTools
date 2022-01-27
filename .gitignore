@@ -16,6 +16,9 @@ packages/
 .work/
 /src/**/pkg/**
 
+# Output directory
+out/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

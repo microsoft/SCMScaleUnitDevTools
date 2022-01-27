@@ -60,7 +60,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\Copy-FilesForScans.ps1 = ..\build\Copy-FilesForScans.ps1
-		..\build\pdbpackages.config = ..\build\pdbpackages.config
+		..\build\packages.pdbs.config = ..\build\packages.pdbs.config
 	EndProjectSection
 EndProject
 Global
