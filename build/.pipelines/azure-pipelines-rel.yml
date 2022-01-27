@@ -140,7 +140,7 @@ stages:
                 $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.dll
                 $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.exe
             symbols_pattern: |
-                SRV*https://symweb;$(build.artifactstagingdirectory)/ScaleUnitManagementTools/
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/
 
         #- template: steps/TSAUpload-Template.yml
 

@@ -6,7 +6,7 @@ parameters:
     $(build.artifactstagingdirectory)\*.exe
 - name: symbols_pattern
   type: string
-  default: SRV*https://symweb;$(build.artifactstagingdirectory)
+  default: $(build.artifactstagingdirectory)
 
 steps:
   - task: BinSkim@4
