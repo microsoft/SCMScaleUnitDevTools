@@ -26,8 +26,9 @@ branches:
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
   other:
-   regex: ^(?!pull$|pr$|main$).+$
+   regex: ^(?!pull$|pull-requests?$|pr$|main$).+$
    mode: ContinuousDeployment
+   source-branches: ['main']
    tag: ci
    increment: Patch
    prevent-increment-of-merged-branch-version: false
