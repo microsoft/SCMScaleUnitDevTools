@@ -36,6 +36,12 @@ stages:
 
         - template: steps/Disable-StrongName-template.yml   #template for Disable Strong Name
 
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            useGlobalJson: true
+            workingDirectory: '$(build.sourcesdirectory)/src'
+
         - task: DotNetCoreCLI@2
           displayName: .NET Restore
           inputs:

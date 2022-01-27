@@ -11,6 +11,8 @@ variables:      # pipeline-level
   value: true
 - name: PoolName
   value: '1ES-windows-2019-msdyneng'
+- name: dotnetVersion
+  value: 3.1.22
 - name: strongname_signing_pattern
   value: |
     CLI.dll
@@ -29,4 +31,3 @@ variables:      # pipeline-level
     Newtonsoft.Json.dll
     DeepEqual.dll
     FluentAssertions.dll
-
