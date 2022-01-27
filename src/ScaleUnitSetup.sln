@@ -57,6 +57,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{35F2
 		..\.config\tsaconfig.json = ..\.config\tsaconfig.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\Copy-FilesForScans.ps1 = ..\build\Copy-FilesForScans.ps1
+		..\build\pdbpackages.config = ..\build\pdbpackages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -88,9 +94,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3} = {7556C323-BE8A-474F-A930-EF3D80503D94}
+		{4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3} = {C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45}
 		{106DFE64-27B9-44DC-BAFF-2E26B0108A1D} = {4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3}
 		{35F26810-790C-4F1F-A661-5DBAF367ACE2} = {7556C323-BE8A-474F-A930-EF3D80503D94}
+		{C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45} = {7556C323-BE8A-474F-A930-EF3D80503D94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {239EC2FD-37C2-44AB-B513-5520A1621104}

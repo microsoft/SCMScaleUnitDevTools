@@ -97,6 +97,28 @@ stages:
             scan_pattern: |
               $(Build.ArtifactStagingDirectory)
 
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip'
+            replaceExistingArchive: true
+
+        - task: NuGetCommand@2
+          inputs:
+            command: 'restore'
+            restoreSolution: '$(build.sourcesdirectory)/build/pdbpackages.config'
+            feedsToUse: 'select'
+            vstsFeed: 'e6f12261-a46a-4af1-ac0c-e22bc2c5a478/70a2a6ad-daeb-46a0-9bfb-6b140d06b2ff'
+            includeNuGetOrg: false
+            restoreDirectory: '$(build.sourcesdirectory)/packages'
+
+        - task: PowerShell@2
+          inputs:
+            filePath: '$(build.sourcesdirectory)/build/Copy-FilesForScans.ps1'
+            arguments: '-PackagesDir $(build.sourcesdirectory)/packages -PackagesFile $(build.sourcesdirectory)/build/pdbpackages.config -DestinationDir $(build.artifactstagingdirectory)'
+
         - template: steps/Binskim-Template.yml
           parameters:
             scan_pattern: |
