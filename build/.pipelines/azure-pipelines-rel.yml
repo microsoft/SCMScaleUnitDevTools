@@ -105,6 +105,12 @@ stages:
             archiveFile: '$(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip'
             replaceExistingArchive: true
 
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifact
+          inputs:
+            PathtoPublish: $(build.artifactstagingdirectory)/*.zip
+            ArtifactName: ZipPackage
+
         - task: NuGetCommand@2
           displayName: 'Restore PDBs'
           inputs:
@@ -121,6 +127,7 @@ stages:
             filePath: '$(build.sourcesdirectory)/build/Copy-FilesForScans.ps1'
             arguments: '-PackagesDir $(build.sourcesdirectory)/packages -PackagesFile $(build.sourcesdirectory)/build/packages.pdbs.config -DestinationDir $(build.artifactstagingdirectory)/ScaleUnitManagementTools'
 
+        
         - template: steps/Binskim-Template.yml
           parameters:
             scan_pattern: |
