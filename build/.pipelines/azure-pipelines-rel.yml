@@ -146,6 +146,7 @@ stages:
 
         - task: GithubRelease@1 
           displayName: 'Create GitHub Release'
+          condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
           inputs:
             gitHubConnection: 'Osfaixat_Github'
             action: 'create'
@@ -161,7 +162,7 @@ stages:
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact
           inputs:
-            PathtoPublish: $(build.artifactstagingdirectory)/*.zip
+            PathtoPublish: $(build.artifactstagingdirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip
             ArtifactName: ZipPackage
         
         - task: ComponentGovernanceComponentDetection@0
