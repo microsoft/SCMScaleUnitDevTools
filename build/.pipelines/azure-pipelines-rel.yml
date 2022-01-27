@@ -108,7 +108,7 @@ stages:
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact
           inputs:
-            PathtoPublish: $(build.artifactstagingdirectory)/*.zip
+            PathtoPublish: $(build.artifactstagingdirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip
             ArtifactName: ZipPackage
 
         - task: NuGetCommand@2
@@ -151,7 +151,7 @@ stages:
             changeLogCompareToRelease: 'lastFullRelease'
             changeLogType: 'commitBased'
             assets: |
-                $(Build.ArtifactStagingDirectory)/*.zip
+                $(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip
 
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact
