@@ -63,7 +63,7 @@ stages:
             command: 'publish'
             publishWebProjects: false
             projects: '$(build.sourcesdirectory)/src/CLI/CLI.csproj'
-            arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) --output $(build.artifactstagingdirectory)'
+            arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) --output $(build.artifactstagingdirectory)/ScaleUnitManagementTools'
             modifyOutputPath: false
             zipAfterPublish: false
 
@@ -71,7 +71,7 @@ stages:
 
         - template: steps/CodeSigning-template.yml   #template for CodeSigning for StrongName and Authenticode 
           parameters:
-            codesigning_path: $(build.artifactstagingdirectory)
+            codesigning_path: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
             strongname_codesigning_pattern: $(strongname_signing_pattern)
             codesigning_pattern: $(signing_pattern)
             enable_oss_codesigning : true
@@ -80,7 +80,7 @@ stages:
         - template: steps/SBOM-Template.yml
           parameters: 
             software_name: 'D365-SCMScaleUnitDevTools'
-            pipeline_output: $(build.artifactstagingdirectory)
+            pipeline_output: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
 
         - template: steps/CodeSignValidation-Template.yml
           parameters: 
@@ -99,13 +99,14 @@ stages:
 
         - task: ArchiveFiles@2
           inputs:
-            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools'
             includeRootFolder: false
             archiveType: 'zip'
             archiveFile: '$(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip'
             replaceExistingArchive: true
 
         - task: NuGetCommand@2
+          displayName: 'Restore PDBs'
           inputs:
             command: 'restore'
             restoreSolution: '$(build.sourcesdirectory)/build/packages.pdbs.config'
@@ -115,17 +116,18 @@ stages:
             restoreDirectory: '$(build.sourcesdirectory)/packages'
 
         - task: PowerShell@2
+          displayName: 'Copy PDBs for scans'
           inputs:
             filePath: '$(build.sourcesdirectory)/build/Copy-FilesForScans.ps1'
-            arguments: '-PackagesDir $(build.sourcesdirectory)/packages -PackagesFile $(build.sourcesdirectory)/build/packages.pdbs.config -DestinationDir $(build.artifactstagingdirectory)'
+            arguments: '-PackagesDir $(build.sourcesdirectory)/packages -PackagesFile $(build.sourcesdirectory)/build/packages.pdbs.config -DestinationDir $(build.artifactstagingdirectory)/ScaleUnitManagementTools'
 
         - template: steps/Binskim-Template.yml
           parameters:
             scan_pattern: |
-                $(build.artifactstagingdirectory)\*.dll
-                $(build.artifactstagingdirectory)\*.exe
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.dll
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.exe
             symbols_pattern: |
-                SRV*https://symweb;$(build.artifactstagingdirectory)\
+                SRV*https://symweb;$(build.artifactstagingdirectory)/ScaleUnitManagementTools/
 
         #- template: steps/TSAUpload-Template.yml
 
@@ -147,8 +149,8 @@ stages:
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact
           inputs:
-            PathtoPublish: $(build.artifactstagingdirectory)
-            ArtifactName: NugetPackages
+            PathtoPublish: $(build.artifactstagingdirectory)/*.zip
+            ArtifactName: ZipPackage
         
         - task: ComponentGovernanceComponentDetection@0
           displayName: Component Detection

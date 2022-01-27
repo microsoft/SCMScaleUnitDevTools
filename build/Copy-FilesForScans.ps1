@@ -19,5 +19,5 @@ if (!(Test-Path $nugetOutput))
     throw "$nugetOutput does not exist. Make sure the package has been successfully restored."
 }
 
-Copy-Item $nugetOutput\ -Destination $DestinationDir -Recurse -Verbose
+Copy-Item $nugetOutput\* -Destination $DestinationDir -Recurse -Verbose
 
