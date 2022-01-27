@@ -17,3 +17,4 @@ steps:
       TargetPattern: 'binskimPattern'
       AnalyzeTargetBinskim: ${{ parameters.scan_pattern }}
       AnalyzeLocalSymbolDirectories: ${{ parameters.symbols_pattern }}
+      AnalyzeIgnorePdbLoadError: true
