@@ -19,5 +19,5 @@ if (!(Test-Path $nugetOutput))
     throw "$nugetOutput does not exist. Make sure the package has been successfully restored."
 }
 
-Get-ChildItem $nugetOutput -Recurse | Copy-Item -Destination {Join-Path $DestinationDir $_.FullName.Substring($SourceDir.length)} -Verbose
+Copy-Item $nugetOutput\ -Destination $DestinationDir -Recurse -Verbose
 
