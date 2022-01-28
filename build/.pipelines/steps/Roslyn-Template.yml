@@ -1,0 +1,7 @@
+steps:
+  - task: RoslynAnalyzers@3
+    displayName: Run Roslyn Analyzers
+    inputs:
+      userProvideBuildInfo: 'autoMsBuildInfo'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
