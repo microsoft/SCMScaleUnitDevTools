@@ -1,6 +1,6 @@
 using System;
 
-namespace CLI
+namespace CLI.Utilities
 {
     public class ArgumentParser
     {
