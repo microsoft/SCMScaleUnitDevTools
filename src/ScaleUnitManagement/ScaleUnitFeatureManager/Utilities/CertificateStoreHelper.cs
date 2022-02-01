@@ -41,9 +41,13 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Utilities
 
             var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
 
+#pragma warning disable IA5352 //We need to ensure that this certificate is placed on the root store
             store.Open(OpenFlags.ReadWrite);
+#pragma warning restore IA5352
 
+#pragma warning disable CA5380 //We need to ensure that this certificate is placed on the root store
             store.Add(certificate);
+#pragma warning restore CA5380
 
             store.Close();
         }

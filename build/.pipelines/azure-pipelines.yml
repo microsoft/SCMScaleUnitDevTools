@@ -1,0 +1,129 @@
+name: build
+
+trigger: none
+
+pr:
+  branches:
+    include:
+    - main
+
+pool: $(PoolName)
+
+variables:
+  - template: steps/Variables-template.yml   #template for Variables
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Build_Phase
+        displayName: 'Build'
+        cancelTimeoutInMinutes: 1
+
+        steps:
+        - checkout: self
+          clean: true
+          persistCredentials: true
+
+        - task: gitversion/setup@0
+          inputs:
+            versionSpec: '5.x'
+
+        - task: gitversion/execute@0
+          inputs:
+            useConfigFile: true
+            configFilePath: '$(build.sourcesdirectory)\GitVersion.yml'
+
+        - template: steps/Disable-StrongName-template.yml   #template for Disable Strong Name
+
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            useGlobalJson: true
+            workingDirectory: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Restore
+          inputs:
+            command: 'restore'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Build
+          inputs:
+            command: 'build'
+            projects: '$(build.sourcesdirectory)/src'
+            arguments: '--configuration $(BuildConfiguration) --no-restore'
+            versioningScheme: byEnvVar
+            versionEnvVar: 'GitVersion.SemVer'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Test
+          inputs:
+            command: 'test'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Publish
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '$(build.sourcesdirectory)/src/CLI/CLI.csproj'
+            arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) --output $(build.artifactstagingdirectory)'
+            modifyOutputPath: false
+            zipAfterPublish: true
+
+        - template: steps/Roslyn-Template.yml
+
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifact
+          inputs:
+            PathtoPublish: $(build.artifactstagingdirectory)
+            ArtifactName: Build
+
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Component Detection
+
+        - task: PublishSecurityAnalysisLogs@3
+          inputs:
+            ArtifactName: "CodeAnalysisLogs"
+            ArtifactType: "Container"
+
+        - template: steps/PostAnalysis-template.yml
+
+  - stage: CodeScanning
+    dependsOn: [] # this removes the implicit dependency on any previous stage and causes this to run in parallel
+    displayName: 'Source scanning'
+
+    jobs:
+      - job: CodeScanningJob
+        displayName: 'Source scanning'
+
+        variables:
+          - name: runCodesignValidationInjection
+            value: false
+
+        steps:
+          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+            clean: true
+            fetchDepth: 1 # the depth of commits to ask Git to fetch
+
+          - template: steps/CredScan-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - template: steps/Policheck-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI') }}: # Only run on CI builds
+            - template: steps/TSAUpload-Template.yml
+
+          - task: PublishSecurityAnalysisLogs@3
+            inputs:
+              ArtifactName: "CodeAnalysisLogs"
+              ArtifactType: "Container"
+
+          - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
+            - template: steps/PostAnalysis-template.yml

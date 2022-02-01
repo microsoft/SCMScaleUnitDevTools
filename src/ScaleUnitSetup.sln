@@ -14,43 +14,91 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7556C323-BE8A-474F-A930-EF3D80503D94}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\.gitignore = ..\.gitignore
+		Directory.Build.props = Directory.Build.props
+		..\GitVersion.yml = ..\GitVersion.yml
+		global.json = global.json
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaleUnitManagementTests", "ScaleUnitManagementTests\ScaleUnitManagementTests.csproj", "{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScaleUnitManagementTests", "ScaleUnitManagementTests\ScaleUnitManagementTests.csproj", "{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BC507C5-03C6-4C12-9958-1E9BC018F27F} = {7BC507C5-03C6-4C12-9958-1E9BC018F27F}
 		{728FACCA-8DB6-47BF-BAFE-E580F349F969} = {728FACCA-8DB6-47BF-BAFE-E580F349F969}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\.pipelines\azure-pipelines-compliance.yml = ..\build\.pipelines\azure-pipelines-compliance.yml
+		..\build\.pipelines\azure-pipelines-rel.yml = ..\build\.pipelines\azure-pipelines-rel.yml
+		..\build\.pipelines\azure-pipelines.yml = ..\build\.pipelines\azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "steps", "steps", "{106DFE64-27B9-44DC-BAFF-2E26B0108A1D}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\.pipelines\steps\AntiMalware-Template.yml = ..\build\.pipelines\steps\AntiMalware-Template.yml
+		..\build\.pipelines\steps\Binskim-Template.yml = ..\build\.pipelines\steps\Binskim-Template.yml
+		..\build\.pipelines\steps\CodeQL-Template.yml = ..\build\.pipelines\steps\CodeQL-Template.yml
+		..\build\.pipelines\steps\CodeSigning-template.yml = ..\build\.pipelines\steps\CodeSigning-template.yml
+		..\build\.pipelines\steps\CodeSignValidation-Template.yml = ..\build\.pipelines\steps\CodeSignValidation-Template.yml
+		..\build\.pipelines\steps\CredScan-Template.yml = ..\build\.pipelines\steps\CredScan-Template.yml
+		..\build\.pipelines\steps\Disable-StrongName-template.yml = ..\build\.pipelines\steps\Disable-StrongName-template.yml
+		..\build\.pipelines\steps\Policheck-Template.yml = ..\build\.pipelines\steps\Policheck-Template.yml
+		..\build\.pipelines\steps\PostAnalysis-template.yml = ..\build\.pipelines\steps\PostAnalysis-template.yml
+		..\build\.pipelines\steps\Roslyn-Template.yml = ..\build\.pipelines\steps\Roslyn-Template.yml
+		..\build\.pipelines\steps\SBOM-Template.yml = ..\build\.pipelines\steps\SBOM-Template.yml
+		..\build\.pipelines\steps\TSAUpload-Template.yml = ..\build\.pipelines\steps\TSAUpload-Template.yml
+		..\build\.pipelines\steps\Variables-template.yml = ..\build\.pipelines\steps\Variables-template.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{35F26810-790C-4F1F-A661-5DBAF367ACE2}"
+	ProjectSection(SolutionItems) = preProject
+		..\.config\CredScanSuppressions.json = ..\.config\CredScanSuppressions.json
+		..\.config\PoliCheckExclusions.xml = ..\.config\PoliCheckExclusions.xml
+		..\.config\tsaconfig.json = ..\.config\tsaconfig.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\Copy-FilesForScans.ps1 = ..\build\Copy-FilesForScans.ps1
+		..\build\packages.pdbs.config = ..\build\packages.pdbs.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Debug|x64.ActiveCfg = Debug|x64
+		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Debug|x64.Build.0 = Debug|x64
+		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Release|x64.ActiveCfg = Release|x64
+		{E99018A0-F03F-48D1-BBB5-57FEA5928439}.Release|x64.Build.0 = Release|x64
+		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Debug|x64.ActiveCfg = Debug|x64
+		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Debug|x64.Build.0 = Debug|x64
+		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Release|x64.ActiveCfg = Release|x64
+		{7BC507C5-03C6-4C12-9958-1E9BC018F27F}.Release|x64.Build.0 = Release|x64
+		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Debug|x64.ActiveCfg = Debug|x64
+		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Debug|x64.Build.0 = Debug|x64
+		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Release|x64.ActiveCfg = Release|x64
+		{728FACCA-8DB6-47BF-BAFE-E580F349F969}.Release|x64.Build.0 = Release|x64
+		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Debug|x64.ActiveCfg = Debug|x64
+		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Debug|x64.Build.0 = Debug|x64
+		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Release|x64.ActiveCfg = Release|x64
+		{0DAA1B22-7F61-409E-9930-040C19D4FD6C}.Release|x64.Build.0 = Release|x64
+		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Debug|x64.ActiveCfg = Debug|x64
+		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Debug|x64.Build.0 = Debug|x64
+		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Release|x64.ActiveCfg = Release|x64
+		{30F9FDD9-3715-4057-BD92-043CCC5A1CB3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3} = {C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45}
+		{106DFE64-27B9-44DC-BAFF-2E26B0108A1D} = {4DCAAAD2-C6B1-44E8-B86F-E1B7B982E4B3}
+		{35F26810-790C-4F1F-A661-5DBAF367ACE2} = {7556C323-BE8A-474F-A930-EF3D80503D94}
+		{C69E89A7-EA77-4AB9-8F3A-4A4B5B258C45} = {7556C323-BE8A-474F-A930-EF3D80503D94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {239EC2FD-37C2-44AB-B513-5520A1621104}

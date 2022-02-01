@@ -1,0 +1,33 @@
+variables:      # pipeline-level
+- name: BuildPlatform
+  value: 'win-x64'
+- name: BuildConfiguration
+  value: 'Release'
+- name: VSBuildVer
+  value: 16.0
+- name: LGTM.UploadSnapshot
+  value: true
+- name: Semmle.SkipAnalysis
+  value: true
+- name: PoolName
+  value: '1ES-windows-2019-msdyneng'
+- name: dotnetVersion
+  value: 3.1.22
+- name: strongname_signing_pattern
+  value: |
+    CLI.dll
+    CLIFramework.dll
+    CloudAndEdgeLibs.dll
+    ScaleUnitManagement.dll
+- name: signing_pattern
+  value: |
+    CLI.dll
+    CLI.exe
+    CLIFramework.dll
+    CloudAndEdgeLibs.dll
+    ScaleUnitManagement.dll
+- name: oss_signing_pattern
+  value: |
+    Newtonsoft.Json.dll
+    DeepEqual.dll
+    FluentAssertions.dll

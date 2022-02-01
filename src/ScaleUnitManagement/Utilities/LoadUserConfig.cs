@@ -42,7 +42,7 @@ namespace ScaleUnitManagement.Utilities
 
                 var stringReader = new StringReader(doc.InnerXml);
 
-                return (CloudAndEdgeConfiguration)serializer.Deserialize(stringReader);
+                return (CloudAndEdgeConfiguration)serializer.Deserialize(XmlReader.Create(stringReader));
             }
             catch (Exception ex)
             {

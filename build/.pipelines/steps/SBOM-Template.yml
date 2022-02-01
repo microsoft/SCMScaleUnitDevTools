@@ -1,0 +1,42 @@
+parameters:
+- name: software_name
+  type: string
+- name: pipeline_output
+  type: string
+- name: manifest_output_path
+  type: string
+  default: $(Agent.TempDirectory)\SBOM
+
+steps:
+  - task: PowerShell@1
+    displayName: Create SBOM folder
+    inputs:
+      scriptType: inlineScript
+      scriptName: Deployment/Scripts/LocalAgent/CopyLocalAgentFiles.ps1
+      arguments: -Dir ${{ parameters.manifest_output_path }}
+      inlineScript: >-
+              param(
+                  [Parameter(Mandatory=$true)]
+                  [string]$Dir
+              )
+
+              if (!(Test-Path $Dir))
+              {
+                New-Item -ItemType Directory -Force -Path $Dir
+              }
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Manifest Generator'
+    inputs:
+      BuildDropPath: ${{ parameters.pipeline_output }}
+      BuildComponentPath: '$(build.sourcesdirectory)/packages'
+      PackageName: ${{ parameters.software_name }}
+      PackageVersion: '$(Build.BuildNumber)'
+      ManifestDirPath: ${{ parameters.manifest_output_path }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: SBOM'
+    inputs:
+      PathtoPublish: ${{ parameters.manifest_output_path }}
+      ArtifactName: ${{ parameters.software_name }}-SBOM
+      TargetPath: 'SBOM'
