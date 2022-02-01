@@ -23,7 +23,7 @@ namespace CLI.Menus.SetupToolsOptions
         private async Task RunUpdateScaleunitId(int input, string selectionHistory)
         {
             string scaleUnitId = sortedNonHubScaleUnits[input - 1].ScaleUnitId;
-            var action = new SyncDBAction(scaleUnitId);
+            var action = new UpdateScaleUnitIdAction(scaleUnitId);
             await action.Execute();
         }
     }

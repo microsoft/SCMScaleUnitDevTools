@@ -18,7 +18,7 @@ namespace CLI.Menus
         public async Task DeleteWorkloadsFromScaleUnit(int input, string selectionHistory)
         {
             string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
-            var action = new WorkloadsInstallationStatusAction(scaleUnitId);
+            var action = new DeleteWorkloadsAction(scaleUnitId);
             await action.Execute();
         }
     }
