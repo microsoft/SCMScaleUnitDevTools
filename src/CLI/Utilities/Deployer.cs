@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CLI.Actions;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
-using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
-namespace CLI
+namespace CLI.Utilities
 {
     internal class Deployer
     {
@@ -71,43 +68,15 @@ namespace CLI
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 Console.WriteLine($"\nInitializing environment on {scaleUnit.PrintableName()}");
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-                List<IStep> steps = GetSteps();
-                await RunSteps(steps);
+                var stepGenerator = new StepGenerator(scaleUnit.ScaleUnitId);
+                List<IStep> steps = stepGenerator.GetSteps();
+                foreach (IStep step in steps)
+                {
+                    var action = new StepAction(scaleUnit.ScaleUnitId, step);
+                    await action.Execute();
+                }
 
                 Console.WriteLine($"\nAll initialization steps completed for {scaleUnit.PrintableName()}");
-            }
-        }
-
-        private List<IStep> GetSteps()
-        {
-            var sf = new StepFactory();
-            List<IStep> steps = sf.GetStepsOfType<ICommonStep>();
-            if (ScaleUnitContext.GetScaleUnitId() == "@@")
-            {
-                steps.AddRange(sf.GetStepsOfType<IHubStep>());
-            }
-            else
-            {
-                steps.AddRange(sf.GetStepsOfType<IScaleUnitStep>());
-            }
-            steps.Sort((x, y) => x.Priority().CompareTo(y.Priority()));
-            return steps;
-        }
-
-        private async Task RunSteps(List<IStep> steps)
-        {
-            for (int i = 0; i < steps.Count; i++)
-            {
-                try
-                {
-                    Console.WriteLine("\nExecuting step: " + steps[i].Label());
-                    await steps[i].Run();
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"Error occurred while enabling scale unit feature:\n{ex}");
-                }
             }
         }
 

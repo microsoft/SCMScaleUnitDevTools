@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CLI.Menus;
+using CLI.Utilities;
 using CLIFramework;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
