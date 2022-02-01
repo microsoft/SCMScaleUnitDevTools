@@ -26,6 +26,7 @@ namespace CLI
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.WriteLine("\n" + argumentParser.HelpMessage());
                 return;
             }
 
@@ -39,6 +40,16 @@ namespace CLI
             if (argumentParser.Deploy)
             {
                 await deployer.Deploy();
+            }
+
+            if (argumentParser.DrainPipelines)
+            {
+                await deployer.DrainAllPipelines();
+            }
+
+            if (argumentParser.StartPipelines)
+            {
+                await deployer.StartAllPipelines();
             }
         }
     }

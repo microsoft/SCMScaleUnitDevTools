@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ScaleUnitManagement.DatabaseManager;
+using CLI.Actions;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Hub;
 using ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI
 {
@@ -29,7 +28,7 @@ namespace CLI
             }
 
             await InitializeEnvironments();
-            await PrepareEnvironments();
+            await ConfigureEnvironments();
             await InstallWorkloads();
 
             Console.WriteLine("\nHub and spoke environments have been deployed successfully!\n");
@@ -40,10 +39,31 @@ namespace CLI
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
                 Console.WriteLine($"\nCleaning environment on {scaleUnit.PrintableName()}");
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-                var storageAccountManager = new StorageAccountManager();
-                await storageAccountManager.CleanStorageAccount();
+                var action = new CleanUpStorageAccountAction(scaleUnit.ScaleUnitId);
+                await action.Execute();
             }
+        }
+
+        public async Task DrainAllPipelines()
+        {
+            Console.WriteLine($"\nDraining all data pipelines");
+            foreach (ScaleUnitInstance scaleUnit in Config.ScaleUnitInstances())
+            {
+                var action = new DrainPipelinesAction(scaleUnit.ScaleUnitId);
+                await action.Execute();
+            }
+            Console.WriteLine("Done.");
+        }
+
+        public async Task StartAllPipelines()
+        {
+            Console.WriteLine($"\nStarting all data pipelines");
+            foreach (ScaleUnitInstance scaleUnit in Config.ScaleUnitInstances())
+            {
+                var action = new StartPipelinesAction(scaleUnit.ScaleUnitId);
+                await action.Execute();
+            }
+            Console.WriteLine("Done.");
         }
 
         private async Task InitializeEnvironments()
@@ -91,20 +111,13 @@ namespace CLI
             }
         }
 
-        private async Task PrepareEnvironments()
+        private async Task ConfigureEnvironments()
         {
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 Console.WriteLine($"\nPreparing {scaleUnit.PrintableName()} for installation");
-                if (scaleUnit.ScaleUnitId.Equals("@@"))
-                {
-                    await new HubConfigurationManager().Configure();
-                }
-                else
-                {
-                    await new ScaleUnitConfigurationManager().Configure();
-                }
+                var action = new ConfigureEnvironmentAction(scaleUnit.ScaleUnitId);
+                await action.Execute();
             }
         }
 
@@ -112,16 +125,9 @@ namespace CLI
         {
             foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
             {
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
                 Console.WriteLine($"\nInstalling workloads on {scaleUnit.PrintableName()}");
-                if (scaleUnit.IsHub())
-                {
-                    await new HubWorkloadInstaller().Install();
-                }
-                else
-                {
-                    await new ScaleUnitWorkloadInstaller().Install();
-                }
+                var action = new InstallWorkloadsAction(scaleUnit.ScaleUnitId);
+                await action.Execute();
             }
         }
     }
