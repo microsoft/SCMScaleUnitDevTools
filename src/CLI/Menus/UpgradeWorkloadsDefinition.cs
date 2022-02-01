@@ -23,7 +23,7 @@ namespace CLI.Menus
         public async Task Upgrade(int input, string selectionHistory)
         {
             string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
-            var action = new WorkloadsInstallationStatusAction(scaleUnitId);
+            var action = new UpgradeWorkloadsDefinitionAction(scaleUnitId);
             await action.Execute();
         }
     }
