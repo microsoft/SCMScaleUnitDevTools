@@ -2,7 +2,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.DatabaseManager
 {
-    public class AADAppWhitelisting
+    public class AADAppAllowListing
     {
         public void UpdateAADAppClientTable(string dbName, string userName, string appName, string appId)
         {

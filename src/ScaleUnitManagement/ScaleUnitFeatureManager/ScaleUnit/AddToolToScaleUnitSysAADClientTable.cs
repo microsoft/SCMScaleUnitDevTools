@@ -25,8 +25,8 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             string scaleUnitAppId = scaleUnit.AuthConfiguration.AppId;
             string dbName = scaleUnit.AxDbName;
 
-            var appWhitelisting = new AADAppWhitelisting();
-            appWhitelisting.UpdateAADAppClientTable(dbName, UserName, ScaleUnitAppName, scaleUnitAppId);
+            var allowListing = new AADAppAllowListing();
+            allowListing.UpdateAADAppClientTable(dbName, UserName, ScaleUnitAppName, scaleUnitAppId);
 
             return Task.CompletedTask;
         }

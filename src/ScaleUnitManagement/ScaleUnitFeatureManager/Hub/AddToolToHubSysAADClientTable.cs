@@ -20,16 +20,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
         {
             const string UserName = "ScaleUnitManagement";
             string hubDb = Config.HubScaleUnit().AxDbName;
-            var whitelisting = new AADAppWhitelisting();
+            var allowListing = new AADAppAllowListing();
 
             string interAOSAppId = Config.InterAOSAppId();
             const string InterAOSAppName = "ScaleUnits";
-            whitelisting.UpdateAADAppClientTable(hubDb, UserName, InterAOSAppName, interAOSAppId);
+            allowListing.UpdateAADAppClientTable(hubDb, UserName, InterAOSAppName, interAOSAppId);
 
             const string ScaleUnitAppName = "Scale Unit Management Tool";
             ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             string scaleUnitAppId = scaleUnit.AuthConfiguration.AppId;
-            whitelisting.UpdateAADAppClientTable(hubDb, UserName, ScaleUnitAppName, scaleUnitAppId);
+            allowListing.UpdateAADAppClientTable(hubDb, UserName, ScaleUnitAppName, scaleUnitAppId);
 
             return Task.CompletedTask;
         }
