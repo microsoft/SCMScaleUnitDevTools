@@ -1,5 +1,5 @@
 using System;
-using CLI;
+using CLI.Utilities;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
