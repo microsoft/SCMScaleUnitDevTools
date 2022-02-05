@@ -1,0 +1,13 @@
+steps:
+  - task: PostAnalysis@2
+    inputs:
+      GdnBreakAllTools: false
+      GdnBreakGdnToolApiScan: true
+      GdnBreakGdnToolBinSkim: false
+      GdnBreakGdnToolCodesignValidation: true
+      GdnBreakGdnToolCredScan: true
+      GdnBreakGdnToolPoliCheck: true
+      GdnBreakGdnToolRoslynAnalyzers: true
+      GdnBreakGdnToolSemmle: true
+
+# There is a failure due to binskim that we can't do anything about. Relevant bugs will still be filed by TSA.

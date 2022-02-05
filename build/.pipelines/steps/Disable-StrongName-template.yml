@@ -1,0 +1,56 @@
+steps:
+  - task: PowerShell@2
+    displayName: 'Disable Strong Name'
+    inputs:
+      targetType: inline
+      script: >+
+        <#
+            .SYNOPSIS
+            Disable all strong name verification.
+
+            .DESCRIPTION
+            VSTS Hosted 2017 build agents use strong name verification as of Jan 2017.
+            This means we can't run unit tests on delay-signed assemblies.
+            Run this to take care of that.
+        #>
+
+        # Sorted in order of most preferred sn.exe to least preferred
+        # Search the .NET SDK directories
+
+        $possibleSnExeLocations = @(
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.1 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools',
+            'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools'
+        )
+
+        # Find the first existing path
+
+        $i = 0
+
+        while (-not (Test-Path $possibleSnExeLocations[$i]) -and $i -lt $possibleSnExeLocations.Count) { $i++ }
+
+        if ($i -ge $possibleSnExeLocations.Count) { throw 'Could not find a valid sn.exe path' }
+
+        Write-Host 'Determined valid sn.exe path:'
+
+        Write-Host $possibleSnExeLocations[$i]
+
+        # Disable all, x86
+
+        Write-Host -ForegroundColor Cyan 'Disabling verification for x86...'
+
+        $snPath = $possibleSnExeLocations[$i] + '\sn.exe'
+
+        & $snPath -Vr *
+
+        # Disable all, x64
+
+        Write-Host -ForegroundColor Cyan 'Disabling verification for x64...'
+
+        $sn64Path = $possibleSnExeLocations[$i] + '\x64\sn.exe'
+
+        & $sn64Path -Vr *
