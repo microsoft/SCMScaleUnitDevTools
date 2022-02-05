@@ -1,0 +1,17 @@
+parameters:
+- name: scan_pattern
+  type: string
+  default: |
+    $(Build.SourcesDirectory)\Source
+- name: supressions_file
+  type: string
+  default: |
+    $(Build.SourcesDirectory)\.config\CredScanSuppressions.json
+
+steps:        
+  - task: CredScan@3
+    displayName: Run CredScan
+    inputs:
+      outputFormat: 'pre'
+      scanFolder: ${{ parameters.scan_pattern }}
+      suppressionsFile: ${{ parameters.supressions_file }}

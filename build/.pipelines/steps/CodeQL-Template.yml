@@ -1,0 +1,13 @@
+
+steps:
+  - task: Semmle@1
+    inputs:
+      sourceCodeDirectory: '$(Build.SourcesDirectory)\src'
+      language: 'csharp'
+      buildCommandsString: 'dotnet clean --configuration $(BuildConfiguration)# dotnet build --configuration $(BuildConfiguration) --no-restore'
+      querySuite: 'Recommended'
+      timeout: '1800'
+      ram: '16384'
+      addProjectDirToScanningExclusionList: true
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)

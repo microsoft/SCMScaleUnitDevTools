@@ -51,12 +51,13 @@ namespace ScaleUnitManagement.DatabaseManager
 
             var targetBlobClient = new BlobClient(connectionString, blobContainerName, blobName);
 
-            var blobUriBuilder = new BlobUriBuilder(sasUri)
+            var blobUriBuilder = new BlobUriBuilder(sasUri);
+            if (string.IsNullOrWhiteSpace(blobUriBuilder.BlobName))
             {
-                BlobName = blobName
-            };
-            var blobUri = blobUriBuilder.ToUri();
+                blobUriBuilder.BlobName = blobName;
+            }
 
+            var blobUri = blobUriBuilder.ToUri();
 
             CopyFromUriOperation operation = await targetBlobClient.StartCopyFromUriAsync(blobUri);
 
