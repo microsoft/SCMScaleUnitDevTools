@@ -1,27 +1,239 @@
-trigger:
-- main
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/release
 
-pool:
-  vmImage: 'windows-latest'
+pool: $(PoolName)
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  - template: steps/Variables-template.yml   #template for Variables
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '$(build.sourcesdirectory)/src'
+trigger: none
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '$(build.sourcesdirectory)/src'
-    arguments: '--configuration $(buildConfiguration) --no-restore'
+schedules:
+- cron: 0 3 * * 6 # at 3AM every saturday
+  branches:
+    include:
+    - main
+  always: true
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '$(build.sourcesdirectory)/src'
+pr: none
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Build_Phase
+        displayName: Build
+
+        steps:
+        - checkout: self
+
+        - task: gitversion/setup@0
+          inputs:
+            versionSpec: '5.x'
+
+        - task: gitversion/execute@0
+          inputs:
+            useConfigFile: true
+            configFilePath: '$(build.sourcesdirectory)\GitVersion.yml'
+
+        - template: steps/Disable-StrongName-template.yml   #template for Disable Strong Name
+
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            useGlobalJson: true
+            workingDirectory: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Restore
+          inputs:
+            command: 'restore'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Build
+          inputs:
+            command: 'build'
+            projects: '$(build.sourcesdirectory)/src'
+            arguments: '--configuration $(BuildConfiguration) --no-restore'
+            versioningScheme: byEnvVar
+            versionEnvVar: 'GitVersion.SemVer'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Test
+          inputs:
+            command: 'test'
+            projects: '$(build.sourcesdirectory)/src'
+
+        - task: DotNetCoreCLI@2
+          displayName: .NET Publish
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '$(build.sourcesdirectory)/src/CLI/CLI.csproj'
+            arguments: '--configuration $(BuildConfiguration) --self-contained --runtime $(BuildPlatform) --output $(build.artifactstagingdirectory)/ScaleUnitManagementTools'
+            modifyOutputPath: false
+            zipAfterPublish: false
+
+        - template: steps/CodeQL-Template.yml
+
+        - template: steps/CodeSigning-template.yml   #template for CodeSigning for StrongName and Authenticode 
+          parameters:
+            codesigning_path: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
+            strongname_codesigning_pattern: $(strongname_signing_pattern)
+            codesigning_pattern: $(signing_pattern)
+            enable_oss_codesigning : true
+            oss_codesigning_pattern: $(oss_signing_pattern)
+
+        - template: steps/SBOM-Template.yml
+          parameters: 
+            software_name: 'D365-SCMScaleUnitDevTools'
+            pipeline_output: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
+
+        - template: steps/CodeSignValidation-Template.yml
+          parameters: 
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - template: steps/AntiMalware-Template.yml
+          parameters: 
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - template: steps/CredScan-Template.yml
+          parameters:
+            scan_pattern: |
+              $(Build.ArtifactStagingDirectory)
+
+        - task: NuGetCommand@2
+          displayName: 'Restore PDBs'
+          inputs:
+            command: 'restore'
+            restoreSolution: '$(build.sourcesdirectory)/build/packages.pdbs.config'
+            feedsToUse: 'select'
+            vstsFeed: 'e6f12261-a46a-4af1-ac0c-e22bc2c5a478/70a2a6ad-daeb-46a0-9bfb-6b140d06b2ff'
+            includeNuGetOrg: false
+            restoreDirectory: '$(build.sourcesdirectory)/packages'
+
+        - task: PowerShell@2
+          displayName: 'Copy PDBs for scans'
+          inputs:
+            filePath: '$(build.sourcesdirectory)/build/Copy-FilesForScans.ps1'
+            arguments: '-PackagesDir $(build.sourcesdirectory)/packages -PackagesFile $(build.sourcesdirectory)/build/packages.pdbs.config -DestinationDir $(build.artifactstagingdirectory)/ScaleUnitManagementTools'
+  
+        - template: steps/Binskim-Template.yml
+          parameters:
+            scan_pattern: |
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.dll
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/*.exe
+            symbols_pattern: |
+                $(build.artifactstagingdirectory)/ScaleUnitManagementTools/
+
+        - template: steps/TSAUpload-Template.yml
+
+        - task: PublishBuildArtifacts@1
+          displayName: Publish files for APIScan
+          inputs:
+            PathtoPublish: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
+            ArtifactName: ScaleUnitManagementToolsAPIScan
+        
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Component Detection
+
+        - task: PublishSecurityAnalysisLogs@3
+          inputs:
+            ArtifactName: "CodeAnalysisLogs"
+            ArtifactType: "Container"
+
+        - template: steps/PostAnalysis-template.yml
+
+  - stage: CodeScanning
+    dependsOn: [] # this removes the implicit dependency on any previous stage and causes this to run in parallel
+    displayName: 'Source scanning'
+
+    jobs:
+      - job: CodeScanningJob
+        displayName: 'Source scanning'
+
+        variables:
+          - name: runCodesignValidationInjection
+            value: false
+
+        steps:
+          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+            clean: true
+            fetchDepth: 1 # the depth of commits to ask Git to fetch
+
+          - template: steps/CredScan-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - template: steps/Policheck-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - template: steps/TSAUpload-Template.yml
+
+          - task: PublishSecurityAnalysisLogs@3
+            inputs:
+              ArtifactName: "CodeAnalysisLogs"
+              ArtifactType: "Container"
+
+          - template: steps/PostAnalysis-template.yml
+
+      - job: APIScan_Phase
+        displayName: 'APIScan'
+        timeoutInMinutes: 360
+        dependsOn: Build_Phase
+  
+        pool: 'FinOps-APIScan'
+
+        steps:
+          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+            clean: true
+            fetchDepth: 1 # the depth of commits to ask Git to fetch
+
+          - task: gitversion/setup@0
+            inputs:
+              versionSpec: '5.x'
+
+          - task: gitversion/execute@0
+            inputs:
+              useConfigFile: true
+              configFilePath: '$(build.sourcesdirectory)\GitVersion.yml'
+
+          - task: AzureKeyVault@1
+            inputs:
+                azureSubscription: "$(Azure_Sub)"
+                KeyVaultName: "$(Keyvault_Name)"
+                SecretsFilter: "$(Keyvault_Secret)"
+                RunAsPreJob: false
+      
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: ScaleUnitManagementToolsAPIScan
+              path: $(Build.ArtifactStagingDirectory)
+
+          - task: APIScan@2
+            displayName: 'Run APIScan'
+            env:
+              AzureServicesAuthConnectionString: RunAs=App;AppId=$(App_ID);TenantId=$(Tenant_Id);AppKey=$(ApiScanAppSecretName)
+            inputs:
+              softwareFolder: '$(Build.ArtifactStagingDirectory)'
+              softwareName: d365scm-devtools
+              softwareVersionNum: '$(GitVersion.Major).0.0'
+              mode: 'release'
+              symbolsFolder: $(Build.ArtifactStagingDirectory)
+              isLargeApp: false
+              analyzerTimeout: '20:00:00'
+              verbosityLevel: 'standard'
+              statusUpdateInterval: '00:03:00'
+
+          - template: steps/TSAUpload-Template.yml
+
+          - task: PublishSecurityAnalysisLogs@3
+            displayName: 'Publish Security Analysis Logs'
