@@ -149,42 +149,6 @@ stages:
 
         - template: steps/PostAnalysis-template.yml
 
-  - stage: CodeScanning
-    dependsOn: [] # this removes the implicit dependency on any previous stage and causes this to run in parallel
-    displayName: 'Source scanning'
-
-    jobs:
-      - job: CodeScanningJob
-        displayName: 'Source scanning'
-
-        variables:
-          - name: runCodesignValidationInjection
-            value: false
-
-        steps:
-          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
-            clean: true
-            fetchDepth: 1 # the depth of commits to ask Git to fetch
-
-          - template: steps/CredScan-Template.yml
-            parameters:
-              scan_pattern: |
-                $(Build.SourcesDirectory)
-
-          - template: steps/Policheck-Template.yml
-            parameters:
-              scan_pattern: |
-                $(Build.SourcesDirectory)
-
-          - template: steps/TSAUpload-Template.yml
-
-          - task: PublishSecurityAnalysisLogs@3
-            inputs:
-              ArtifactName: "CodeAnalysisLogs"
-              ArtifactType: "Container"
-
-          - template: steps/PostAnalysis-template.yml
-
       - job: APIScan_Phase
         displayName: 'APIScan'
         timeoutInMinutes: 360
@@ -237,3 +201,39 @@ stages:
 
           - task: PublishSecurityAnalysisLogs@3
             displayName: 'Publish Security Analysis Logs'
+
+  - stage: CodeScanning
+    dependsOn: [] # this removes the implicit dependency on any previous stage and causes this to run in parallel
+    displayName: 'Source scanning'
+
+    jobs:
+      - job: CodeScanningJob
+        displayName: 'Source scanning'
+
+        variables:
+          - name: runCodesignValidationInjection
+            value: false
+
+        steps:
+          - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+            clean: true
+            fetchDepth: 1 # the depth of commits to ask Git to fetch
+
+          - template: steps/CredScan-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - template: steps/Policheck-Template.yml
+            parameters:
+              scan_pattern: |
+                $(Build.SourcesDirectory)
+
+          - template: steps/TSAUpload-Template.yml
+
+          - task: PublishSecurityAnalysisLogs@3
+            inputs:
+              ArtifactName: "CodeAnalysisLogs"
+              ArtifactType: "Container"
+
+          - template: steps/PostAnalysis-template.yml
