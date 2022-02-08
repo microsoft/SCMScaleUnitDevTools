@@ -17,7 +17,7 @@ namespace CLI.Menus.WorkloadMovementOptions
 
         private async Task ShowWorkloadMovementStatusForScaleUnit(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new WorkloadsMovementStatusAction(scaleUnitId);
             await action.Execute();
         }

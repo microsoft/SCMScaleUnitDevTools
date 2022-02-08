@@ -22,7 +22,7 @@ namespace CLI.Menus.WorkloadDataPipelineOptions
 
         private async Task Start(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new StartPipelinesAction(scaleUnitId);
             await action.Execute();
         }

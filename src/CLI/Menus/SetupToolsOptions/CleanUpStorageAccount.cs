@@ -17,7 +17,7 @@ namespace CLI.Menus.SetupToolsOptions
 
         private async Task CleanUpScaleUnitStorageAccount(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new CleanUpStorageAccountAction(scaleUnitId);
             await action.Execute();
         }

@@ -16,7 +16,7 @@ namespace CLI.Menus
 
         private async Task ConfigureScaleUnit(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new ConfigureEnvironmentAction(scaleUnitId);
             await action.Execute();
         }

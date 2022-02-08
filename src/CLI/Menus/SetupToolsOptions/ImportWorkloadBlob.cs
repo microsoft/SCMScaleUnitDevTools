@@ -18,7 +18,7 @@ namespace CLI.Menus.SetupToolsOptions
         {
             string sasToken = CLIController.EnterValuePrompt("Please paste in the blob SAS URL for the blob storage that the workloads should be copied from:");
 
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new ImportWorkloadBlobAction(scaleUnitId, sasToken);
             await action.Execute();
         }

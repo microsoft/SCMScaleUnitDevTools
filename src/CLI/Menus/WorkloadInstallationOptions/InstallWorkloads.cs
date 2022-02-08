@@ -16,7 +16,7 @@ namespace CLI.Menus.WorkloadInstallationOptions
 
         private async Task InstallWorkloadsForScaleUnit(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new InstallWorkloadsAction(scaleUnitId);
             await action.Execute();
         }

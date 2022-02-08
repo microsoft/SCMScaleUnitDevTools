@@ -22,9 +22,9 @@ namespace CLI
             return sortedScaleUnits;
         }
 
-        protected string GetScaleUnitId(int index)
+        protected string GetScaleUnitId(int userInput)
         {
-            return GetSortedScaleUnits()[index].ScaleUnitId;
+            return GetSortedScaleUnits()[userInput - 1].ScaleUnitId;
         }
 
         protected CLIOption Option(string name, Func<int, string, Task> command)

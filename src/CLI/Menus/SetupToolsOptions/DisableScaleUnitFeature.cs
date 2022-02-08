@@ -16,7 +16,7 @@ namespace CLI.Menus.SetupToolsOptions
 
         private async Task RunDisableScaleUnitFeature(int input, string selectionHistory)
         {
-            string scaleUnitId = GetSortedScaleUnits()[input - 1].ScaleUnitId;
+            string scaleUnitId = GetScaleUnitId(input);
             var action = new DisableScaleUnitFeatureAction(scaleUnitId);
             await action.Execute();
         }
