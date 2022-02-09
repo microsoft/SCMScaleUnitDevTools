@@ -87,11 +87,6 @@ stages:
             enable_oss_codesigning : true
             oss_codesigning_pattern: $(oss_signing_pattern)
 
-        - template: steps/SBOM-Template.yml
-          parameters: 
-            software_name: 'D365-SCMScaleUnitDevTools'
-            pipeline_output: $(build.artifactstagingdirectory)/ScaleUnitManagementTools
-
         - template: steps/CodeSignValidation-Template.yml
           parameters: 
             scan_pattern: |
