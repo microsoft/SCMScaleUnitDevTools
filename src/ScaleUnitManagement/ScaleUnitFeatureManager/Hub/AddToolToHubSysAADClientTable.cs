@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ScaleUnitManagement.DatabaseManager;
 using ScaleUnitManagement.Utilities;
@@ -22,14 +23,22 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.Hub
             string hubDb = Config.HubScaleUnit().AxDbName;
             var allowListing = new AADAppAllowListing();
 
-            string interAOSAppId = Config.InterAOSAppId();
-            const string InterAOSAppName = "ScaleUnits";
-            allowListing.UpdateAADAppClientTable(hubDb, UserName, InterAOSAppName, interAOSAppId);
+            try
+            {
+                string interAOSAppId = Config.InterAOSAppId();
+                const string InterAOSAppName = "ScaleUnits";
+                allowListing.UpdateAADAppClientTable(hubDb, UserName, InterAOSAppName, interAOSAppId);
 
-            const string ScaleUnitAppName = "Scale Unit Management Tool";
-            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
-            string scaleUnitAppId = scaleUnit.AuthConfiguration.AppId;
-            allowListing.UpdateAADAppClientTable(hubDb, UserName, ScaleUnitAppName, scaleUnitAppId);
+                const string ScaleUnitAppName = "Scale Unit Management Tool";
+                ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+                string scaleUnitAppId = scaleUnit.AuthConfiguration.AppId;
+                allowListing.UpdateAADAppClientTable(hubDb, UserName, ScaleUnitAppName, scaleUnitAppId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.WriteLine($"\nIf the {UserName} user does not exist, run Deployment.Setup.exe fullall sync to create it");
+            }
 
             return Task.CompletedTask;
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ScaleUnitManagement.DatabaseManager;
 using ScaleUnitManagement.Utilities;
@@ -26,7 +27,16 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             string dbName = scaleUnit.AxDbName;
 
             var allowListing = new AADAppAllowListing();
-            allowListing.UpdateAADAppClientTable(dbName, UserName, ScaleUnitAppName, scaleUnitAppId);
+
+            try
+            {
+                allowListing.UpdateAADAppClientTable(dbName, UserName, ScaleUnitAppName, scaleUnitAppId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.WriteLine($"\nIf the {UserName} user does not exist, run Deployment.Setup.exe fullall sync to create it");
+            }
 
             return Task.CompletedTask;
         }
