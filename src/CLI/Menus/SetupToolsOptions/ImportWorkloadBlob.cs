@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using System;
 using System.Collections.Generic;
-using ScaleUnitManagement.DatabaseManager;
+using CLI.Actions;
 
-namespace CLI.SetupToolsOptions
+namespace CLI.Menus.SetupToolsOptions
 {
     internal class ImportWorkloadBlob : DevToolMenu
     {
@@ -18,16 +17,10 @@ namespace CLI.SetupToolsOptions
         private async Task ImportWorkloadBlobFromSasToken(int input, string selectionHistory)
         {
             string sasToken = CLIController.EnterValuePrompt("Please paste in the blob SAS URL for the blob storage that the workloads should be copied from:");
-            var storageAccountManager = new StorageAccountManager();
-            try
-            {
-                await storageAccountManager.ImportWorkloadsBlob(sasToken);
-                Console.WriteLine("Done");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An exception occured while importing blobs: {ex.Message}");
-            }
+
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new ImportWorkloadBlobAction(scaleUnitId, sasToken);
+            await action.Execute();
         }
     }
 }

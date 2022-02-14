@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI.WorkloadDataPipelineOptions
+namespace CLI.Menus.WorkloadDataPipelineOptions
 {
     internal class StartPipelines : DevToolMenu
     {
@@ -20,10 +20,11 @@ namespace CLI.WorkloadDataPipelineOptions
             Console.WriteLine("Done\n");
         }
 
-        public async Task Start(int input, string selectionHistory)
+        private async Task Start(int input, string selectionHistory)
         {
-            var pipelineManager = new PipelineManager();
-            await pipelineManager.StartWorkloadDataPipelines();
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new StartPipelinesAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

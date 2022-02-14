@@ -22,9 +22,9 @@ namespace CLI
             return sortedScaleUnits;
         }
 
-        protected string GetScaleUnitId(int index)
+        protected string GetScaleUnitId(int userInput)
         {
-            return GetSortedScaleUnits()[index].ScaleUnitId;
+            return GetSortedScaleUnits()[userInput - 1].ScaleUnitId;
         }
 
         protected CLIOption Option(string name, Func<int, string, Task> command)
@@ -37,18 +37,9 @@ namespace CLI
             var options = new List<CLIOption>();
             foreach (ScaleUnitInstance scaleUnit in scaleUnits)
             {
-                options.Add(Option(scaleUnit.PrintableName(), RunInScaleUnitContext(scaleUnit, command)));
+                options.Add(Option(scaleUnit.PrintableName(), command));
             }
             return options;
-        }
-
-        private Func<int, string, Task> RunInScaleUnitContext(ScaleUnitInstance scaleUnit, Func<int, string, Task> command)
-        {
-            return async (input, selectionHistory) =>
-            {
-                using var context = ScaleUnitContext.CreateContext(scaleUnit.ScaleUnitId);
-                await command(input, selectionHistory);
-            };
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using CLI.Menus;
+using CLI.Utilities;
 using CLIFramework;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 
@@ -25,6 +27,7 @@ namespace CLI
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.WriteLine("\n" + argumentParser.HelpMessage());
                 return;
             }
 
@@ -38,6 +41,16 @@ namespace CLI
             if (argumentParser.Deploy)
             {
                 await deployer.Deploy();
+            }
+
+            if (argumentParser.DrainPipelines)
+            {
+                await deployer.DrainAllPipelines();
+            }
+
+            if (argumentParser.StartPipelines)
+            {
+                await deployer.StartAllPipelines();
             }
         }
     }

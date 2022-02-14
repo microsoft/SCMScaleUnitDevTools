@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.Utilities;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI.WorkloadInstallationOptions
+namespace CLI.Menus.WorkloadInstallationOptions
 {
     internal class InstallWorkloads : DevToolMenu
     {
@@ -17,10 +16,9 @@ namespace CLI.WorkloadInstallationOptions
 
         private async Task InstallWorkloadsForScaleUnit(int input, string selectionHistory)
         {
-            if (ScaleUnitContext.GetScaleUnitId() == "@@")
-                await new HubWorkloadInstaller().Install();
-            else
-                await new ScaleUnitWorkloadInstaller().Install();
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new InstallWorkloadsAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

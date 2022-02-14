@@ -1,11 +1,14 @@
 using System;
 
-namespace CLI
+namespace CLI.Utilities
 {
     public class ArgumentParser
     {
         public bool Deploy { get; set; } = false;
         public bool CleanStorage { get; set; } = false;
+        public bool DrainPipelines { get; set; } = false;
+        public bool StartPipelines { get; set; } = false;
+
         private bool[] matched;
         private string[] arguments;
 
@@ -16,12 +19,14 @@ namespace CLI
 
             Deploy = ParseArgument("--single-box-deploy");
             CleanStorage = ParseArgument("--clean-storage");
+            DrainPipelines = ParseArgument("--drain-pipelines");
+            StartPipelines = ParseArgument("--start-pipelines");
 
             for (int i = 0; i < matched.Length; i++)
             {
                 if (!matched[i])
                 {
-                    throw new Exception($"Did not recognize argument {args[i]}. Allowed arguments are \"--single-box-deploy\" and \"--clean-storage\"");
+                    throw new Exception($"Did not recognize argument {args[i]}.");
                 }
             }
         }
@@ -35,6 +40,16 @@ namespace CLI
                 return true;
             }
             return false;
+        }
+
+        public string HelpMessage()
+        {
+            return "Usage: program [options]\n" +
+                "--clean-storage        Cleans all Azure storage accounts for hub and spoke\n" +
+                "--single-box-deploy    Prepares and installs hub and spoke environments\n" +
+                "--drain-pipelines      Drains pipelines between hub and spoke\n" +
+                "--start-pipelines      Starts pipelines between hub and spoke\n" +
+                "If no options are given the UI will run.";
         }
     }
 }
