@@ -26,7 +26,7 @@ namespace CLI
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 Console.WriteLine("\n" + argumentParser.HelpMessage());
                 return;
             }
