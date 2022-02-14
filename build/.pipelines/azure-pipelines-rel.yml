@@ -158,12 +158,6 @@ stages:
             changeLogType: 'commitBased'
             assets: |
                 $(Build.ArtifactStagingDirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip
-
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Artifact
-          inputs:
-            PathtoPublish: $(build.artifactstagingdirectory)/ScaleUnitManagementTools_v$(GitVersion.SemVer).zip
-            ArtifactName: ZipPackage
         
         - task: ComponentGovernanceComponentDetection@0
           displayName: Component Detection
