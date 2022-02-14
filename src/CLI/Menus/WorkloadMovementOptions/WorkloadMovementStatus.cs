@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CLI.Actions;
 using CLIFramework;
-using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
-namespace CLI.WorkloadMovementOptions
+namespace CLI.Menus.WorkloadMovementOptions
 {
     internal class WorkloadMovementStatus : DevToolMenu
     {
@@ -17,8 +17,9 @@ namespace CLI.WorkloadMovementOptions
 
         private async Task ShowWorkloadMovementStatusForScaleUnit(int input, string selectionHistory)
         {
-            var workloadMover = new WorkloadMover();
-            await workloadMover.ShowMovementStatus();
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new WorkloadsMovementStatusAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }
