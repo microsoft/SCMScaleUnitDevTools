@@ -1,3 +1,4 @@
+using System;
 using ScaleUnitManagement.Utilities;
 
 namespace ScaleUnitManagement.DatabaseManager
@@ -17,7 +18,21 @@ namespace ScaleUnitManagement.DatabaseManager
             ";
 
             var sqlQueryExecutor = new SqlQueryExecutor();
-            sqlQueryExecutor.Execute(sqlQuery);
+
+            try
+            {
+                sqlQueryExecutor.Execute(sqlQuery);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains($"No user exists named {userName}"))
+                {
+                    Console.WriteLine($"\nUser \"{userName}\" does not exist, run Deployment.Setup.exe fullall sync to create it\n");
+                }
+                throw;
+            }
+
+
         }
     }
 }

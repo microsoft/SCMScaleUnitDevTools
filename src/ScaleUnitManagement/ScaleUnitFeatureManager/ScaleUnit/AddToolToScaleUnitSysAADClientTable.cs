@@ -35,7 +35,7 @@ namespace ScaleUnitManagement.ScaleUnitFeatureManager.ScaleUnit
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"\nIf the {UserName} user does not exist, run Deployment.Setup.exe fullall sync to create it");
+                Console.WriteLine("\nFailed to add CLI tool App to SysAADClientTable.");
             }
 
             return Task.CompletedTask;
