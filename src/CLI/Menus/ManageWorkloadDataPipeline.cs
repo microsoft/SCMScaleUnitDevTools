@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CLI.WorkloadDataPipelineOptions;
+using CLI.Menus.WorkloadDataPipelineOptions;
 using CLIFramework;
 
-namespace CLI
+namespace CLI.Menus
 {
     internal class ManageWorkloadDataPipeline : DevToolMenu
     {

@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using System;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System.Collections.Generic;
+using CLI.Actions;
 
-namespace CLI.SetupToolsOptions
+namespace CLI.Menus.SetupToolsOptions
 {
     internal class SyncDB : DevToolMenu
     {
@@ -15,17 +14,11 @@ namespace CLI.SetupToolsOptions
             await CLIController.ShowScreen(screen);
         }
 
-        private Task RunSyncDB(int input, string selectionHistory)
+        private async Task RunSyncDB(int input, string selectionHistory)
         {
-            try
-            {
-                new RunDBSync().Run();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"An error occured while trying to run DbSync:\n{ex}");
-            }
-            return Task.CompletedTask;
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new SyncDBAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }

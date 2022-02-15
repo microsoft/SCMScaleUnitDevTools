@@ -1,18 +1,19 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ScaleUnitManagement.Utilities;
 using ScaleUnitManagement.WorkloadSetupOrchestrator;
-using System;
 
-namespace CLI.WorkloadMovementOptions
+namespace CLI.Actions
 {
-    internal class MoveWorkloads
+    internal class MoveAllWorkloadsAction : IAction
     {
-        public async Task MoveAllWorkloads(int input, string selectionHistory)
+        public async Task Execute()
         {
             try
             {
                 Console.WriteLine("Moving all workloads to the hub");
-                System.Collections.Generic.List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
+                List<ScaleUnitInstance> scaleUnitInstances = Config.ScaleUnitInstances();
 
                 foreach (ScaleUnitInstance scaleUnit in scaleUnitInstances)
                 {

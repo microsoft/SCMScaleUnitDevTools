@@ -1,11 +1,9 @@
 using System.Threading.Tasks;
 using CLIFramework;
-using System;
-using ScaleUnitManagement.ScaleUnitFeatureManager.Common;
 using System.Collections.Generic;
-using ScaleUnitManagement.Utilities;
+using CLI.Actions;
 
-namespace CLI.SetupToolsOptions
+namespace CLI.Menus.SetupToolsOptions
 {
     internal class DisableScaleUnitFeature : DevToolMenu
     {
@@ -16,23 +14,11 @@ namespace CLI.SetupToolsOptions
             await CLIController.ShowScreen(screen);
         }
 
-        private Task RunDisableScaleUnitFeature(int input, string selectionHistory)
+        private async Task RunDisableScaleUnitFeature(int input, string selectionHistory)
         {
-            try
-            {
-                new StopServices().Run();
-                using (var webConfig = new WebConfig())
-                {
-                    SharedWebConfig.Configure(webConfig, isScaleUnitFeatureEnabled: false);
-                }
-                new RunDBSync().Run(isScaleUnitFeatureEnabled: false);
-                new StartServices().Run();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"An error occured while trying to disable scale unit feature:\n{ex}");
-            }
-            return Task.CompletedTask;
+            string scaleUnitId = GetScaleUnitId(input);
+            var action = new DisableScaleUnitFeatureAction(scaleUnitId);
+            await action.Execute();
         }
     }
 }
