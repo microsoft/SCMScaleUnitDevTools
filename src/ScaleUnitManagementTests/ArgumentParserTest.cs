@@ -20,10 +20,12 @@ namespace ScaleUnitManagementTests
         public void BeforeParsing_HasInitialValues()
         {
             // Arrange + Act + Assert
-            argumentParser.Deploy.Should().BeFalse();
+            argumentParser.SingleBoxDeploy.Should().BeFalse();
             argumentParser.CleanStorage.Should().BeFalse();
             argumentParser.DrainPipelines.Should().BeFalse();
             argumentParser.StartPipelines.Should().BeFalse();
+            argumentParser.HubDeploy.Should().BeFalse();
+            argumentParser.SpokeDeploy.Should().BeFalse();
         }
 
         [TestMethod]
@@ -34,7 +36,7 @@ namespace ScaleUnitManagementTests
             argumentParser.Parse(arguments);
 
             // Assert
-            argumentParser.Deploy.Should().BeTrue();
+            argumentParser.SingleBoxDeploy.Should().BeTrue();
             argumentParser.CleanStorage.Should().BeTrue();
             argumentParser.DrainPipelines.Should().BeTrue();
             argumentParser.StartPipelines.Should().BeTrue();
@@ -45,6 +47,19 @@ namespace ScaleUnitManagementTests
         {
             // Arrange
             string[] arguments = { "--unknown-argument" };
+
+            // Act
+            Action act = () => argumentParser.Parse(arguments);
+
+            // Assert
+            act.Should().Throw<Exception>();
+        }
+
+        [TestMethod]
+        public void Parse_WithMultipleDeployArguments_ThrowsError()
+        {
+            // Arrange
+            string[] arguments = { "--hub-deploy --spoke-deploy" };
 
             // Act
             Action act = () => argumentParser.Parse(arguments);
