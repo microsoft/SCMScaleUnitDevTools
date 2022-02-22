@@ -6,11 +6,10 @@ namespace ScaleUnitManagement.Utilities
     public class SqlQueryExecutor
     {
         private readonly string dbName;
-        private readonly ScaleUnitInstance scaleUnit;
 
         public SqlQueryExecutor()
         {
-            scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
+            ScaleUnitInstance scaleUnit = Config.FindScaleUnitWithId(ScaleUnitContext.GetScaleUnitId());
             dbName = scaleUnit.AxDbName;
         }
 
