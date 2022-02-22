@@ -22,13 +22,14 @@ namespace CLI
         /// <param name="cleanStorage">Cleans all Azure storage accounts for hub and spoke</param>
         /// <param name="drainPipelines">Drains pipelines between hub and spoke</param>
         /// <param name="startPipelines">Starts pipelines between hub and spoke</param>
-        public static async Task Main(bool singleBoxDeploy,
-                bool hubDeploy,
-                bool spokeDeploy,
-                bool cleanStorage,
-                bool drainPipelines,
-                bool startPipelines
-            )
+        public static async Task Main(
+            bool singleBoxDeploy,
+            bool hubDeploy,
+            bool spokeDeploy,
+            bool cleanStorage,
+            bool drainPipelines,
+            bool startPipelines
+        )
         {
             CheckForAdminAccess.ValidateCurrentUserIsProcessAdmin();
 
