@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.Threading.Tasks;
 using CLI.Menus;
 using CLI.Utilities;
@@ -16,24 +17,14 @@ namespace CLI
             if (args.Length == 0)
             {
                 await CLIController.Run(new RootMenu());
-                return;
             }
-
-            var argumentParser = new ArgumentParser();
-            try
+            else
             {
-                argumentParser.Parse(args);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                Console.WriteLine("\n" + argumentParser.HelpMessage());
-                return;
-            }
+                var argumentHandler = new ArgumentHandler();
+                RootCommand rootCommand = argumentHandler.BuildRootCommand();
 
-            var argumentHandler = new ArgumentHandler();
-            await argumentHandler.RunScripts(argumentParser);
-
+                await rootCommand.InvokeAsync(args);
+            }
         }
     }
 }
