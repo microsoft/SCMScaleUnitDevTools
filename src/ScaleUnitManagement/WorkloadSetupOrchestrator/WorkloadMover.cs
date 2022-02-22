@@ -51,15 +51,35 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
 
         public async Task EmergencyTransitionToHub()
         {
-            IAOSClient scaleUnitAosClient = await GetScaleUnitAosClient();
             IAOSClient hubAosClient = await GetHubAosClient();
             List<WorkloadInstance> workloadInstances = null;
-            await ReliableRun.Execute(async () => workloadInstances = await scaleUnitAosClient.GetWorkloadInstances(), "Getting workload instances");
+            await ReliableRun.Execute(async () => workloadInstances = await hubAosClient.GetWorkloadInstances(), "Getting workload instances");
+            string scaleUnitId = ScaleUnitContext.GetScaleUnitId();
+            int movedWorkloads = 0;
 
             foreach (WorkloadInstance workloadInstance in workloadInstances)
             {
-                workloadInstance.ExecutingEnvironmentOverride = CreateTemporalAssignment("@@", DateTime.UtcNow);
-                await ReliableRun.Execute(async () => await hubAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+                if (workloadInstance.ExecutingEnvironmentOverride != null)
+                {
+                    continue;
+                }
+
+                if (workloadInstance.ExecutingEnvironment.Any())
+                {
+                    TemporalAssignment lastAssignment = workloadInstance.ExecutingEnvironment.Last();
+                    if (scaleUnitId.Equals(lastAssignment?.Environment.ScaleUnitId))
+                    {
+                        workloadInstance.ExecutingEnvironmentOverride = CreateTemporalAssignment("@@", DateTime.UtcNow);
+                        await ReliableRun.Execute(async () => await hubAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+                        Console.WriteLine($"Registered emergency transition to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload with id {workloadInstance.Id} from scale unit {scaleUnit.ScaleUnitId}");
+                        movedWorkloads++;
+                    }
+                }
+            }
+            
+            if (movedWorkloads == 0)
+            {
+                Console.WriteLine($"No workloads were assigned to {scaleUnit.ScaleUnitId}.");
             }
         }
 
