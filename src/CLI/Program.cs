@@ -11,6 +11,9 @@ using ScaleUnitManagement.Utilities;
 
 namespace CLI
 {
+    /// <summary>
+    /// CLI Program class
+    /// </summary>
     public class Program
     {
         /// <summary>
