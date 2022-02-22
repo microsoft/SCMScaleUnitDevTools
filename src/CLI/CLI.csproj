@@ -9,6 +9,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -21,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>    
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1"  />
+    <PackageReference Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22114.1" />
   </ItemGroup>
 
 </Project>
