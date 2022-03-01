@@ -70,7 +70,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
                     if (scaleUnitId.Equals(lastAssignment?.Environment.ScaleUnitId))
                     {
                         workloadInstance.ExecutingEnvironmentOverride = CreateTemporalAssignment("@@", DateTime.UtcNow);
-                        await ReliableRun.Execute(async () => await hubAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Moving workload instance from scale unit {scaleUnit.ScaleUnitId} to the hub");
+                        await ReliableRun.Execute(async () => await hubAosClient.WriteWorkloadInstances(new List<WorkloadInstance> { workloadInstance }), $"Performing emergency transition for workload instances from scale unit {scaleUnit.ScaleUnitId} to the hub");
                         Console.WriteLine($"Registered emergency transition to hub for {workloadInstance.VersionedWorkload.Workload.Name} workload with id {workloadInstance.Id} from scale unit {scaleUnit.ScaleUnitId}");
                         movedWorkloads++;
                     }
