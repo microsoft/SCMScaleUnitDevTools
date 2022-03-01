@@ -79,7 +79,7 @@ namespace ScaleUnitManagement.WorkloadSetupOrchestrator
             
             if (movedWorkloads == 0)
             {
-                Console.WriteLine($"No workloads were assigned to {scaleUnit.ScaleUnitId}.");
+                Console.WriteLine($"No workloads are assigned to {scaleUnit.ScaleUnitId}, from the hub's perspective.");
             }
         }
 
