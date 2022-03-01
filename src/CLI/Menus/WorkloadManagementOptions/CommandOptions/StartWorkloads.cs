@@ -4,13 +4,15 @@ using System.Threading.Tasks;
 using CLI.Actions;
 using CLIFramework;
 
-namespace CLI.Menus.WorkloadDataPipelineOptions
+namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class StartPipelines : DevToolMenu
+    internal class StartWorkloads : LeafMenu
     {
+        public override string Description => "Start workload data pipelines";
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), Start);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
             var screen = new MultiSelectScreen(options, selectionHistory,
                 $"Please select the environment(s) you want to start.\n" +
                 $"Press enter to start the workloads on all environments.\n",
@@ -20,10 +22,10 @@ namespace CLI.Menus.WorkloadDataPipelineOptions
             Console.WriteLine("Done\n");
         }
 
-        private async Task Start(int input, string selectionHistory)
+        protected async override Task PerformAction(int input, string selectionHistory)
         {
             string scaleUnitId = GetScaleUnitId(input);
-            var action = new StartPipelinesAction(scaleUnitId);
+            var action = new StartWorkloadsAction(scaleUnitId);
             await action.Execute();
         }
     }

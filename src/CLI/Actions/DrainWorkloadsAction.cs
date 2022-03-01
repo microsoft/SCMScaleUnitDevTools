@@ -3,9 +3,9 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI.Actions
 {
-    internal class DrainPipelinesAction : ContextualAction
+    internal class DrainWorkloadsAction : ContextualAction
     {
-        public DrainPipelinesAction(string scaleUnitId) : base(scaleUnitId)
+        public DrainWorkloadsAction(string scaleUnitId) : base(scaleUnitId)
         {
         }
 

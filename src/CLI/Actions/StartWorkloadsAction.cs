@@ -3,9 +3,9 @@ using ScaleUnitManagement.WorkloadSetupOrchestrator;
 
 namespace CLI.Actions
 {
-    internal class StartPipelinesAction : ContextualAction
+    internal class StartWorkloadsAction : ContextualAction
     {
-        public StartPipelinesAction(string scaleUnitId) : base(scaleUnitId)
+        public StartWorkloadsAction(string scaleUnitId) : base(scaleUnitId)
         {
         }
 

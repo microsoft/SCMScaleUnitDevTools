@@ -3,18 +3,20 @@ using CLIFramework;
 using System.Collections.Generic;
 using CLI.Actions;
 
-namespace CLI.Menus.SetupToolsOptions
+namespace CLI.Menus.DatabaseManagementOptions
 {
-    internal class SyncDB : DevToolMenu
+    internal class SyncDB : LeafMenu
     {
+        public override string Description => "Sync DB";
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), RunSyncDB);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
             var screen = new SingleSelectScreen(options, selectionHistory, "Please select the database you would like to sync:\n", "\nDatabase to sync: ");
             await CLIController.ShowScreen(screen);
         }
 
-        private async Task RunSyncDB(int input, string selectionHistory)
+        protected override async Task PerformAction(int input, string selectionHistory)
         {
             string scaleUnitId = GetScaleUnitId(input);
             var action = new SyncDBAction(scaleUnitId);

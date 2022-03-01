@@ -6,21 +6,23 @@ using CLIFramework;
 using ScaleUnitManagement.ScaleUnitFeatureManager.Utilities;
 using ScaleUnitManagement.Utilities;
 
-namespace CLI.Menus
+namespace CLI.Menus.ScaleUnitManagementOptions
 {
-    internal class EnableScaleUnitFeature : DevToolMenu
+    internal class EnableScaleUnitFeature : LeafMenu
     {
         protected List<IStep> availableSteps;
         private ScaleUnitInstance scaleUnit;
 
+        public override string Description => "Initialize the hybrid topology";
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PrintAvailableSteps);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), ShowAvailableSteps);
             var screen = new SingleSelectScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to configure?: ");
             await CLIController.ShowScreen(screen);
         }
 
-        private async Task PrintAvailableSteps(int input, string selectionHistory)
+        private async Task ShowAvailableSteps(int input, string selectionHistory)
         {
             scaleUnit = GetSortedScaleUnits()[input - 1];
             var options = new List<CLIOption>();
@@ -29,7 +31,7 @@ namespace CLI.Menus
 
             foreach (IStep step in availableSteps)
             {
-                options.Add(new CLIOption() { Name = step.Label(), Command = RunStep });
+                options.Add(new CLIOption() { Name = step.Label(), Command = PerformAction });
             }
 
             string helpMessage = $"Please select steps you would like to run by supplying the step numbers\n" +
@@ -42,7 +44,7 @@ namespace CLI.Menus
             await CLIController.ShowScreen(screen);
         }
 
-        private async Task RunStep(int input, string selectionHistory)
+        protected override async Task PerformAction(int input, string selectionHistory)
         {
             var action = new StepAction(scaleUnit.ScaleUnitId, availableSteps[input - 1]);
             await action.Execute();

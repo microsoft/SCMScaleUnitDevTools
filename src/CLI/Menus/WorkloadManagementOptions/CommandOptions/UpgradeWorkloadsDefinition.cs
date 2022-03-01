@@ -4,13 +4,15 @@ using System.Threading.Tasks;
 using CLI.Actions;
 using CLIFramework;
 
-namespace CLI.Menus
+namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class UpgradeWorkloadsDefinition : DevToolMenu
+    internal class UpgradeWorkloadsDefinition : LeafMenu
     {
+        public override string Description => "Upgrade workloads definition";
+
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), Upgrade);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
             var screen = new MultiSelectScreen(options, selectionHistory,
                 $"Please select the environment(s) you want to upgrade the workload definitions on\n" +
                 $"Press enter to upgrade the workloads on all environments.\n",
@@ -20,7 +22,7 @@ namespace CLI.Menus
             Console.WriteLine("Done\n");
         }
 
-        public async Task Upgrade(int input, string selectionHistory)
+        protected async override Task PerformAction(int input, string selectionHistory)
         {
             string scaleUnitId = GetScaleUnitId(input);
             var action = new UpgradeWorkloadsDefinitionAction(scaleUnitId);
