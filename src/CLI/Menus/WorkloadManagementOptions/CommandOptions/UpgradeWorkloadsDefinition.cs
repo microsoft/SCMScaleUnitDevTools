@@ -6,13 +6,15 @@ using CLIFramework;
 
 namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class UpgradeWorkloadsDefinition : LeafMenu
+    internal class UpgradeWorkloadsDefinition : ActionMenu
     {
-        public override string Description => "Upgrade workloads definition";
+        public override string Label => "Upgrade workloads definition";
+
+        protected override IAction Action => new UpgradeWorkloadsDefinitionAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
             var screen = new MultiSelectScreen(options, selectionHistory,
                 $"Please select the environment(s) you want to upgrade the workload definitions on\n" +
                 $"Press enter to upgrade the workloads on all environments.\n",
@@ -20,13 +22,6 @@ namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
             await CLIController.ShowScreen(screen);
 
             Console.WriteLine("Done\n");
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new UpgradeWorkloadsDefinitionAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }

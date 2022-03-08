@@ -5,7 +5,7 @@ namespace CLI.Menus
 {
     internal class DatabaseManagementMenu : NavigationMenu
     {
-        public override string Description => "Database management";
+        public override string Label => "Database management";
 
         protected override List<DevToolMenu> SubMenus()
         {

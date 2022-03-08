@@ -3,18 +3,15 @@ using CLI.Actions;
 
 namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class MoveWorkloads : LeafMenu
+    internal class MoveWorkloads : ActionMenu
     {
-        public override string Description => "Move all workloads to the hub";
+        public override string Label => "Move all workloads to the hub";
+
+        protected override IAction Action => new MoveAllWorkloadsAction();
 
         public override async Task Show(int input, string selectionHistory)
         {
-            await PerformAction(input, selectionHistory);
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            await new MoveAllWorkloadsAction().Execute();
+            await Action.Execute();
         }
     }
 }

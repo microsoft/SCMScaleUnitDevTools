@@ -5,22 +5,17 @@ using CLIFramework;
 
 namespace CLI.Menus.ScaleUnitManagementOptions
 {
-    internal class ConfigureEnvironment : LeafMenu
+    internal class ConfigureEnvironment : ActionMenu
     {
-        public override string Description => "Prepare environments for workload installation";
+        public override string Label => "Prepare environments for workload installation";
+
+        protected override IAction Action => new ConfigureEnvironmentAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
             var screen = new SingleSelectScreen(options, selectionHistory, "Environments:\n", "\nWhich environment would you like to prepare for workload installation?: ");
             await CLIController.ShowScreen(screen);
-        }
-
-        protected override async Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new ConfigureEnvironmentAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace CLI.Menus
 {
     internal class ScaleUnitManagementMenu : NavigationMenu
     {
-        public override string Description => "Scale unit management";
+        public override string Label => "Scale unit management";
 
         protected override List<DevToolMenu> SubMenus()
         {

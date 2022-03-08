@@ -5,23 +5,18 @@ using CLIFramework;
 
 namespace CLI.Menus.WorkloadManagementOptions.QueryOptions
 {
-    internal class WorkloadMovementStatus : LeafMenu
+    internal class WorkloadMovementStatus : ActionMenu
     {
-        public override string Description => "Show workload movement status";
+        public override string Label => "Show workload movement status";
+
+        protected override IAction Action => new WorkloadsMovementStatusAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
 
             var screen = new SingleSelectScreen(options, selectionHistory, "Show status of workload movement on:\n", "\nEnvironment?: ");
             await CLIController.ShowScreen(screen);
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new WorkloadsMovementStatusAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }

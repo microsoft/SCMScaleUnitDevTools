@@ -5,7 +5,7 @@ namespace CLI.Menus
 {
     internal class WorkloadManagementMenu : NavigationMenu
     {
-        public override string Description => "Workload management";
+        public override string Label => "Workload management";
 
         protected override List<DevToolMenu> SubMenus()
         {

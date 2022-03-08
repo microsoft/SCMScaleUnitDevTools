@@ -6,13 +6,15 @@ using CLIFramework;
 
 namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class StartWorkloads : LeafMenu
+    internal class StartWorkloads : ActionMenu
     {
-        public override string Description => "Start workload data pipelines";
+        public override string Label => "Start workload data pipelines";
+
+        protected override IAction Action => new StartWorkloadsAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
             var screen = new MultiSelectScreen(options, selectionHistory,
                 $"Please select the environment(s) you want to start.\n" +
                 $"Press enter to start the workloads on all environments.\n",
@@ -20,13 +22,6 @@ namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
             await CLIController.ShowScreen(screen);
 
             Console.WriteLine("Done\n");
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new StartWorkloadsAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }

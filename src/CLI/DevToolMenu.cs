@@ -10,7 +10,7 @@ namespace CLI
     {
         protected List<ScaleUnitInstance> sortedScaleUnits = null;
 
-        public abstract string Description { get; }
+        public abstract string Label { get; }
 
         public abstract Task Show(int input, string selectionHistory);
 

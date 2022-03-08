@@ -8,12 +8,15 @@ using ScaleUnitManagement.Utilities;
 
 namespace CLI.Menus.ScaleUnitManagementOptions
 {
-    internal class EnableScaleUnitFeature : LeafMenu
+    internal class EnableScaleUnitFeature : ActionMenu
     {
         protected List<IStep> availableSteps;
         private ScaleUnitInstance scaleUnit;
+        private IStep selectedStep;
 
-        public override string Description => "Initialize the hybrid topology";
+        public override string Label => "Initialize the hybrid topology";
+
+        protected override IAction Action => new StepAction(scaleUnit.ScaleUnitId, selectedStep);
 
         public override async Task Show(int input, string selectionHistory)
         {
@@ -31,7 +34,7 @@ namespace CLI.Menus.ScaleUnitManagementOptions
 
             foreach (IStep step in availableSteps)
             {
-                options.Add(new CLIOption() { Name = step.Label(), Command = PerformAction });
+                options.Add(new CLIOption() { Name = step.Label(), Command = PerformStep });
             }
 
             string helpMessage = $"Please select steps you would like to run by supplying the step numbers\n" +
@@ -44,10 +47,10 @@ namespace CLI.Menus.ScaleUnitManagementOptions
             await CLIController.ShowScreen(screen);
         }
 
-        protected override async Task PerformAction(int input, string selectionHistory)
+        private async Task PerformStep(int input, string selectionHistory)
         {
-            var action = new StepAction(scaleUnit.ScaleUnitId, availableSteps[input - 1]);
-            await action.Execute();
+            selectedStep = availableSteps[input - 1];
+            await Action.Execute();
         }
     }
 }

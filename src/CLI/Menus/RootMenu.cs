@@ -4,7 +4,7 @@ namespace CLI.Menus
 {
     internal class RootMenu : NavigationMenu
     {
-        public override string Description => "Home";
+        public override string Label => "Home";
 
         protected override List<DevToolMenu> SubMenus()
         {

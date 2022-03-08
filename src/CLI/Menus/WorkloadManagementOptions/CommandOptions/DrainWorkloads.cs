@@ -6,13 +6,15 @@ using CLIFramework;
 
 namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class DrainWorkloads : LeafMenu
+    internal class DrainWorkloads : ActionMenu
     {
-        public override string Description => "Drain workload data pipelines";
+        public override string Label => "Drain workload data pipelines";
+
+        protected override IAction Action => new DrainWorkloadsAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
             var screen = new MultiSelectScreen(options, selectionHistory,
                 $"Please select the environment(s) you want to drain\n" +
                 $"Press enter to drain the workloads on all environments.\n",
@@ -20,13 +22,6 @@ namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
             await CLIController.ShowScreen(screen);
 
             Console.WriteLine("Done\n");
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new DrainWorkloadsAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }

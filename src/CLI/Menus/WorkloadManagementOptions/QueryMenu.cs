@@ -5,7 +5,7 @@ namespace CLI.Menus.WorkloadManagementOptions
 {
     internal class QueryMenu : NavigationMenu
     {
-        public override string Description => "Query options";
+        public override string Label => "Query options";
 
         protected override List<DevToolMenu> SubMenus()
         {

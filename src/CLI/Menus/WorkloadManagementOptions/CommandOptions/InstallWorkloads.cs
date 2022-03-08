@@ -5,22 +5,17 @@ using CLIFramework;
 
 namespace CLI.Menus.WorkloadManagementOptions.CommandOptions
 {
-    internal class InstallWorkloads : LeafMenu
+    internal class InstallWorkloads : ActionMenu
     {
-        public override string Description => "Install workloads";
+        public override string Label => "Install workloads";
+
+        protected override IAction Action => new InstallWorkloadsAction(scaleUnitId);
 
         public override async Task Show(int input, string selectionHistory)
         {
-            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformAction);
+            List<CLIOption> options = SelectScaleUnitOptions(GetSortedScaleUnits(), PerformScaleUnitAction);
             var screen = new SingleSelectScreen(options, selectionHistory, "Install workloads on:\n", "\nEnvironment to install the workloads on?: ");
             await CLIController.ShowScreen(screen);
-        }
-
-        protected async override Task PerformAction(int input, string selectionHistory)
-        {
-            string scaleUnitId = GetScaleUnitId(input);
-            var action = new InstallWorkloadsAction(scaleUnitId);
-            await action.Execute();
         }
     }
 }
