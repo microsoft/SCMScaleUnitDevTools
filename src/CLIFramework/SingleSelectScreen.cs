@@ -10,6 +10,8 @@ namespace CLIFramework
 
         public override async Task PerformAction(string input)
         {
+            inputValidationError = "";
+
             var allOptions = new List<CLIOption>();
             allOptions.AddRange(options);
             allOptions.AddRange(navigationOptions);

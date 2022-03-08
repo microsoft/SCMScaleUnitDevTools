@@ -143,6 +143,18 @@ namespace ScaleUnitManagementTests.CLITests
         }
 
         [TestMethod]
+        public async Task RunKnownStep_ClearsError()
+        {
+            // Arrange + Act
+            await screen.PerformAction("19");
+            await screen.PerformAction("3");
+
+            // Assert
+            screen.inputValidationError.Should().BeEmpty();
+            executedSteps.Should().BeEquivalentTo(new List<int> { 3 });
+        }
+
+        [TestMethod]
         public async Task EnterNonNumber_ThrowsException()
         {
             // Arrange + Act
