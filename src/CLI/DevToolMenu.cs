@@ -6,7 +6,7 @@ using ScaleUnitManagement.Utilities;
 
 namespace CLI
 {
-    public abstract class DevToolMenu : CLIMenu
+    internal abstract class DevToolMenu : CLIMenu
     {
         protected List<ScaleUnitInstance> sortedScaleUnits = null;
 
