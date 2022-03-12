@@ -5,7 +5,7 @@ using CLIFramework;
 
 namespace CLI
 {
-    public abstract class NavigationMenu : DevToolMenu
+    internal abstract class NavigationMenu : DevToolMenu
     {
         public override async Task Show(int input, string selectionHistory)
         {

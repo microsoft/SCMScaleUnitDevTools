@@ -84,7 +84,7 @@ namespace CLI
                 Console.WriteLine($"\nDraining all data pipelines");
                 foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
                 {
-                    var action = new DrainPipelinesAction(scaleUnit.ScaleUnitId);
+                    var action = new DrainWorkloadsAction(scaleUnit.ScaleUnitId);
                     await action.Execute();
                 }
                 Console.WriteLine("Done.");
@@ -95,7 +95,7 @@ namespace CLI
                 Console.WriteLine($"\nStarting all data pipelines");
                 foreach (ScaleUnitInstance scaleUnit in sortedScaleUnitInstances)
                 {
-                    var action = new StartPipelinesAction(scaleUnit.ScaleUnitId);
+                    var action = new StartWorkloadsAction(scaleUnit.ScaleUnitId);
                     await action.Execute();
                 }
                 Console.WriteLine("Done.");
