@@ -2,9 +2,9 @@
 
 The scale unit capability for Microsoft Dynamics 365 Supply Chain Management is paused for new customers as the architecture is undergoing enhancements. We are not taking on any new customers for this solution currently, but are actively working on a composable, flexible, and easy-to-use architecture to our Supply Chain line of business that will further enhance our ability to provide a world-class scale unit solution for our customers.
 
-We are working to enhance Dynamics 365 Supply Chain Management to allow for further composability across specific modules like Warehouse management. We will continue to plan for and develop new cloud and edge scale unit offerings to meet our customers' needs. For more information, please reach out to d365scmcneext@microsoft.com.
+We are working to enhance Dynamics 365 Supply Chain Management to allow for further composability across specific modules like Warehouse management. We will continue to plan for and develop new cloud and edge scale unit offerings to meet our customers' needs. For more information, please reach out to [d365scmcneext@microsoft.com](mailto:d365scmcneext@microsoft.com).
 
-This repository will be archived and no longer maintained.
+This repository is now archived and will no longer be maintained.
 
 # Tools for deploying and configuring scale units for Dynamics 365 Supply Chain Management on one-box developer environments
 ![CEToolsIcon](https://user-images.githubusercontent.com/8451704/102076252-c114ef80-3e07-11eb-94b5-254ed89a2f4b.png)
